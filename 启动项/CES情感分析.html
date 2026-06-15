@@ -62,6 +62,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <div class="btn-row">
     <button class="btn btn-primary" id="analyzeTendencyBtn" onclick="analyze('tendency')">🧭 感知倾向分析</button>
     <button class="btn btn-primary" id="analyzeFrequencyBtn" onclick="analyze('frequency')">🧮 感知频率分析</button>
+    <button class="btn btn-primary" id="analyzeBothBtn" onclick="analyze('both')">🔁 感知倾向+感知频率分析</button>
     <button class="btn btn-outline btn-sm" onclick="fillExample('pos')">🌞 正面示例</button>
     <button class="btn btn-outline btn-sm" onclick="fillExample('neg')">🌧 负面示例</button>
     <button class="btn btn-outline btn-sm" onclick="fillExample('mix')">🌗 混合示例</button>
@@ -287,6 +288,17 @@ function requireMimoAsrApiKey(){
   var key=getMimoAsrApiKey();
   if(!key)throw new Error("请先填写 MiMo ASR API Key");
   return key;
+}
+function normalizeAnalysisTask(task){
+  return task==="frequency"||task==="both"?task:"tendency";
+}
+function taskIncludesTendency(task){
+  task=normalizeAnalysisTask(task);
+  return task==="tendency"||task==="both";
+}
+function taskIncludesFrequency(task){
+  task=normalizeAnalysisTask(task);
+  return task==="frequency"||task==="both";
 }
 function loadDeepSeekSettings(){
   $("aiMode").value=localStorage.getItem(STORAGE_AI_MODE)||"both";
@@ -621,7 +633,7 @@ function localCandidatesForPrompt(local){
 function deepseekMessages(text,local,task){
   var ctx=getContext();
   var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
-  task=task==="frequency"?"frequency":"tendency";
+  task=normalizeAnalysisTask(task);
   var frequencyRules=[
     "感知频率表示公众对某类 CES 的关注强度或议题可见度，不是满意度。",
     "先按中文句号、问号、感叹号、分号及明显语义停顿分句；一句内有多个独立体验内容时继续拆成语义片段。",
@@ -656,14 +668,70 @@ function deepseekMessages(text,local,task){
       method_note:"方法说明"
     }
   };
-  var schema=Object.assign({},baseSchema,task==="frequency"?frequencySchema:tendencySchema);
-  var taskName=task==="frequency"?"AI 感知频率复核":"CES 感知倾向分析";
-  var taskRule=task==="frequency"
+  var schema=Object.assign({},baseSchema,task==="both"?Object.assign({},tendencySchema,frequencySchema):(task==="frequency"?frequencySchema:tendencySchema));
+  var taskName=task==="both"?"CES 感知倾向与 AI 感知频率复核":(task==="frequency"?"AI 感知频率复核":"CES 感知倾向分析");
+  var taskRule=task==="both"
+    ?"同时执行 CES 感知倾向分析和 AI 感知频率复核：感知倾向统计 PVj = ΣSij / Nj；感知频率统计 PFj = Nj / N。两类结果都必须给出命中原文片段、判断依据和是否人工复核。"
+    :(task==="frequency"
     ?"只执行 AI 感知频率复核：对有效分句或语义片段做 CES 多标签命中，给出命中原文片段、判断原因、是否人工复核，并统计每类 CES 的 Nj、N、PFj = Nj / N。感知频率表示关注强度，不表示满意度。不要输出感知倾向评分。"
-    :"只执行 CES 感知倾向分析：对每个命中片段分别给出 CES 类别、命中内容、倾向类型、倾向分值、判断依据、是否需要人工复核；统计 PVj = ΣSij / Nj，以及正向、中性、负向数量和比例。不要输出 AI 感知频率复核。";
+    :"只执行 CES 感知倾向分析：对每个命中片段分别给出 CES 类别、命中内容、倾向类型、倾向分值、判断依据、是否需要人工复核；统计 PVj = ΣSij / Nj，以及正向、中性、负向数量和比例。不要输出 AI 感知频率复核。");
   return [
     {role:"system",content:"你是一名风景园林生态系统文化服务（CES）分析助手。当前使用的是本地轻量 CES 分类树、关键词、统计信息和本地命中结果，不包含完整训练明细。请优先依据本地候选类别、命中关键词和给定 CES 指标定义进行判断，而不是只按通用常识判断。必须按具体分句或语义片段分别判断，不要把整条评论总体情绪直接赋给所有 CES 类别。正负混合评论必须拆分，例如“风景好但厕所脏”中美学景观体验为正向，设施维护与管理服务为负向。感知倾向分值规则：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向；0.90-1.00强正向，0.70-0.89一般正向，0.56-0.69弱正向，0.45-0.55中性，0.30-0.44弱负向，0.10-0.29一般负向，0.00-0.09强负向。感知频率规则如下：\n"+frequencyRules+"\n本次任务："+taskName+"。"+taskRule+" 必须只输出 JSON，不要 Markdown。"},
     {role:"user",content:"请根据以下信息完成："+taskName+"。\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n输出要求：\n1. 对评论按中文句号、问号、感叹号、分号及明显语义停顿分句；一句内有多个独立体验内容时继续拆成语义片段。\n2. "+taskRule+"\n3. 同时保留整体 sentiment、positive_prob、negative_prob、sentence_analysis、reasons 字段；不确定可填 null 或空数组。\n4. 严格按这个 JSON 结构输出，不要输出多余文字：\n"+JSON.stringify(schema,null,2)}
+  ];
+}
+
+function mimoMessages(text,local,task){
+  var ctx=getContext();
+  var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
+  task=normalizeAnalysisTask(task);
+  var baseSchema={
+    sentiment:"0消极/1中性/2积极；如当前任务不需要可返回 null",
+    positive_prob:"0到1；如当前任务不需要可返回 null",
+    negative_prob:"0到1；如当前任务不需要可返回 null",
+    sentence_analysis:[{sentence:"原文分句",sentiment:"0/1/2"}],
+    reasons:["整体判断原因"]
+  };
+  var tendencySchema={
+    perception_tendency:{
+      items:[{comment_id:"当前评论",original_text:"原评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",tendency_type:"正向/中性/负向",tendency_score:"0到1连续分值",evidence:"判断依据",review_required:"true/false"}],
+      category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",hit_count:"命中片段数",tendency_mean:"PVj均值",positive_count:"正向数",neutral_count:"中性数",negative_count:"负向数",positive_ratio:"正向比例",neutral_ratio:"中性比例",negative_ratio:"负向比例",note:"备注"}],
+      review_required_count:"需人工复核数量",
+      method_note:"方法说明"
+    }
+  };
+  var frequencySchema={
+    perception_frequency_ai:{
+      segments:[{comment_id:"当前评论",original_text:"原评论",segment:"有效分句或语义片段",valid:"true/false",invalid_reason:"无意义/广告/乱码/纯表情/无实际体验内容或空"}],
+      items:[{comment_id:"当前评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",reason:"判断原因",review_required:"true/false"}],
+      category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",Nj:"命中片段数",N:"有效分句总数",PFj:"Nj/N，保留4位小数",PFj_percent:"百分比，保留2位小数",examples:["命中内容示例"],note:"备注"}],
+      valid_segment_count:"有效分句总数 N",
+      review_required_count:"需人工复核数量",
+      method_note:"方法说明"
+    }
+  };
+  var schema=Object.assign({},baseSchema,task==="both"?Object.assign({},tendencySchema,frequencySchema):(task==="frequency"?frequencySchema:tendencySchema));
+  var mimoFrequencyPrompt=[
+    "你是一名风景园林生态系统文化服务（CES）感知频率分析助手。我将上传训练数据集和待分析评论。请先读取训练集，学习“评论原文—分句文本—命中内容—CES类别—判断原因”的标注逻辑，再按训练集规则分析新评论。所有分类必须给出命中原文片段，不得只给类别。",
+    "本研究采用12类CES指标：1美学景观体验；2游憩活动与运动体验；3蓝空间亲水体验；4生态自然与生物感知；5文化遗产与地方认同；6教育科普与认知体验；7精神恢复与心理舒适；8社交亲子与全龄共享；9可达交通与游线导向；10设施维护与管理服务；11空间承载与秩序体验；12环境舒适与微气候。",
+    "分析步骤：先归纳训练集中每类CES的关键词、典型语义和边界规则。对评论按“。？！；”及明显语义停顿分句。若一句包含多个独立体验内容，可拆成语义片段。对每个分句或片段进行CES多标签识别。正向、中性、负向评价均计入感知频率。每个命中类别必须标出命中内容和判断依据。无明确CES内容标为“未命中”；乱码、广告、纯表情、无实际体验内容不纳入有效分句总数。不确定样本标为“需人工复核”。",
+    "感知频率计算：PFj = Nj / N。其中，PFj为第j类CES感知频率，Nj为第j类CES命中分句数或片段数，N为全部有效分句总数。若一句话命中多个CES类别，各类别分别计1次。",
+    "主要边界规则：美学景观体验强调景观好看、拍照、花海、夜景；生态自然与生物感知强调植物、动物、生境、生态、自然接触。蓝空间亲水体验强调海、湖、河、湿地、沙滩、亲水、栈道。游憩活动与运动体验强调跑步、骑行、徒步、露营、游乐、健身；社交亲子与全龄共享强调亲子、朋友、老人、宠物、社区邻里。可达交通与游线导向强调交通、停车、入口、路线、指示牌、无障碍；设施维护与管理服务强调卫生、维修、保洁、安全管理、灾后恢复。空间承载与秩序体验强调拥挤、排队、空间容量、动线秩序；环境舒适与微气候强调遮阴、通风、热、晒、湿、噪音、空气质量。教育科普与认知体验强调科普、展陈、解说、研学；文化遗产与地方认同强调历史、地方符号、城市记忆、民俗节庆。",
+    "感知频率保留4位小数，百分比保留2位小数。感知频率只表示被提及和被关注的频率，不表示满意度或供给质量。"
+  ].join("\n");
+  var mimoTendencyPrompt=[
+    "你是一名风景园林生态系统文化服务（CES）感知倾向分析助手。我将上传训练数据集和待分析评论。请先读取训练集，学习“评论原文—命中内容—CES类别—情绪倾向—判断原因”的标注逻辑，再分析新评论。所有结果必须给出命中原文片段和判断依据，保证可复核。",
+    "本研究采用12类CES指标：1美学景观体验；2游憩活动与运动体验；3蓝空间亲水体验；4生态自然与生物感知；5文化遗产与地方认同；6教育科普与认知体验；7精神恢复与心理舒适；8社交亲子与全龄共享；9可达交通与游线导向；10设施维护与管理服务；11空间承载与秩序体验；12环境舒适与微气候。",
+    "分析步骤：先归纳训练集中每类CES的正向、中性、负向表达规则。对评论按“。？！；”及明显语义停顿分句。若一句包含多个独立体验内容，可拆成语义片段。先识别每个分句或片段命中的CES类别，再分别判断对应感知倾向。同一句可多标签，且不同类别可有不同倾向。每个命中结果需给出：命中CES类别、命中内容、倾向类型、倾向分值、判断依据、是否需人工复核。不要把整条评论的总体情绪直接赋给所有类别，必须按具体命中内容判断。例如“风景好但停车难”：美学景观为正向，可达交通为负向。",
+    "感知倾向采用0—1连续分值：0.00—0.44为负向；0.45—0.55为中性；0.56—1.00为正向。评分参考：0.90—1.00 强正向，如“非常美、特别舒服、强烈推荐”；0.70—0.89 一般正向，如“不错、挺好、环境好”；0.56—0.69 弱正向，如“还可以、整体不错”；0.45—0.55 中性，如“一般、普通、无明显好坏”；0.30—0.44 弱负向，如“有点晒、稍微拥挤、不太方便”；0.10—0.29 一般负向，如“厕所少、设施旧、人很多”；0.00—0.09 强负向，如“非常差、脏乱差、安全隐患严重”。",
+    "感知倾向计算：PVj = ΣSij / Nj。其中，PVj为第j类CES感知倾向，Sij为该类第i个命中片段的倾向分值，Nj为该类命中片段数量。",
+    "主要判断规则：“景色很美、空气清新、适合散步、厕所干净、停车方便”为正向，按具体内容归入对应CES类别。“一般、普通、没什么特别”为中性。“停车难、厕所少、太晒、人太多、设施破旧、指示不清”为负向。“人很多”通常归入空间承载与秩序体验并偏负向；若表达为“热闹、有烟火气”，可判为中性或正向。“空气好”若强调体感舒适，归入环境舒适与微气候；若强调自然接触或生态环境，可同时归入生态自然与生物感知。无法判断倾向的样本标为“需人工复核”，不要强行评分。"
+  ].join("\n");
+  var selectedPrompt=task==="both"?mimoTendencyPrompt+"\n\n"+mimoFrequencyPrompt:(task==="frequency"?mimoFrequencyPrompt:mimoTendencyPrompt);
+  var taskName=task==="both"?"感知倾向+感知频率分析":(task==="frequency"?"感知频率分析":"感知倾向分析");
+  return [
+    {role:"system",content:selectedPrompt+"\n\n当前轻量版没有携带完整训练明细，请把下方“本地候选类别和命中结果”视为可用训练摘要。必须只输出 JSON，不要 Markdown。"},
+    {role:"user",content:"请执行："+taskName+"。\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n严格按这个 JSON 结构输出，不要输出多余文字：\n"+JSON.stringify(schema,null,2)}
   ];
 }
 
@@ -692,7 +760,7 @@ function selectedAiKinds(){
 
 async function callAiDirect(kind,messages,task){
   var cfg=getAiConfig(kind);
-  var payload={model:cfg.model,messages:messages,temperature:0.2,max_tokens:task==="check"?200:2600};
+  var payload={model:cfg.model,messages:messages,temperature:0.2,max_tokens:task==="check"?200:(task==="both"?4200:2600)};
   var lastError=null;
   for(var i=0;i<DEEPSEEK_RETRIES;i++){
     try{
@@ -1128,13 +1196,13 @@ function combinePerceptionFrequencyAi(rows){
 function mergeResult(local,parsed,cfg,task){
   var result=JSON.parse(JSON.stringify(local));
   var norm=normalizeAiParsed(parsed),provider=cfg&&cfg.provider||PROVIDER_DEEPSEEK,label=cfg&&cfg.label||"DeepSeek";
-  task=task==="frequency"?"frequency":"tendency";
+  task=normalizeAnalysisTask(task);
   result.ok=true;result.fallback=false;result.provider=provider;
   result.ai_models=[{provider:label,ok:true,model:cfg&&cfg.model||"deepseek-chat",weight:1}];
   result.deepseek={ok:label==="DeepSeek",fallback:false,model:cfg&&cfg.model||"deepseek-chat"};
   result.sentiment_item={sentiment:norm.sentiment,positive_prob:norm.positive_prob,negative_prob:norm.negative_prob,confidence:Math.max(norm.positive_prob||0,norm.negative_prob||0),note:"情感由 "+label+" 输出；CES 分类由本地数据集输出。"};
-  result.perception_tendency=task==="tendency"?normalizePerceptionTendency(parsed&&parsed.perception_tendency,label):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
-  result.perception_frequency_ai=task==="frequency"?normalizePerceptionFrequencyAi(parsed&&parsed.perception_frequency_ai,label):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
+  result.perception_tendency=taskIncludesTendency(task)?normalizePerceptionTendency(parsed&&parsed.perception_tendency,label):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
+  result.perception_frequency_ai=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(parsed&&parsed.perception_frequency_ai,label):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
   result.llm_perception={sentence_analysis:norm.sentence_analysis};
   result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(norm.reasons);
   return result;
@@ -1142,7 +1210,7 @@ function mergeResult(local,parsed,cfg,task){
 
 function mergeEqualWeightResult(local,rows,task){
   var result=JSON.parse(JSON.stringify(local)),valid=rows.filter(function(r){return r&&r.ok});
-  task=task==="frequency"?"frequency":"tendency";
+  task=normalizeAnalysisTask(task);
   if(!valid.length)throw new Error("DeepSeek 和 MiMo 均不可用");
   if(valid.length===1)return mergeResult(local,valid[0].parsed,valid[0].cfg,task);
   var n1=normalizeAiParsed(valid[0].parsed),n2=normalizeAiParsed(valid[1].parsed);
@@ -1157,8 +1225,8 @@ function mergeEqualWeightResult(local,rows,task){
   result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
   result.mimo={ok:true,fallback:false,model:getMimoModel()};
   result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos,neg),note:"情感由 DeepSeek 与 MiMo 2.5 Pro 等权合成；CES 分类由本地数据集输出。"};
-  result.perception_tendency=task==="tendency"?combinePerceptionTendencies(valid):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
-  result.perception_frequency_ai=task==="frequency"?combinePerceptionFrequencyAi(valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
+  result.perception_tendency=taskIncludesTendency(task)?combinePerceptionTendencies(valid):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
+  result.perception_frequency_ai=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
   result.llm_perception={sentence_analysis:[].concat(n1.sentence_analysis||[],n2.sentence_analysis||[])};
   result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["DeepSeek 与 MiMo 2.5 Pro 均参与分析，最终情感概率按 50% + 50% 等权合成。"],n1.reasons||[],n2.reasons||[]);
   return result;
@@ -1178,9 +1246,11 @@ function localOnlyResult(local,error){
 }
 
 async function runSelectedAiAnalysis(local,text,task){
-  var kinds=selectedAiKinds(),messages=deepseekMessages(text,local,task);
+  task=normalizeAnalysisTask(task);
+  var kinds=selectedAiKinds();
   var settled=await Promise.allSettled(kinds.map(async function(kind){
     var cfg=getAiConfig(kind);
+    var messages=kind==="mimo"?mimoMessages(text,local,task):deepseekMessages(text,local,task);
     var raw=await callAi(kind,messages,task);
     return {ok:true,cfg:cfg,parsed:extractJson(raw)};
   }));
@@ -1199,16 +1269,17 @@ async function runSelectedAiAnalysis(local,text,task){
 }
 
 async function analyze(task){
-  task=task==="frequency"?"frequency":"tendency";
+  task=normalizeAnalysisTask(task);
   var text=$("commentInput").value.trim();
   var st=$("statusMsg");
   if(!text){st.textContent="请先输入文本";return}
-  var btn=task==="frequency"?$("analyzeFrequencyBtn"):$("analyzeTendencyBtn"),otherBtn=task==="frequency"?$("analyzeTendencyBtn"):$("analyzeFrequencyBtn");
-  btn.disabled=true;otherBtn.disabled=true;st.className="status";st.textContent="正在加载本地数据集...";
+  var buttons=[$("analyzeTendencyBtn"),$("analyzeFrequencyBtn"),$("analyzeBothBtn")];
+  buttons.forEach(function(b){if(b)b.disabled=true});
+  st.className="status";st.textContent="正在加载本地数据集...";
   $("resultSection").style.display="none";
   try{
     var local=await getLocalAnalysis(text);
-    st.textContent=local.source==="browser_local_dataset"?"正在连接 AI 模型进行"+(task==="frequency"?"感知频率":"感知倾向")+"分析；失败则保留本地数据集结果...":"正在连接 AI 模型...";
+    st.textContent=local.source==="browser_local_dataset"?"正在连接 AI 模型进行"+(task==="both"?"感知倾向+感知频率":(task==="frequency"?"感知频率":"感知倾向"))+"分析；失败则保留本地数据集结果...":"正在连接 AI 模型...";
     var result;
     try{
       result=await runSelectedAiAnalysis(local,text,task);
@@ -1224,7 +1295,7 @@ async function analyze(task){
     var result=localOnlyResult(browserLocalAnalysis(text,e),e);
     renderAll(result,text,task);
     st.className="status ok";st.textContent="已使用本地数据集兜底。来源："+result.provider;
-  }finally{btn.disabled=false;otherBtn.disabled=false}
+  }finally{buttons.forEach(function(b){if(b)b.disabled=false})}
 }
 
 function renderAll(result,text,task){
@@ -1318,8 +1389,9 @@ function saveStoredHistory(key,items){
   try{localStorage.setItem(key,JSON.stringify(items.slice(0,MAX_HISTORY)))}catch(e){}
 }
 function addHistory(task,result,text){
+  task=normalizeAnalysisTask(task);
   var now=new Date().toLocaleString(),provider=result.provider||"",shortText=text.substring(0,60);
-  if(task==="frequency"){
+  if(taskIncludesFrequency(task)){
     var freq=result.perception_frequency_ai||{},summary=freq.category_summary||[],items=freq.items||[];
     frequencyHistory.unshift({
       time:now,
@@ -1331,7 +1403,8 @@ function addHistory(task,result,text){
     });
     frequencyHistory=frequencyHistory.slice(0,MAX_HISTORY);
     saveStoredHistory(STORAGE_FREQUENCY_HISTORY,frequencyHistory);
-  }else{
+  }
+  if(taskIncludesTendency(task)){
     var tendency=result.perception_tendency||{},ts= tendency.category_summary||[],ti=tendency.items||[];
     tendencyHistory.unshift({
       time:now,
