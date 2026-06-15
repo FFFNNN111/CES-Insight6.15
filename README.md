@@ -39,11 +39,14 @@ Root directory: 留空
 
 项目已经包含 `package.json` 和 `wrangler.toml`，用于解决 Cloudflare 默认执行 `npm run build` 时找不到 `package.json` 的问题。
 
+部署到 Cloudflare 后，页面会优先请求本站的 `/api/chat`，再由 Cloudflare Pages Function 转发到 DeepSeek 或 MiMo。这样可以避免浏览器直接跨域请求外部 API 被拦截。
+
 ## 保留内容
 
 - `index.html`：GitHub Pages 首页入口。
 - `启动项/CES情感分析.html`：主页面。
 - `启动项/ces_browser_dataset.js`：浏览器本地 CES 分类树和关键词数据。
+- `functions/api/chat.js`：Cloudflare Pages Function，用于代理 DeepSeek / MiMo / MiMo ASR。
 - `package.json`、`wrangler.toml`、`scripts/build-static.js`：Cloudflare Pages 静态构建配置。
 - `.nojekyll`、`.gitignore`、`.gitattributes`：GitHub Pages 和编码辅助配置。
 
@@ -58,12 +61,12 @@ Root directory: 留空
 
 ## 当前工作方式
 
-- DeepSeek：浏览器直连 `https://api.deepseek.com`，需要用户自己填写 Key。
-- MiMo 2.5 Pro：浏览器直连 `https://api.xiaomimimo.com/v1`，需要用户自己填写 Key。
-- MiMo 2.5 ASR：浏览器直连 `https://api.xiaomimimo.com/v1/chat/completions`，需要用户自己填写 Key。
+- DeepSeek：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.deepseek.com`，本地双击 HTML 时浏览器直连。
+- MiMo 2.5 Pro：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1`，本地双击 HTML 时浏览器直连。
+- MiMo 2.5 ASR：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1/chat/completions`，本地双击 HTML 时浏览器直连。
 - 本地 CES：使用 `ces_browser_dataset.js` 做轻量分类兜底。
 
-页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`。
+页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`，输入框会直接显示普通字符。
 
 ## 重要说明
 

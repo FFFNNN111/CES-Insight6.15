@@ -97,13 +97,13 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <div><label>公园类型</label><select id="parkType"><option value="auto">自动</option><option>城市公园</option><option>湿地公园</option><option>森林公园</option><option>滨海公园</option><option>社区公园</option></select></div>
       <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">DeepSeek + MiMo 等权</option><option value="deepseek">只用 DeepSeek</option><option value="mimo">只用 MiMo</option></select></div>
       <div><label>DeepSeek 地址</label><input id="apiBase" value="https://api.deepseek.com"></div>
-      <div><label>DeepSeek API Key</label><input id="deepseekApiKey" type="password" autocomplete="off" placeholder="填入 DeepSeek API Key"></div>
+      <div><label>DeepSeek API Key</label><input id="deepseekApiKey" type="text" autocomplete="off" placeholder="填入 DeepSeek API Key"></div>
       <div><label>MiMo 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
       <div><label>MiMo 模型名</label><input id="mimoModel" value="mimo-v2.5-pro"></div>
-      <div><label>MiMo API Key</label><input id="mimoApiKey" type="password" autocomplete="off" placeholder="填入 MiMo API Key"></div>
+      <div><label>MiMo API Key</label><input id="mimoApiKey" type="text" autocomplete="off" placeholder="填入 MiMo API Key"></div>
       <div><label>MiMo ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
       <div><label>MiMo ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
-      <div><label>MiMo ASR API Key</label><input id="mimoAsrApiKey" type="password" autocomplete="off" placeholder="填入 MiMo ASR API Key"></div>
+      <div><label>MiMo ASR API Key</label><input id="mimoAsrApiKey" type="text" autocomplete="off" placeholder="填入 MiMo ASR API Key"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-outline btn-sm" onclick="saveAiSettings()">保存 AI 设置</button>
@@ -201,6 +201,7 @@ const STORAGE_AI_MODE = "ces_ai_mode";
 const DEEPSEEK_RETRIES = 5;
 const REQUEST_TIMEOUT_MS = 45000;
 const ASR_TIMEOUT_MS = 120000;
+const CHAT_PROXY_PATH = "/api/chat";
 const PROVIDER_DEEPSEEK = "deepseek v4 pro模型+本地数据集回答";
 const PROVIDER_MIMO = "mimo 2.5 pro模型+本地数据集回答";
 const PROVIDER_BOTH = "deepseek模型+mimo 2.5 pro模型等权+本地数据集回答";
@@ -476,15 +477,14 @@ function blobToDataUrl(audio){
 
 async function callMimoAsrDirect(audio){
   var dataUrl=await audioToWavDataUrl(audio);
+  var cfg={label:"MiMo 2.5 ASR",api_key:requireMimoAsrApiKey(),api_base:getMimoAsrApiBase(),model:getMimoAsrModel(),endpoint:normalizeMimoAsrUrl(getMimoAsrApiBase())};
   var payload={
-    model:getMimoAsrModel(),
+    model:cfg.model,
     messages:[{role:"user",content:[{type:"input_audio",input_audio:{data:dataUrl,format:"wav"}}]}],
     temperature:0,
     max_tokens:500
   };
-  var resp=await fetchWithTimeout(normalizeMimoAsrUrl(getMimoAsrApiBase()),{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+requireMimoAsrApiKey()},body:JSON.stringify(payload)},ASR_TIMEOUT_MS);
-  var data=await resp.json().catch(function(){return{ok:false,message:"MiMo ASR 返回不是 JSON"}});
-  if(!resp.ok)throw new Error(data.message||data.error&&data.error.message||("HTTP "+resp.status));
+  var data=await requestChatCompletion(cfg,payload,ASR_TIMEOUT_MS);
   return readAsrText(data);
 }
 
@@ -532,6 +532,48 @@ async function fetchWithTimeout(url,options,timeoutMs){
   finally{clearTimeout(timer)}
 }
 
+function shouldUseChatProxy(){
+  return location.protocol!=="file:";
+}
+
+function shouldFallbackToDirect(error){
+  var status=error&&error.status;
+  var msg=String(error&&error.message||"");
+  return status===404||status===405||msg.indexOf("Failed to fetch")>=0;
+}
+
+async function parseChatResponse(resp,label){
+  var data=await resp.json().catch(function(){return{ok:false,message:label+" 返回不是 JSON"}});
+  if(!resp.ok||data.ok===false){
+    var err=new Error(data.message||data.error&&data.error.message||(label+" HTTP "+resp.status));
+    err.status=resp.status;
+    throw err;
+  }
+  return data;
+}
+
+async function callChatProxy(cfg,payload,timeoutMs){
+  var body={api_key:cfg.api_key,api_base:cfg.api_base,model:cfg.model,messages:payload.messages,temperature:payload.temperature,max_tokens:payload.max_tokens};
+  var resp=await fetchWithTimeout(CHAT_PROXY_PATH,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},timeoutMs);
+  return await parseChatResponse(resp,cfg.label);
+}
+
+async function callChatDirect(cfg,payload,timeoutMs){
+  var resp=await fetchWithTimeout(cfg.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+cfg.api_key},body:JSON.stringify(payload)},timeoutMs);
+  return await parseChatResponse(resp,cfg.label);
+}
+
+async function requestChatCompletion(cfg,payload,timeoutMs){
+  if(shouldUseChatProxy()){
+    try{
+      return await callChatProxy(cfg,payload,timeoutMs);
+    }catch(e){
+      if(!shouldFallbackToDirect(e))throw e;
+    }
+  }
+  return await callChatDirect(cfg,payload,timeoutMs);
+}
+
 function deepseekMessages(text){
   var ctx=getContext();
   var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
@@ -570,15 +612,9 @@ async function callAiDirect(kind,messages){
   var lastError=null;
   for(var i=0;i<DEEPSEEK_RETRIES;i++){
     try{
-      var resp=await fetchWithTimeout(cfg.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+cfg.api_key},body:JSON.stringify(payload)},REQUEST_TIMEOUT_MS);
-      if(!resp.ok){
-        var err=new Error(cfg.label+" HTTP "+resp.status);err.status=resp.status;
-        if(resp.status===401||resp.status===403||!shouldRetry(resp.status)||i===DEEPSEEK_RETRIES-1)throw err;
-      }else{
-        var data=await resp.json();
-        var msg=data.choices&&data.choices[0]&&data.choices[0].message;
-        return msg?(msg.content||msg.reasoning_content||""):"";
-      }
+      var data=await requestChatCompletion(cfg,payload,REQUEST_TIMEOUT_MS);
+      var msg=data.choices&&data.choices[0]&&data.choices[0].message;
+      return msg?(msg.content||msg.reasoning_content||""):"";
     }catch(e){lastError=e;if(e.status===401||e.status===403||i===DEEPSEEK_RETRIES-1)break}
     await sleep(350*(i+1));
   }
