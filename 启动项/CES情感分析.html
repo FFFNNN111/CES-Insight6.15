@@ -48,7 +48,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 <div class="container">
 <header>
   <h1>🌿 CES 感知情感分析</h1>
-  <p>DeepSeek / MiMo 2.5 Pro / MiMo ASR + 本地 CES 数据集</p>
+  <p>deepseek v4 pro / MIMO V2.5pro / MiMo ASR + 本地 CES 数据集</p>
 </header>
 
 <div class="card">
@@ -57,7 +57,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <div class="model-switch" role="group" aria-label="AI 模型选择">
     <button class="btn btn-outline btn-sm btn-mode" id="modeDeepseekBtn" type="button" onclick="setAiMode('deepseek')">DeepSeek</button>
     <button class="btn btn-outline btn-sm btn-mode" id="modeMimoBtn" type="button" onclick="setAiMode('mimo')">MiMo</button>
-    <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">DeepSeek + MiMo 等权</button>
+    <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">deepseek v4 pro + MIMO V2.5pro</button>
   </div>
   <div class="btn-row">
     <button class="btn btn-primary" id="analyzeTendencyBtn" onclick="analyze('tendency')">🧭 感知倾向分析</button>
@@ -98,7 +98,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <div><label>省份</label><input id="province" value="广东省"></div>
       <div><label>月份</label><select id="month"><option value="auto">自动</option><option>1月</option><option>2月</option><option>3月</option><option>4月</option><option>5月</option><option>6月</option><option>7月</option><option>8月</option><option>9月</option><option>10月</option><option>11月</option><option>12月</option></select></div>
       <div><label>公园类型</label><select id="parkType"><option value="auto">自动</option><option>城市公园</option><option>湿地公园</option><option>森林公园</option><option>滨海公园</option><option>社区公园</option></select></div>
-      <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">DeepSeek + MiMo 等权</option><option value="deepseek">只用 DeepSeek</option><option value="mimo">只用 MiMo</option></select></div>
+      <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">deepseek v4 pro + MIMO V2.5pro</option><option value="deepseek">只用 deepseek v4 pro</option><option value="mimo">只用 MIMO V2.5pro</option></select></div>
       <div><label>DeepSeek 地址</label><input id="apiBase" value="https://api.deepseek.com"></div>
       <div><label>DeepSeek API Key</label><input id="deepseekApiKey" type="text" autocomplete="off" placeholder="填入 DeepSeek API Key"></div>
       <div><label>MiMo 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
@@ -113,7 +113,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <button class="btn btn-outline btn-sm" onclick="checkHealth()">测试 AI 连接</button>
       <button class="btn btn-outline btn-sm" onclick="clearAiKeys()">清除 Key</button>
     </div>
-    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 DeepSeek、MiMo 或两者等权分析。连接失败时，软件只使用本地 CES 数据集。</p>
+    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、MIMO V2.5pro 或两者 3:1 分析。连接失败时，软件只使用本地 CES 数据集。</p>
   </details>
 </div>
 
@@ -199,7 +199,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <div class="highlight-text" id="qaAnswer" style="margin-top:12px">暂无回答。</div>
 </div>
 
-<div class="footer">CES 感知情感分析 · DeepSeek / MiMo 2.5 Pro / MiMo ASR · 本地数据集</div>
+<div class="footer">CES 感知情感分析 · deepseek v4 pro / MIMO V2.5pro / MiMo ASR · 本地数据集</div>
 </div>
 
 <script src="ces_browser_dataset.js"></script>
@@ -225,8 +225,8 @@ const REQUEST_TIMEOUT_MS = 45000;
 const ASR_TIMEOUT_MS = 120000;
 const CHAT_PROXY_PATH = "/api/chat";
 const PROVIDER_DEEPSEEK = "deepseek v4 pro模型+本地数据集回答";
-const PROVIDER_MIMO = "mimo 2.5 pro模型+本地数据集回答";
-const PROVIDER_BOTH = "deepseek v4 pro模型+mimo 2.5 pro模型+本地数据集回答";
+const PROVIDER_MIMO = "MIMO V2.5pro模型+本地数据集回答";
+const PROVIDER_BOTH = "deepseek v4 pro模型+MIMO V2.5pro模型+本地数据集回答";
 const PROVIDER_LOCAL = "本地数据集回答";
 const MAX_HISTORY = 100;
 let lastResult = null;
@@ -247,7 +247,7 @@ function normalizeDeepSeekUrl(base){return normalizeChatUrl(base,DEFAULT_DEEPSEE
 function normalizeMimoUrl(base){return normalizeChatUrl(base,DEFAULT_MIMO_API_BASE)}
 function normalizeMimoAsrUrl(base){return normalizeChatUrl(base,DEFAULT_MIMO_ASR_API_BASE)}
 function getAiMode(){return ($("aiMode").value||"both")}
-function aiModeLabel(mode){return mode==="deepseek"?"DeepSeek":mode==="mimo"?"MiMo":"DeepSeek + MiMo 等权"}
+function aiModeLabel(mode){return mode==="deepseek"?"deepseek v4 pro":mode==="mimo"?"MIMO V2.5pro":"deepseek v4 pro + MIMO V2.5pro"}
 function updateAiModeButtons(){
   var mode=getAiMode();
   [["deepseek","modeDeepseekBtn"],["mimo","modeMimoBtn"],["both","modeBothBtn"]].forEach(function(row){
@@ -682,57 +682,7 @@ function deepseekMessages(text,local,task){
 }
 
 function mimoMessages(text,local,task){
-  var ctx=getContext();
-  var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
-  task=normalizeAnalysisTask(task);
-  var baseSchema={
-    sentiment:"0消极/1中性/2积极；如当前任务不需要可返回 null",
-    positive_prob:"0到1；如当前任务不需要可返回 null",
-    negative_prob:"0到1；如当前任务不需要可返回 null",
-    sentence_analysis:[{sentence:"原文分句",sentiment:"0/1/2"}],
-    reasons:["整体判断原因"]
-  };
-  var tendencySchema={
-    perception_tendency:{
-      items:[{comment_id:"当前评论",original_text:"原评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",tendency_type:"正向/中性/负向",tendency_score:"0到1连续分值",evidence:"判断依据",review_required:"true/false"}],
-      category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",hit_count:"命中片段数",tendency_mean:"PVj均值",positive_count:"正向数",neutral_count:"中性数",negative_count:"负向数",positive_ratio:"正向比例",neutral_ratio:"中性比例",negative_ratio:"负向比例",note:"备注"}],
-      review_required_count:"需人工复核数量",
-      method_note:"方法说明"
-    }
-  };
-  var frequencySchema={
-    perception_frequency_ai:{
-      segments:[{comment_id:"当前评论",original_text:"原评论",segment:"有效分句或语义片段",valid:"true/false",invalid_reason:"无意义/广告/乱码/纯表情/无实际体验内容或空"}],
-      items:[{comment_id:"当前评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",reason:"判断原因",review_required:"true/false"}],
-      category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",Nj:"命中片段数",N:"有效分句总数",PFj:"Nj/N，保留4位小数",PFj_percent:"百分比，保留2位小数",examples:["命中内容示例"],note:"备注"}],
-      valid_segment_count:"有效分句总数 N",
-      review_required_count:"需人工复核数量",
-      method_note:"方法说明"
-    }
-  };
-  var schema=Object.assign({},baseSchema,task==="both"?Object.assign({},tendencySchema,frequencySchema):(task==="frequency"?frequencySchema:tendencySchema));
-  var mimoFrequencyPrompt=[
-    "你是一名风景园林生态系统文化服务（CES）感知频率分析助手。我将上传训练数据集和待分析评论。请先读取训练集，学习“评论原文—分句文本—命中内容—CES类别—判断原因”的标注逻辑，再按训练集规则分析新评论。所有分类必须给出命中原文片段，不得只给类别。",
-    "本研究采用12类CES指标：1美学景观体验；2游憩活动与运动体验；3蓝空间亲水体验；4生态自然与生物感知；5文化遗产与地方认同；6教育科普与认知体验；7精神恢复与心理舒适；8社交亲子与全龄共享；9可达交通与游线导向；10设施维护与管理服务；11空间承载与秩序体验；12环境舒适与微气候。",
-    "分析步骤：先归纳训练集中每类CES的关键词、典型语义和边界规则。对评论按“。？！；”及明显语义停顿分句。若一句包含多个独立体验内容，可拆成语义片段。对每个分句或片段进行CES多标签识别。正向、中性、负向评价均计入感知频率。每个命中类别必须标出命中内容和判断依据。无明确CES内容标为“未命中”；乱码、广告、纯表情、无实际体验内容不纳入有效分句总数。不确定样本标为“需人工复核”。",
-    "感知频率计算：PFj = Nj / N。其中，PFj为第j类CES感知频率，Nj为第j类CES命中分句数或片段数，N为全部有效分句总数。若一句话命中多个CES类别，各类别分别计1次。",
-    "主要边界规则：美学景观体验强调景观好看、拍照、花海、夜景；生态自然与生物感知强调植物、动物、生境、生态、自然接触。蓝空间亲水体验强调海、湖、河、湿地、沙滩、亲水、栈道。游憩活动与运动体验强调跑步、骑行、徒步、露营、游乐、健身；社交亲子与全龄共享强调亲子、朋友、老人、宠物、社区邻里。可达交通与游线导向强调交通、停车、入口、路线、指示牌、无障碍；设施维护与管理服务强调卫生、维修、保洁、安全管理、灾后恢复。空间承载与秩序体验强调拥挤、排队、空间容量、动线秩序；环境舒适与微气候强调遮阴、通风、热、晒、湿、噪音、空气质量。教育科普与认知体验强调科普、展陈、解说、研学；文化遗产与地方认同强调历史、地方符号、城市记忆、民俗节庆。",
-    "感知频率保留4位小数，百分比保留2位小数。感知频率只表示被提及和被关注的频率，不表示满意度或供给质量。"
-  ].join("\n");
-  var mimoTendencyPrompt=[
-    "你是一名风景园林生态系统文化服务（CES）感知倾向分析助手。我将上传训练数据集和待分析评论。请先读取训练集，学习“评论原文—命中内容—CES类别—情绪倾向—判断原因”的标注逻辑，再分析新评论。所有结果必须给出命中原文片段和判断依据，保证可复核。",
-    "本研究采用12类CES指标：1美学景观体验；2游憩活动与运动体验；3蓝空间亲水体验；4生态自然与生物感知；5文化遗产与地方认同；6教育科普与认知体验；7精神恢复与心理舒适；8社交亲子与全龄共享；9可达交通与游线导向；10设施维护与管理服务；11空间承载与秩序体验；12环境舒适与微气候。",
-    "分析步骤：先归纳训练集中每类CES的正向、中性、负向表达规则。对评论按“。？！；”及明显语义停顿分句。若一句包含多个独立体验内容，可拆成语义片段。先识别每个分句或片段命中的CES类别，再分别判断对应感知倾向。同一句可多标签，且不同类别可有不同倾向。每个命中结果需给出：命中CES类别、命中内容、倾向类型、倾向分值、判断依据、是否需人工复核。不要把整条评论的总体情绪直接赋给所有类别，必须按具体命中内容判断。例如“风景好但停车难”：美学景观为正向，可达交通为负向。",
-    "感知倾向采用0—1连续分值：0.00—0.44为负向；0.45—0.55为中性；0.56—1.00为正向。评分参考：0.90—1.00 强正向，如“非常美、特别舒服、强烈推荐”；0.70—0.89 一般正向，如“不错、挺好、环境好”；0.56—0.69 弱正向，如“还可以、整体不错”；0.45—0.55 中性，如“一般、普通、无明显好坏”；0.30—0.44 弱负向，如“有点晒、稍微拥挤、不太方便”；0.10—0.29 一般负向，如“厕所少、设施旧、人很多”；0.00—0.09 强负向，如“非常差、脏乱差、安全隐患严重”。",
-    "感知倾向计算：PVj = ΣSij / Nj。其中，PVj为第j类CES感知倾向，Sij为该类第i个命中片段的倾向分值，Nj为该类命中片段数量。",
-    "主要判断规则：“景色很美、空气清新、适合散步、厕所干净、停车方便”为正向，按具体内容归入对应CES类别。“一般、普通、没什么特别”为中性。“停车难、厕所少、太晒、人太多、设施破旧、指示不清”为负向。“人很多”通常归入空间承载与秩序体验并偏负向；若表达为“热闹、有烟火气”，可判为中性或正向。“空气好”若强调体感舒适，归入环境舒适与微气候；若强调自然接触或生态环境，可同时归入生态自然与生物感知。无法判断倾向的样本标为“需人工复核”，不要强行评分。"
-  ].join("\n");
-  var selectedPrompt=task==="both"?mimoTendencyPrompt+"\n\n"+mimoFrequencyPrompt:(task==="frequency"?mimoFrequencyPrompt:mimoTendencyPrompt);
-  var taskName=task==="both"?"感知倾向+感知频率分析":(task==="frequency"?"感知频率分析":"感知倾向分析");
-  return [
-    {role:"system",content:selectedPrompt+"\n\n当前轻量版没有携带完整训练明细，请把下方“本地候选类别和命中结果”视为可用训练摘要。必须只输出 JSON，不要 Markdown。"},
-    {role:"user",content:"请执行："+taskName+"。\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n严格按这个 JSON 结构输出，不要输出多余文字：\n"+JSON.stringify(schema,null,2)}
-  ];
+  return deepseekMessages(text,local,task);
 }
 
 function extractJson(raw){
@@ -746,9 +696,9 @@ function shouldRetry(status){return status===429||status>=500}
 
 function getAiConfig(kind){
   if(kind==="mimo"){
-    return {kind:"mimo",label:"MiMo 2.5 Pro",provider:PROVIDER_MIMO,api_key:requireMimoApiKey(),api_base:getMimoApiBase(),model:getMimoModel(),endpoint:normalizeMimoUrl(getMimoApiBase())};
+    return {kind:"mimo",label:"MIMO V2.5pro",provider:PROVIDER_MIMO,api_key:requireMimoApiKey(),api_base:getMimoApiBase(),model:getMimoModel(),endpoint:normalizeMimoUrl(getMimoApiBase())};
   }
-  return {kind:"deepseek",label:"DeepSeek",provider:PROVIDER_DEEPSEEK,api_key:requireDeepSeekApiKey(),api_base:getDeepSeekApiBase(),model:"deepseek-chat",endpoint:normalizeDeepSeekUrl(getDeepSeekApiBase())};
+  return {kind:"deepseek",label:"deepseek v4 pro",provider:PROVIDER_DEEPSEEK,api_key:requireDeepSeekApiKey(),api_base:getDeepSeekApiBase(),model:"deepseek-chat",endpoint:normalizeDeepSeekUrl(getDeepSeekApiBase())};
 }
 
 function selectedAiKinds(){
@@ -1033,7 +983,7 @@ function combinePerceptionTendencies(rows){
     items:items,
     category_summary:summary,
     review_required_count:items.filter(function(item){return item.review_required}).length,
-    method_note:"DeepSeek 与 MiMo 2.5 Pro 的感知倾向结果已合并；同一 CES 类别整体倾向均值按模型均值平均。"
+    method_note:"deepseek v4 pro 与 MIMO V2.5pro 的感知倾向结果已合并。"
   };
 }
 
@@ -1189,7 +1139,7 @@ function combinePerceptionFrequencyAi(rows){
     category_summary:summary,
     valid_segment_count:validCounts.length?Math.max.apply(null,validCounts):0,
     review_required_count:items.filter(function(item){return item.review_required}).length,
-    method_note:"DeepSeek 与 MiMo 2.5 Pro 的 AI 感知频率复核结果已合并；同一 CES 类别 PFj 按模型均值平均。"
+    method_note:"deepseek v4 pro 与 MIMO V2.5pro 的 AI 感知频率复核结果已合并。"
   };
 }
 
@@ -1213,22 +1163,23 @@ function mergeEqualWeightResult(local,rows,task){
   task=normalizeAnalysisTask(task);
   if(!valid.length)throw new Error("DeepSeek 和 MiMo 均不可用");
   if(valid.length===1)return mergeResult(local,valid[0].parsed,valid[0].cfg,task);
-  var n1=normalizeAiParsed(valid[0].parsed),n2=normalizeAiParsed(valid[1].parsed);
-  var pos=((n1.positive_prob||0)+(n2.positive_prob||0))/2;
-  var neg=((n1.negative_prob||0)+(n2.negative_prob||0))/2;
+  var deepRow=valid.find(function(r){return r.cfg&&r.cfg.kind==="deepseek"})||valid[0],mimoRow=valid.find(function(r){return r.cfg&&r.cfg.kind==="mimo"})||valid[1]||valid[0];
+  var n1=normalizeAiParsed(deepRow.parsed),n2=normalizeAiParsed(mimoRow.parsed),deepWeight=0.75,mimoWeight=0.25;
+  var pos=((n1.positive_prob||0)*deepWeight)+((n2.positive_prob||0)*mimoWeight);
+  var neg=((n1.negative_prob||0)*deepWeight)+((n2.negative_prob||0)*mimoWeight);
   var sentiment=1;
   if(pos-neg>0.1)sentiment=2;
   else if(neg-pos>0.1)sentiment=0;
-  else if(Number.isFinite(Number(n1.sentiment))&&Number.isFinite(Number(n2.sentiment)))sentiment=Math.round((Number(n1.sentiment)+Number(n2.sentiment))/2);
+  else if(Number.isFinite(Number(n1.sentiment))&&Number.isFinite(Number(n2.sentiment)))sentiment=Math.round((Number(n1.sentiment)*deepWeight)+(Number(n2.sentiment)*mimoWeight));
   result.ok=true;result.fallback=false;result.provider=PROVIDER_BOTH;
-  result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:0.5}});
+  result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:r.cfg.kind==="deepseek"?deepWeight:mimoWeight}});
   result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
   result.mimo={ok:true,fallback:false,model:getMimoModel()};
-  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos,neg),note:"情感由 DeepSeek 与 MiMo 2.5 Pro 等权合成；CES 分类由本地数据集输出。"};
+  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos,neg),note:"情感由 deepseek v4 pro 75% 与 MIMO V2.5pro 25% 合成；CES 分类由本地数据集输出。"};
   result.perception_tendency=taskIncludesTendency(task)?combinePerceptionTendencies(valid):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
   result.perception_frequency_ai=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
   result.llm_perception={sentence_analysis:[].concat(n1.sentence_analysis||[],n2.sentence_analysis||[])};
-  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["DeepSeek 与 MiMo 2.5 Pro 均参与分析，最终情感概率按 50% + 50% 等权合成。"],n1.reasons||[],n2.reasons||[]);
+  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["deepseek v4 pro 与 MIMO V2.5pro 均参与分析，最终情感概率按 DeepSeek 75% + MiMo 25% 合成。"],n1.reasons||[],n2.reasons||[]);
   return result;
 }
 
