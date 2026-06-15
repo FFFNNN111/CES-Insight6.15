@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CES 感知情感分析 · DeepSeek V4 Pro</title>
+<style>
+:root{--bg:#f5f5f7;--ink:#1d1d1f;--muted:#6e6e73;--line:rgba(60,60,67,.16);--surface:rgba(255,255,255,.78);--primary:#007aff;--positive:#248a3d;--negative:#d70015;--neutral:#6e6e73;--accent:#ff9f0a;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{min-height:100%;margin:0;color:var(--ink);background:linear-gradient(180deg,#fff 0,var(--bg) 430px)}button,textarea,input,select{font:inherit}
+.container{max-width:960px;margin:0 auto;padding:0 16px}
+header{text-align:center;padding:28px 0 18px}
+header h1{font-size:26px;font-weight:700;margin:0 0 4px;letter-spacing:0}
+header p{color:var(--muted);font-size:14px;margin:0}
+.card{background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h2{font-size:17px;margin:0 0 12px;font-weight:600}
+textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;resize:vertical;background:#fff;line-height:1.6}
+textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.15)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:500;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+.btn-outline{background:#fff;color:var(--primary);border:1px solid rgba(0,122,255,.25)}
+.btn-mode.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-sm{font-size:13px;padding:7px 12px}.context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.context-grid label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+.context-grid input,.context-grid select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px;background:#fff;width:100%}
+.model-switch{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}.model-switch .btn{min-width:96px}
+.compat-hidden{display:none!important}
+.status{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}.status.ok{color:var(--positive)}.status.bad{color:var(--negative)}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.metric{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.metric span{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.metric strong{display:block;font-size:22px;font-weight:700}.metric small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.metric.positive{border-left:3px solid var(--positive)}.metric.negative{border-left:3px solid var(--negative)}.metric.neutral{border-left:3px solid var(--neutral)}
+.bar-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}.bar-label{width:130px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar-track{flex:1;height:18px;background:#eee;border-radius:9px;overflow:hidden;min-width:60px}.bar-fill{height:100%;border-radius:9px;transition:width .3s;min-width:3px}
+.highlight-text{line-height:1.8;padding:12px;background:#fff;border-radius:10px;font-size:14px}mark{background:#fff3cd;color:#856404;padding:2px 4px;border-radius:4px}
+.llm-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.llm-row p{margin:0;flex:1;font-size:14px}.pos{color:var(--positive)}.neg{color:var(--negative)}.neu{color:var(--neutral)}
+.reasons{margin:0;padding-left:20px;line-height:1.7}.json-out{background:#1d1d1f;color:#98c379;padding:12px;border-radius:10px;font-size:12px;overflow-x:auto;max-height:200px;white-space:pre-wrap}
+.history-table{width:100%;border-collapse:collapse;font-size:13px}.history-table th{background:#f9f9f9;text-align:left;padding:6px 8px;border-bottom:2px solid var(--line);font-weight:600}.history-table td{padding:5px 8px;border-bottom:1px solid var(--line)}.history-table .pos{color:var(--positive);font-weight:600}.history-table .neg{color:var(--negative);font-weight:600}.history-table .neu{color:var(--neutral)}
+.range-row{display:flex;gap:8px;align-items:center;margin:8px 0;font-size:13px;flex-wrap:wrap}.range-row input{width:60px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;text-align:center;font-size:13px}
+.summary-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}.summary-item{background:#fff;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}.summary-item .v{font-size:18px;font-weight:700}.summary-item .l{font-size:11px;color:var(--muted)}
+details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:pointer;padding:6px 0}
+.footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;background:#fff;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:0 4px 8px 0}.badge.ok{background:#eaf7ee;color:var(--positive);border-color:#cbe8d3}.badge.bad{background:#fff0f0;color:var(--negative);border-color:#ffd6d6}
+@media(max-width:600px){header h1{font-size:22px}.card{padding:14px}.metric-grid{grid-template-columns:repeat(2,1fr)}.bar-row{font-size:12px}.bar-label{width:90px}.btn-row{flex-direction:column}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🌿 CES 感知情感分析</h1>
+  <p>DeepSeek / MiMo 2.5 Pro / MiMo ASR + 本地 CES 数据集</p>
+</header>
+
+<div class="card">
+  <h2>📝 输入文本</h2>
+  <textarea id="commentInput" placeholder="输入访谈、评论或语音转写文本……"></textarea>
+  <div class="model-switch" role="group" aria-label="AI 模型选择">
+    <button class="btn btn-outline btn-sm btn-mode" id="modeDeepseekBtn" type="button" onclick="setAiMode('deepseek')">DeepSeek</button>
+    <button class="btn btn-outline btn-sm btn-mode" id="modeMimoBtn" type="button" onclick="setAiMode('mimo')">MiMo</button>
+    <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">DeepSeek + MiMo 等权</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🔍 开始分析</button>
+    <button class="btn btn-outline btn-sm" onclick="fillExample('pos')">🌞 正面示例</button>
+    <button class="btn btn-outline btn-sm" onclick="fillExample('neg')">🌧 负面示例</button>
+    <button class="btn btn-outline btn-sm" onclick="fillExample('mix')">🌗 混合示例</button>
+    <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
+  </div>
+  <div class="status" id="statusMsg"></div>
+</div>
+
+<div class="card">
+  <h2>🎙 MiMo 2.5 ASR 语音识别</h2>
+  <div class="context-grid">
+    <div><label>上传音频文件</label><input id="audioFileInput" type="file" accept="audio/*" onchange="handleAudioFileChange()"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-outline btn-sm" id="startRecordBtn" onclick="startRecording()">开始录音</button>
+    <button class="btn btn-outline btn-sm" id="stopRecordBtn" onclick="stopRecording()" disabled>停止录音</button>
+    <button class="btn btn-primary btn-sm" id="transcribeAudioBtn" onclick="transcribeAudio()">开始语音识别</button>
+    <button class="btn btn-outline btn-sm" onclick="useTranscriptText()">把识别文本填入分析框</button>
+  </div>
+  <div class="status" id="asrStatus">可上传常见音频，也可以直接录音。识别前会自动转为 MiMo ASR 支持的 WAV。</div>
+  <textarea id="asrText" placeholder="语音识别结果会显示在这里……" style="min-height:70px;margin-top:10px"></textarea>
+</div>
+
+<div class="card">
+  <details open>
+    <summary>📍 语境设置与连接状态</summary>
+    <div style="margin:10px 0">
+      <span class="badge" id="backendBadge">AI 后端未检查</span>
+      <span class="badge" id="deepseekBadge">本地数据集未检查</span>
+      <button class="btn btn-outline btn-sm" onclick="checkHealth()">检查连接</button>
+    </div>
+    <div class="context-grid">
+      <div><label>省份</label><input id="province" value="广东省"></div>
+      <div><label>月份</label><select id="month"><option value="auto">自动</option><option>1月</option><option>2月</option><option>3月</option><option>4月</option><option>5月</option><option>6月</option><option>7月</option><option>8月</option><option>9月</option><option>10月</option><option>11月</option><option>12月</option></select></div>
+      <div><label>公园类型</label><select id="parkType"><option value="auto">自动</option><option>城市公园</option><option>湿地公园</option><option>森林公园</option><option>滨海公园</option><option>社区公园</option></select></div>
+      <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">DeepSeek + MiMo 等权</option><option value="deepseek">只用 DeepSeek</option><option value="mimo">只用 MiMo</option></select></div>
+      <div><label>DeepSeek 地址</label><input id="apiBase" value="https://api.deepseek.com"></div>
+      <div><label>DeepSeek API Key</label><input id="deepseekApiKey" type="password" autocomplete="off" placeholder="填入 DeepSeek API Key"></div>
+      <div><label>MiMo 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
+      <div><label>MiMo 模型名</label><input id="mimoModel" value="mimo-v2.5-pro"></div>
+      <div><label>MiMo API Key</label><input id="mimoApiKey" type="password" autocomplete="off" placeholder="填入 MiMo API Key"></div>
+      <div><label>MiMo ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
+      <div><label>MiMo ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
+      <div><label>MiMo ASR API Key</label><input id="mimoAsrApiKey" type="password" autocomplete="off" placeholder="填入 MiMo ASR API Key"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="saveAiSettings()">保存 AI 设置</button>
+      <button class="btn btn-outline btn-sm" onclick="checkHealth()">测试 AI 连接</button>
+      <button class="btn btn-outline btn-sm" onclick="clearAiKeys()">清除 Key</button>
+    </div>
+    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 DeepSeek、MiMo 或两者等权分析。连接失败时，软件只使用本地 CES 数据集。</p>
+  </details>
+</div>
+
+<div id="resultSection" style="display:none">
+  <div class="card">
+    <h2>📊 多维感知诊断</h2>
+    <div id="providerBadge" class="badge"></div>
+    <div class="metric-grid" id="metricGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>📈 CES 感知维度 <small id="cesHitCount" style="color:var(--muted);font-weight:400"></small></h2>
+    <div id="cesBars"></div>
+  </div>
+
+  <div class="card">
+    <h2>🧩 CES 二级子类</h2>
+    <div id="subCats" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  </div>
+
+  <div class="card">
+    <h2>🔍 原文 CES 词频标注</h2>
+    <div class="highlight-text" id="highlighted"></div>
+  </div>
+
+  <div class="card">
+    <h2>💬 分句感知诊断</h2>
+    <div id="sentenceAnalysis"></div>
+  </div>
+
+  <div class="card">
+    <h2>💡 可能原因</h2>
+    <ul class="reasons" id="reasonList"></ul>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>📋 诊断历史（<span id="historyCount">0</span>）</summary>
+      <div class="range-row">
+        <span>查看第</span><input id="histFrom" value="1" onchange="renderHistory()">
+        <span>至</span><input id="histTo" value="10" onchange="renderHistory()">
+        <span>条 <small id="histTableSummary"></small></span>
+        <button class="btn btn-outline btn-sm" onclick="renderHistory()">刷新</button>
+        <button class="btn btn-outline btn-sm" onclick="clearHistory()">清空</button>
+      </div>
+      <div class="summary-grid" id="histSummary"></div>
+      <table class="history-table">
+        <thead><tr><th>#</th><th>文本</th><th>倾向</th><th>积极概率</th><th>CES</th><th>来源</th><th>时间</th></tr></thead>
+        <tbody id="histBody"></tbody>
+      </table>
+    </details>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>🧾 原始 JSON <button class="btn btn-outline btn-sm" onclick="copyJson()" id="copyBtn" style="margin-left:10px">复制</button></summary>
+      <pre class="json-out" id="jsonOut"></pre>
+    </details>
+  </div>
+</div>
+
+<div class="card">
+  <h2>❓ CES 智能问答</h2>
+  <textarea id="qaInput" placeholder="例如：为什么遮阴和步道舒适度会影响 CES 感知？" style="min-height:70px"></textarea>
+  <div class="btn-row"><button class="btn btn-primary" onclick="askQuestion()">提问</button></div>
+  <div class="highlight-text" id="qaAnswer" style="margin-top:12px">暂无回答。</div>
+</div>
+
+<div class="footer">CES 感知情感分析 · DeepSeek / MiMo 2.5 Pro / MiMo ASR · 本地数据集</div>
+</div>
+
+<script src="ces_browser_dataset.js"></script>
+<script>
+const DEFAULT_DEEPSEEK_API_BASE = "https://api.deepseek.com";
+const DEFAULT_MIMO_API_BASE = "https://api.xiaomimimo.com/v1";
+const DEFAULT_MIMO_MODEL = "mimo-v2.5-pro";
+const DEFAULT_MIMO_ASR_API_BASE = "https://api.xiaomimimo.com/v1";
+const DEFAULT_MIMO_ASR_MODEL = "mimo-v2.5-asr";
+const STORAGE_DEEPSEEK_API_BASE = "ces_deepseek_api_base";
+const STORAGE_DEEPSEEK_API_KEY = "ces_deepseek_api_key";
+const STORAGE_MIMO_API_BASE = "ces_mimo_api_base";
+const STORAGE_MIMO_API_KEY = "ces_mimo_api_key";
+const STORAGE_MIMO_MODEL = "ces_mimo_model";
+const STORAGE_MIMO_ASR_API_BASE = "ces_mimo_asr_api_base";
+const STORAGE_MIMO_ASR_API_KEY = "ces_mimo_asr_api_key";
+const STORAGE_MIMO_ASR_MODEL = "ces_mimo_asr_model";
+const STORAGE_AI_MODE = "ces_ai_mode";
+const DEEPSEEK_RETRIES = 5;
+const REQUEST_TIMEOUT_MS = 45000;
+const ASR_TIMEOUT_MS = 120000;
+const PROVIDER_DEEPSEEK = "deepseek v4 pro模型+本地数据集回答";
+const PROVIDER_MIMO = "mimo 2.5 pro模型+本地数据集回答";
+const PROVIDER_BOTH = "deepseek模型+mimo 2.5 pro模型等权+本地数据集回答";
+const PROVIDER_LOCAL = "本地数据集回答";
+const MAX_HISTORY = 50;
+let lastResult = null;
+let diagHistory = [];
+let asrRecorder = null;
+let asrChunks = [];
+let asrAudioBlob = null;
+let asrAudioName = "";
+
+function $(id){return document.getElementById(id)}
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function fmt(v){return v==null || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(4)}
+function normalizeChatUrl(base,fallback){var clean=String(base||fallback).replace(/\/+$/,"");return clean.endsWith("/chat/completions")?clean:clean+"/chat/completions"}
+function normalizeDeepSeekUrl(base){return normalizeChatUrl(base,DEFAULT_DEEPSEEK_API_BASE)}
+function normalizeMimoUrl(base){return normalizeChatUrl(base,DEFAULT_MIMO_API_BASE)}
+function normalizeMimoAsrUrl(base){return normalizeChatUrl(base,DEFAULT_MIMO_ASR_API_BASE)}
+function getAiMode(){return ($("aiMode").value||"both")}
+function aiModeLabel(mode){return mode==="deepseek"?"DeepSeek":mode==="mimo"?"MiMo":"DeepSeek + MiMo 等权"}
+function updateAiModeButtons(){
+  var mode=getAiMode();
+  [["deepseek","modeDeepseekBtn"],["mimo","modeMimoBtn"],["both","modeBothBtn"]].forEach(function(row){
+    var btn=$(row[1]);
+    if(!btn)return;
+    var active=mode===row[0];
+    btn.className="btn btn-outline btn-sm btn-mode"+(active?" active":"");
+    btn.setAttribute("aria-pressed",active?"true":"false");
+  });
+}
+function setAiMode(mode){
+  if(["deepseek","mimo","both"].indexOf(mode)<0)mode="both";
+  $("aiMode").value=mode;
+  localStorage.setItem(STORAGE_AI_MODE,mode);
+  updateAiModeButtons();
+  $("backendBadge").textContent="当前 AI 模型："+aiModeLabel(mode);
+  $("backendBadge").className="badge ok";
+}
+function getDeepSeekApiBase(){return ($("apiBase").value||DEFAULT_DEEPSEEK_API_BASE).trim()}
+function getDeepSeekApiKey(){return ($("deepseekApiKey").value||"").trim()}
+function getMimoApiBase(){return ($("mimoApiBase").value||DEFAULT_MIMO_API_BASE).trim()}
+function getMimoApiKey(){return ($("mimoApiKey").value||"").trim()}
+function getMimoModel(){return ($("mimoModel").value||DEFAULT_MIMO_MODEL).trim()}
+function getMimoAsrApiBase(){return ($("mimoAsrApiBase").value||DEFAULT_MIMO_ASR_API_BASE).trim()}
+function getMimoAsrApiKey(){return ($("mimoAsrApiKey").value||"").trim()}
+function getMimoAsrModel(){return ($("mimoAsrModel").value||DEFAULT_MIMO_ASR_MODEL).trim()}
+function requireDeepSeekApiKey(){
+  var key=getDeepSeekApiKey();
+  if(!key)throw new Error("请先填写 DeepSeek API Key");
+  return key;
+}
+function requireMimoApiKey(){
+  var key=getMimoApiKey();
+  if(!key)throw new Error("请先填写 MiMo API Key");
+  return key;
+}
+function requireMimoAsrApiKey(){
+  var key=getMimoAsrApiKey();
+  if(!key)throw new Error("请先填写 MiMo ASR API Key");
+  return key;
+}
+function loadDeepSeekSettings(){
+  $("aiMode").value=localStorage.getItem(STORAGE_AI_MODE)||"both";
+  $("apiBase").value=localStorage.getItem(STORAGE_DEEPSEEK_API_BASE)||DEFAULT_DEEPSEEK_API_BASE;
+  $("deepseekApiKey").value=localStorage.getItem(STORAGE_DEEPSEEK_API_KEY)||"";
+  $("mimoApiBase").value=localStorage.getItem(STORAGE_MIMO_API_BASE)||DEFAULT_MIMO_API_BASE;
+  $("mimoModel").value=localStorage.getItem(STORAGE_MIMO_MODEL)||DEFAULT_MIMO_MODEL;
+  $("mimoApiKey").value=localStorage.getItem(STORAGE_MIMO_API_KEY)||"";
+  $("mimoAsrApiBase").value=localStorage.getItem(STORAGE_MIMO_ASR_API_BASE)||DEFAULT_MIMO_ASR_API_BASE;
+  $("mimoAsrModel").value=localStorage.getItem(STORAGE_MIMO_ASR_MODEL)||DEFAULT_MIMO_ASR_MODEL;
+  $("mimoAsrApiKey").value=localStorage.getItem(STORAGE_MIMO_ASR_API_KEY)||"";
+  updateAiModeButtons();
+}
+function saveAiSettings(){
+  var base=getDeepSeekApiBase();
+  var key=getDeepSeekApiKey(),mimoBase=getMimoApiBase(),mimoKey=getMimoApiKey(),mimoModel=getMimoModel();
+  var asrBase=getMimoAsrApiBase(),asrKey=getMimoAsrApiKey(),asrModel=getMimoAsrModel();
+  localStorage.setItem(STORAGE_AI_MODE,getAiMode());
+  localStorage.setItem(STORAGE_DEEPSEEK_API_BASE,base||DEFAULT_DEEPSEEK_API_BASE);
+  if(key)localStorage.setItem(STORAGE_DEEPSEEK_API_KEY,key);
+  else localStorage.removeItem(STORAGE_DEEPSEEK_API_KEY);
+  localStorage.setItem(STORAGE_MIMO_API_BASE,mimoBase||DEFAULT_MIMO_API_BASE);
+  localStorage.setItem(STORAGE_MIMO_MODEL,mimoModel||DEFAULT_MIMO_MODEL);
+  if(mimoKey)localStorage.setItem(STORAGE_MIMO_API_KEY,mimoKey);
+  else localStorage.removeItem(STORAGE_MIMO_API_KEY);
+  localStorage.setItem(STORAGE_MIMO_ASR_API_BASE,asrBase||DEFAULT_MIMO_ASR_API_BASE);
+  localStorage.setItem(STORAGE_MIMO_ASR_MODEL,asrModel||DEFAULT_MIMO_ASR_MODEL);
+  if(asrKey)localStorage.setItem(STORAGE_MIMO_ASR_API_KEY,asrKey);
+  else localStorage.removeItem(STORAGE_MIMO_ASR_API_KEY);
+  $("backendBadge").textContent="AI 设置已保存";
+  $("backendBadge").className="badge ok";
+}
+function clearAiKeys(){
+  $("deepseekApiKey").value="";
+  $("mimoApiKey").value="";
+  $("mimoAsrApiKey").value="";
+  localStorage.removeItem(STORAGE_DEEPSEEK_API_KEY);
+  localStorage.removeItem(STORAGE_MIMO_API_KEY);
+  localStorage.removeItem(STORAGE_MIMO_ASR_API_KEY);
+  $("backendBadge").textContent="AI Key 已清除";
+  $("backendBadge").className="badge bad";
+}
+function getContext(){return{province:$("province").value,month:$("month").value,parkType:$("parkType").value}}
+
+function setAsrStatus(text,ok){
+  var el=$("asrStatus");
+  el.textContent=text;
+  el.className="status "+(ok===true?"ok":ok===false?"bad":"");
+}
+
+function handleAudioFileChange(){
+  var file=$("audioFileInput").files&&$("audioFileInput").files[0];
+  asrAudioBlob=null;
+  asrAudioName="";
+  if(file)setAsrStatus("已选择音频："+file.name,true);
+  else setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MiMo ASR 支持的 WAV。");
+}
+
+async function startRecording(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||typeof MediaRecorder==="undefined"){
+    setAsrStatus("当前浏览器不支持录音，请上传音频文件。",false);
+    return;
+  }
+  try{
+    var stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    asrChunks=[];
+    asrAudioBlob=null;
+    asrAudioName="";
+    $("audioFileInput").value="";
+    asrRecorder=new MediaRecorder(stream);
+    asrRecorder.ondataavailable=function(event){if(event.data&&event.data.size>0)asrChunks.push(event.data)};
+    asrRecorder.onstop=function(){
+      var mime=asrRecorder&&asrRecorder.mimeType||"audio/webm";
+      asrAudioBlob=new Blob(asrChunks,{type:mime});
+      asrAudioName="recording_"+Date.now()+".webm";
+      stream.getTracks().forEach(function(track){track.stop()});
+      $("startRecordBtn").disabled=false;
+      $("stopRecordBtn").disabled=true;
+      setAsrStatus("录音已完成，可以开始语音识别。",true);
+      asrRecorder=null;
+    };
+    asrRecorder.start();
+    $("startRecordBtn").disabled=true;
+    $("stopRecordBtn").disabled=false;
+    setAsrStatus("正在录音...",true);
+  }catch(e){
+    setAsrStatus("录音失败："+String(e.message||e),false);
+  }
+}
+
+function stopRecording(){
+  if(asrRecorder&&asrRecorder.state==="recording"){
+    asrRecorder.stop();
+  }
+}
+
+function getSelectedAudio(){
+  var file=$("audioFileInput").files&&$("audioFileInput").files[0];
+  if(file)return{blob:file,name:file.name};
+  if(asrAudioBlob)return{blob:asrAudioBlob,name:asrAudioName||"recording.webm"};
+  return null;
+}
+
+function parseAsrError(error){
+  var msg=String(error&&error.message||error||"语音识别失败");
+  if(msg.indexOf("Failed to fetch")>=0){
+    return "MiMo ASR 连接失败。请检查网络、API 地址或浏览器是否允许连接 MiMo。";
+  }
+  if(msg.indexOf("401")>=0||msg.indexOf("403")>=0)return "MiMo ASR Key 错误或没有权限。";
+  if(msg.indexOf("429")>=0)return "MiMo ASR 请求过多，请稍后重试。";
+  if(msg.indexOf("Param Incorrect")>=0)return "MiMo ASR 参数错误。请优先上传较短、清晰的 WAV/MP3/M4A 音频，或重新录音后再试。";
+  if(msg.indexOf("AbortError")>=0||msg.indexOf("timeout")>=0||msg.indexOf("超时")>=0)return "MiMo ASR 请求超时，请缩短音频或稍后重试。";
+  return msg;
+}
+
+function readAsrText(data){
+  var values=[data&&data.text,data&&data.transcript];
+  var msg=data&&data.choices&&data.choices[0]&&data.choices[0].message;
+  if(msg)values.push(msg.content,msg.text,msg.transcript);
+  if(data&&data.result)values.push(data.result.text,data.result.transcript);
+  if(data&&data.data)values.push(data.data.text,data.data.transcript);
+  if(data&&Array.isArray(data.segments))values.push(data.segments.map(function(s){return s&&s.text||""}).join(""));
+  for(var i=0;i<values.length;i++){
+    var text=String(values[i]||"").trim();
+    if(text)return text;
+  }
+  throw new Error("MiMo ASR 没有返回识别文本");
+}
+
+function getAudioFormat(audio){
+  var name=String(audio&&audio.name||"").toLowerCase();
+  var type=String(audio&&audio.blob&&audio.blob.type||"").toLowerCase();
+  if(type.indexOf("wav")>=0||name.endsWith(".wav"))return"wav";
+  if(type.indexOf("mpeg")>=0||type.indexOf("mp3")>=0||name.endsWith(".mp3"))return"mp3";
+  if(type.indexOf("mp4")>=0||type.indexOf("m4a")>=0||name.endsWith(".m4a"))return"m4a";
+  if(type.indexOf("webm")>=0||name.endsWith(".webm"))return"webm";
+  return"wav";
+}
+
+function floatTo16BitPcm(floatSamples){
+  var output=new Int16Array(floatSamples.length);
+  for(var i=0;i<floatSamples.length;i++){
+    var s=Math.max(-1,Math.min(1,floatSamples[i]));
+    output[i]=s<0?s*0x8000:s*0x7fff;
+  }
+  return output;
+}
+
+function writeStringToDataView(view,offset,string){
+  for(var i=0;i<string.length;i++)view.setUint8(offset+i,string.charCodeAt(i));
+}
+
+function encodeWavFromFloat(floatSamples,sampleRate){
+  var pcm=floatTo16BitPcm(floatSamples),buffer=new ArrayBuffer(44+pcm.length*2),view=new DataView(buffer);
+  writeStringToDataView(view,0,"RIFF");
+  view.setUint32(4,36+pcm.length*2,true);
+  writeStringToDataView(view,8,"WAVE");
+  writeStringToDataView(view,12,"fmt ");
+  view.setUint32(16,16,true);
+  view.setUint16(20,1,true);
+  view.setUint16(22,1,true);
+  view.setUint32(24,sampleRate,true);
+  view.setUint32(28,sampleRate*2,true);
+  view.setUint16(32,2,true);
+  view.setUint16(34,16,true);
+  writeStringToDataView(view,36,"data");
+  view.setUint32(40,pcm.length*2,true);
+  for(var i=0,offset=44;i<pcm.length;i++,offset+=2)view.setInt16(offset,pcm[i],true);
+  return new Blob([view],{type:"audio/wav"});
+}
+
+function downsampleChannel(channelData,sourceRate,targetRate){
+  if(sourceRate===targetRate)return channelData;
+  var ratio=sourceRate/targetRate,newLength=Math.round(channelData.length/ratio),result=new Float32Array(newLength);
+  for(var i=0;i<newLength;i++){
+    var start=Math.floor(i*ratio),end=Math.floor((i+1)*ratio),sum=0,count=0;
+    if(end<=start)end=start+1;
+    for(var j=start;j<end&&j<channelData.length;j++){sum+=channelData[j];count++}
+    result[i]=count?sum/count:0;
+  }
+  return result;
+}
+
+async function audioToWavDataUrl(audio){
+  var arrayBuffer=await audio.blob.arrayBuffer();
+  var AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)throw new Error("当前浏览器不支持音频解码，请上传 WAV 文件。");
+  var ctx=new AudioCtx();
+  try{
+    var decoded=await ctx.decodeAudioData(arrayBuffer.slice(0));
+    var sourceRate=decoded.sampleRate,targetRate=16000,channels=decoded.numberOfChannels,mono=new Float32Array(decoded.length);
+    for(var ch=0;ch<channels;ch++){
+      var data=decoded.getChannelData(ch);
+      for(var i=0;i<data.length;i++)mono[i]+=data[i]/channels;
+    }
+    var wavBlob=encodeWavFromFloat(downsampleChannel(mono,sourceRate,targetRate),targetRate);
+    return await blobToDataUrl({blob:wavBlob,name:"mimo_asr.wav"});
+  }finally{
+    if(ctx&&ctx.close)ctx.close();
+  }
+}
+
+function blobToDataUrl(audio){
+  return new Promise(function(resolve,reject){
+    var reader=new FileReader();
+    reader.onload=function(){resolve(String(reader.result||""))};
+    reader.onerror=function(){reject(new Error("音频文件读取失败"))};
+    reader.readAsDataURL(audio.blob);
+  });
+}
+
+async function callMimoAsrDirect(audio){
+  var dataUrl=await audioToWavDataUrl(audio);
+  var payload={
+    model:getMimoAsrModel(),
+    messages:[{role:"user",content:[{type:"input_audio",input_audio:{data:dataUrl,format:"wav"}}]}],
+    temperature:0,
+    max_tokens:500
+  };
+  var resp=await fetchWithTimeout(normalizeMimoAsrUrl(getMimoAsrApiBase()),{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+requireMimoAsrApiKey()},body:JSON.stringify(payload)},ASR_TIMEOUT_MS);
+  var data=await resp.json().catch(function(){return{ok:false,message:"MiMo ASR 返回不是 JSON"}});
+  if(!resp.ok)throw new Error(data.message||data.error&&data.error.message||("HTTP "+resp.status));
+  return readAsrText(data);
+}
+
+async function transcribeAudio(){
+  var audio=getSelectedAudio();
+  if(!audio){
+    setAsrStatus("请先上传音频或完成录音。",false);
+    return;
+  }
+  var btn=$("transcribeAudioBtn");
+  btn.disabled=true;
+  setAsrStatus("正在直连 MiMo 2.5 ASR 识别语音...",true);
+  try{
+    var text=await callMimoAsrDirect(audio);
+    $("asrText").value=text;
+    $("commentInput").value=text;
+    setAsrStatus("语音识别完成，文本已填入分析框。",true);
+  }catch(e){
+    setAsrStatus("语音识别失败："+parseAsrError(e),false);
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+function useTranscriptText(){
+  var text=$("asrText").value.trim();
+  if(!text){
+    setAsrStatus("暂无可填入的识别文本。",false);
+    return;
+  }
+  $("commentInput").value=text;
+  setAsrStatus("识别文本已填入分析框。",true);
+}
+
+function fillExample(type){
+  var t=$("commentInput");
+  if(type==="pos")t.value="这个公园真的太美了！风景如画，绿树成荫，空气特别清新。周末带孩子来散步，孩子玩得很开心。设施也很完善，干净整洁，非常满意！";
+  else if(type==="neg")t.value="这个公园太让人失望了。垃圾到处都是，厕所脏得没法用，设施破旧不堪。绿化也跟不上，到处光秃秃的。完全不值得来。";
+  else t.value="公园整体还不错，风景优美空气好，适合散步锻炼。但是厕所实在太脏了，垃圾桶也满了没人清理，希望能改善管理。";
+}
+
+async function fetchWithTimeout(url,options,timeoutMs){
+  var ctrl=new AbortController(), timer=setTimeout(function(){ctrl.abort()},timeoutMs);
+  try{return await fetch(url,Object.assign({},options,{signal:ctrl.signal}))}
+  finally{clearTimeout(timer)}
+}
+
+function deepseekMessages(text){
+  var ctx=getContext();
+  var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
+  return [
+    {role:"system",content:"你是 CES 评论情感分析助手。只补充情感、分句情感和原因，不做 CES 分类。必须只输出 JSON，不要 Markdown。字段：sentiment(0消极/1中性/2积极), positive_prob, negative_prob, sentence_analysis[{sentence,sentiment}], reasons[]。"},
+    {role:"user",content:"评论：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n只输出 JSON。"}
+  ];
+}
+
+function extractJson(raw){
+  var s=String(raw||"").replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+  try{return JSON.parse(s)}catch(e){}
+  var m=s.match(/\{[\s\S]*\}/);if(m)try{return JSON.parse(m[0])}catch(e){}
+  throw new Error("DeepSeek 未返回可解析 JSON");
+}
+
+function shouldRetry(status){return status===429||status>=500}
+
+function getAiConfig(kind){
+  if(kind==="mimo"){
+    return {kind:"mimo",label:"MiMo 2.5 Pro",provider:PROVIDER_MIMO,api_key:requireMimoApiKey(),api_base:getMimoApiBase(),model:getMimoModel(),endpoint:normalizeMimoUrl(getMimoApiBase())};
+  }
+  return {kind:"deepseek",label:"DeepSeek",provider:PROVIDER_DEEPSEEK,api_key:requireDeepSeekApiKey(),api_base:getDeepSeekApiBase(),model:"deepseek-chat",endpoint:normalizeDeepSeekUrl(getDeepSeekApiBase())};
+}
+
+function selectedAiKinds(){
+  var mode=getAiMode();
+  if(mode==="deepseek")return["deepseek"];
+  if(mode==="mimo")return["mimo"];
+  return["deepseek","mimo"];
+}
+
+async function callAiDirect(kind,messages){
+  var cfg=getAiConfig(kind);
+  var payload={model:cfg.model,messages:messages,temperature:0.2,max_tokens:1000};
+  var lastError=null;
+  for(var i=0;i<DEEPSEEK_RETRIES;i++){
+    try{
+      var resp=await fetchWithTimeout(cfg.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+cfg.api_key},body:JSON.stringify(payload)},REQUEST_TIMEOUT_MS);
+      if(!resp.ok){
+        var err=new Error(cfg.label+" HTTP "+resp.status);err.status=resp.status;
+        if(resp.status===401||resp.status===403||!shouldRetry(resp.status)||i===DEEPSEEK_RETRIES-1)throw err;
+      }else{
+        var data=await resp.json();
+        var msg=data.choices&&data.choices[0]&&data.choices[0].message;
+        return msg?(msg.content||msg.reasoning_content||""):"";
+      }
+    }catch(e){lastError=e;if(e.status===401||e.status===403||i===DEEPSEEK_RETRIES-1)break}
+    await sleep(350*(i+1));
+  }
+  throw lastError||new Error(cfg.label+" 连接失败");
+}
+
+async function callAi(kind,messages){
+  return await callAiDirect(kind,messages);
+}
+
+async function callDeepSeek(messages){
+  return await callAi("deepseek",messages);
+}
+
+async function getLocalAnalysis(text){
+  $("deepseekBadge").textContent="浏览器本地数据集可用";
+  $("deepseekBadge").className="badge ok";
+  return browserLocalAnalysis(text,null);
+}
+
+function browserLocalAnalysis(text,error){
+  var ds=window.CES_BROWSER_DATASET||{}, taxonomy=Array.isArray(ds.taxonomy)?ds.taxonomy:[], stats=ds.training_stats||{};
+  var dims=[], subs=[], keywords=[], reasons=[];
+  taxonomy.forEach(function(cat){
+    var catHits=[], subHits=[];
+    (cat.subcategories||[]).forEach(function(sub){
+      var hits=(sub.keywords||[]).filter(function(kw){return kw&&text.indexOf(kw)>=0});
+      if(hits.length){
+        hits.forEach(function(kw){if(keywords.indexOf(kw)<0)keywords.push(kw)});
+        catHits=catHits.concat(hits);
+        subHits.push({
+          key:sub.key||"",
+          subcategory:sub.name||"",
+          category:cat.category||"",
+          code:cat.code||"",
+          keywords:hits,
+          frequency:hits.length,
+          probability:Math.min(1,hits.length/5)
+        });
+      }
+    });
+    if(catHits.length){
+      dims.push({
+        code:cat.code||"",
+        category:cat.category||"",
+        name:cat.category||"",
+        keywords:Array.from(new Set(catHits)),
+        frequency:catHits.length,
+        probability:Math.min(1,catHits.length/8),
+        perception_frequency:catHits.length
+      });
+      subs=subs.concat(subHits);
+    }
+  });
+  dims.sort(function(a,b){return b.frequency-a.frequency});
+  subs.sort(function(a,b){return b.frequency-a.frequency});
+  if(dims.length){
+    reasons.push("本次使用浏览器内置的本地 CES 分类树和关键词数据兜底。");
+    reasons.push("命中 "+dims.length+" 个一级 CES 类别、"+subs.length+" 个二级子类。");
+  }else{
+    reasons.push("本次使用浏览器内置的本地 CES 数据兜底，但没有命中明确 CES 关键词。");
+  }
+  reasons.push("本地浏览器兜底不运行 Python 机器学习模型，只输出可核实的本地关键词分类结果。");
+  return {
+    ok:true,
+    fallback:true,
+    provider:PROVIDER_LOCAL,
+    source:"browser_local_dataset",
+    message:String(error&&error.message||error||"本地数据集回答"),
+    dataset:"browser_taxonomy_"+(stats.dataset_id||"local"),
+    ces:{
+      active_dimensions:dims,
+      active_subcategories:subs,
+      matched_keywords:keywords
+    },
+    perception_frequency:keywords.length,
+    model:{
+      dataset_id:stats.dataset_id||"browser_local_dataset",
+      confidence:null,
+      note:"浏览器使用本地分类树关键词兜底。"
+    },
+    sentiment_item:{
+      sentiment:null,
+      positive_prob:null,
+      negative_prob:null,
+      confidence:null,
+      note:"本地无情感模型，未输出情感倾向。"
+    },
+    llm_perception:{sentence_analysis:[]},
+    reasons:reasons
+  };
+}
+
+function normalizeAiParsed(parsed){
+  var pp=Number(parsed.positive_prob),np=Number(parsed.negative_prob),sentiment=parsed.sentiment;
+  if(sentiment==null)sentiment=parsed.overall_sentiment;
+  if(sentiment==="积极")sentiment=2;
+  if(sentiment==="中性")sentiment=1;
+  if(sentiment==="消极")sentiment=0;
+  return {
+    sentiment:sentiment,
+    positive_prob:Number.isFinite(pp)?pp:null,
+    negative_prob:Number.isFinite(np)?np:null,
+    sentence_analysis:Array.isArray(parsed.sentence_analysis)?parsed.sentence_analysis:[],
+    reasons:Array.isArray(parsed.reasons)?parsed.reasons:[]
+  };
+}
+
+function mergeResult(local,parsed,cfg){
+  var result=JSON.parse(JSON.stringify(local));
+  var norm=normalizeAiParsed(parsed),provider=cfg&&cfg.provider||PROVIDER_DEEPSEEK,label=cfg&&cfg.label||"DeepSeek";
+  result.ok=true;result.fallback=false;result.provider=provider;
+  result.ai_models=[{provider:label,ok:true,model:cfg&&cfg.model||"deepseek-chat",weight:1}];
+  result.deepseek={ok:label==="DeepSeek",fallback:false,model:cfg&&cfg.model||"deepseek-chat"};
+  result.sentiment_item={sentiment:norm.sentiment,positive_prob:norm.positive_prob,negative_prob:norm.negative_prob,confidence:Math.max(norm.positive_prob||0,norm.negative_prob||0),note:"情感由 "+label+" 输出；CES 分类由本地数据集输出。"};
+  result.llm_perception={sentence_analysis:norm.sentence_analysis};
+  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(norm.reasons);
+  return result;
+}
+
+function mergeEqualWeightResult(local,rows){
+  var result=JSON.parse(JSON.stringify(local)),valid=rows.filter(function(r){return r&&r.ok});
+  if(!valid.length)throw new Error("DeepSeek 和 MiMo 均不可用");
+  if(valid.length===1)return mergeResult(local,valid[0].parsed,valid[0].cfg);
+  var n1=normalizeAiParsed(valid[0].parsed),n2=normalizeAiParsed(valid[1].parsed);
+  var pos=((n1.positive_prob||0)+(n2.positive_prob||0))/2;
+  var neg=((n1.negative_prob||0)+(n2.negative_prob||0))/2;
+  var sentiment=1;
+  if(pos-neg>0.1)sentiment=2;
+  else if(neg-pos>0.1)sentiment=0;
+  else if(Number.isFinite(Number(n1.sentiment))&&Number.isFinite(Number(n2.sentiment)))sentiment=Math.round((Number(n1.sentiment)+Number(n2.sentiment))/2);
+  result.ok=true;result.fallback=false;result.provider=PROVIDER_BOTH;
+  result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:0.5}});
+  result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
+  result.mimo={ok:true,fallback:false,model:getMimoModel()};
+  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos,neg),note:"情感由 DeepSeek 与 MiMo 2.5 Pro 等权合成；CES 分类由本地数据集输出。"};
+  result.llm_perception={sentence_analysis:[].concat(n1.sentence_analysis||[],n2.sentence_analysis||[])};
+  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["DeepSeek 与 MiMo 2.5 Pro 均参与分析，最终情感概率按 50% + 50% 等权合成。"],n1.reasons||[],n2.reasons||[]);
+  return result;
+}
+
+function localOnlyResult(local,error){
+  var result=JSON.parse(JSON.stringify(local));
+  result.ok=true;result.fallback=true;result.provider=PROVIDER_LOCAL;
+  result.deepseek={ok:false,fallback:true,message:String(error&&error.message||error||"AI 模型不可用")};
+  result.sentiment_item={sentiment:null,positive_prob:null,negative_prob:null,confidence:result.model&&result.model.confidence,note:"AI 模型连接失败，本次只使用本地数据集。"};
+  result.llm_perception={sentence_analysis:[]};
+  var reasons=Array.isArray(local.reasons)?local.reasons:[];
+  result.reasons=reasons.concat(["AI 模型不可用，本次使用本地数据集回答。"]);
+  return result;
+}
+
+async function runSelectedAiAnalysis(local,text){
+  var kinds=selectedAiKinds(),messages=deepseekMessages(text);
+  var settled=await Promise.allSettled(kinds.map(async function(kind){
+    var cfg=getAiConfig(kind);
+    var raw=await callAi(kind,messages);
+    return {ok:true,cfg:cfg,parsed:extractJson(raw)};
+  }));
+  var rows=[],errors=[];
+  settled.forEach(function(item,idx){
+    if(item.status==="fulfilled")rows.push(item.value);
+    else errors.push((kinds[idx]==="mimo"?"MiMo":"DeepSeek")+" 失败："+String(item.reason&&item.reason.message||item.reason));
+  });
+  if(!rows.length)throw new Error(errors.join("；")||"AI 模型均不可用");
+  var result=kinds.length>1?mergeEqualWeightResult(local,rows):mergeResult(local,rows[0].parsed,rows[0].cfg);
+  if(errors.length){
+    result.reasons=(Array.isArray(result.reasons)?result.reasons:[]).concat(errors);
+    result.ai_errors=errors;
+  }
+  return result;
+}
+
+async function analyze(){
+  var text=$("commentInput").value.trim();
+  var st=$("statusMsg");
+  if(!text){st.textContent="请先输入文本";return}
+  var btn=$("analyzeBtn");btn.disabled=true;st.className="status";st.textContent="正在加载本地数据集...";
+  $("resultSection").style.display="none";
+  try{
+    var local=await getLocalAnalysis(text);
+    st.textContent=local.source==="browser_local_dataset"?"正在连接 AI 模型；失败则保留本地数据集结果...":"正在连接 AI 模型...";
+    var result;
+    try{
+      result=await runSelectedAiAnalysis(local,text);
+      $("backendBadge").textContent="AI 后端已连接";$("backendBadge").className="badge ok";
+    }catch(e){
+      result=localOnlyResult(local,e);
+      $("backendBadge").textContent="AI 模型不可用，本地数据集回答";$("backendBadge").className="badge bad";
+      $("deepseekBadge").textContent="浏览器本地数据集可用";$("deepseekBadge").className="badge ok";
+    }
+    renderAll(result,text);
+    st.className="status ok";st.textContent="分析完成，来源："+result.provider;
+  }catch(e){
+    var result=localOnlyResult(browserLocalAnalysis(text,e),e);
+    renderAll(result,text);
+    st.className="status ok";st.textContent="已使用本地数据集兜底。来源："+result.provider;
+  }finally{btn.disabled=false}
+}
+
+function renderAll(result,text){
+  lastResult=result;
+  var ces=result.ces||{},item=result.sentiment_item||{},dims=ces.active_dimensions||[],kws=ces.matched_keywords||[],sents=(result.llm_perception&&result.llm_perception.sentence_analysis)||[];
+  $("providerBadge").textContent=result.provider||"-";$("providerBadge").className="badge "+(result.provider&&result.provider!==PROVIDER_LOCAL?"ok":"bad");
+  renderMetrics(result);renderCesBars(dims);renderSubcategories(ces.active_subcategories||[]);renderHighlight(text,kws);renderSentences(sents);renderReasons(result.reasons||[]);
+  var ent={time:new Date().toLocaleString(),text:text.substring(0,50),sentiment:item.sentiment,pos:item.positive_prob,ces:dims.length,provider:result.provider||""};
+  diagHistory.unshift(ent);if(diagHistory.length>MAX_HISTORY)diagHistory=diagHistory.slice(0,MAX_HISTORY);
+  renderHistory();$("jsonOut").textContent=JSON.stringify(result,null,2);$("resultSection").style.display="";
+}
+
+function renderMetrics(r){
+  var item=r.sentiment_item||{},labels={2:"积极",1:"中性",0:"消极"},s=item.sentiment,cls=s===2?"positive":s===0?"negative":"neutral",pf=r.perception_frequency||0;
+  $("metricGrid").innerHTML=
+    '<div class="metric '+cls+'"><span>情感倾向</span><strong>'+(labels[s]||"-")+'</strong><small>sentiment</small></div>'+
+    '<div class="metric positive"><span>积极概率</span><strong>'+fmt(item.positive_prob)+'</strong><small>positive_prob</small></div>'+
+    '<div class="metric negative"><span>消极概率</span><strong>'+fmt(item.negative_prob)+'</strong><small>negative_prob</small></div>'+
+    '<div class="metric neutral"><span>置信度</span><strong>'+fmt(item.confidence)+'</strong><small>confidence</small></div>'+
+    '<div class="metric"><span>感知频率</span><strong>'+fmt(pf)+'</strong><small>CES frequency</small></div>'+
+    '<div class="metric"><span>分析引擎</span><strong style="font-size:13px">'+esc(r.provider||"-")+'</strong><small>provider</small></div>';
+}
+
+var CES_COLORS=["#007aff","#34c759","#ff9f0a","#ff375f","#5856d6","#00c7be","#ff2d55","#af52de","#5ac8fa","#ff6b35","#8e8e93","#30d158","#64d2ff","#ffd60a"];
+function renderCesBars(cats){
+  var el=$("cesBars");if(!cats.length){el.innerHTML='<p style="color:var(--muted)">未命中 CES 维度</p>';$("cesHitCount").textContent="";return}
+  var maxF=Math.max.apply(null,cats.map(function(c){return c.frequency||c.probability||0}))||1;
+  el.innerHTML=cats.map(function(c,i){var score=c.frequency||c.probability||c.perception_frequency||0,w=Math.round(score/maxF*100),color=CES_COLORS[i%14];return '<div class="bar-row"><div class="bar-label">'+esc(c.category||c.name)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+color+'"></div></div><span style="font-size:12px;width:50px">'+score.toFixed(2)+'</span></div>'}).join("");
+  $("cesHitCount").textContent=cats.length+" 类击中";
+}
+function renderSubcategories(items){$("subCats").innerHTML=items.length?items.slice(0,30).map(function(s){return'<span class="badge">'+esc(s.subcategory||s.name)+'</span>'}).join(""):'<span class="badge">无二级子类</span>'}
+function renderHighlight(text,kws){
+  var el=$("highlighted");if(!kws.length){el.innerHTML=esc(text);return}
+  var pattern=kws.map(function(k){return String(k).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).sort(function(a,b){return b.length-a.length}).join("|");
+  try{el.innerHTML=esc(text).replace(new RegExp("("+pattern+")","g"),'<mark>$1</mark>')}catch(e){el.innerHTML=esc(text)}
+}
+function renderSentences(ss){
+  var labels={2:"积极",1:"中性",0:"消极"},cls={2:"pos",1:"neu",0:"neg"};
+  $("sentenceAnalysis").innerHTML=ss.map(function(s){return '<div class="llm-row"><p>'+esc(s.sentence||"")+'</p><span class="'+(cls[s.sentiment]||"neu")+'" style="font-size:12px">→ '+(labels[s.sentiment]||"-")+'</span></div>'}).join("")||"<p>AI 模型未返回分句情感。</p>";
+}
+function renderReasons(rs){$("reasonList").innerHTML=rs.map(function(r){return"<li>"+esc(r)+"</li>"}).join("")||"<li>暂无可分析原因</li>"}
+function renderHistory(){
+  var from=parseInt($("histFrom").value)||1,to=parseInt($("histTo").value)||10;if(from<1)from=1;if(to<from)to=from;if(to>diagHistory.length)to=diagHistory.length;
+  $("histFrom").value=from;$("histTo").value=to;$("historyCount").textContent="共 "+diagHistory.length+" 条";$("histTableSummary").textContent="显示第 "+from+" 至 "+to+" 条，共 "+diagHistory.length+" 条";
+  var labels={2:"积极",1:"中性",0:"消极"},cmap={2:"pos",1:"neu",0:"neg"},slice=diagHistory.slice(from-1,to);
+  $("histBody").innerHTML=slice.map(function(e,i){var idx=from+i,posText=e.pos==null?"-":e.pos.toFixed(3);return '<tr><td>'+idx+'</td><td title="'+esc(e.text)+'">'+esc(e.text).substring(0,30)+'</td><td class="'+(cmap[e.sentiment]||"neu")+'">'+(labels[e.sentiment]||"-")+'</td><td>'+posText+'</td><td>'+e.ces+'</td><td>'+esc(e.provider)+'</td><td style=font-size:11px>'+e.time.substring(5,16)+'</td></tr>'}).join("");
+  var sm=$("histSummary");if(slice.length){var probRows=slice.filter(function(e){return e.pos!=null}),ap=probRows.length?probRows.reduce(function(s,e){return s+e.pos},0)/probRows.length:0,tc=slice.reduce(function(s,e){return s+e.ces},0),pc=slice.filter(function(e){return e.sentiment===2}).length,nc=slice.filter(function(e){return e.sentiment===0}).length,uc=slice.filter(function(e){return e.sentiment===1}).length;sm.innerHTML='<div class="summary-item"><div class="v">'+slice.length+'</div><div class="l">条数</div></div><div class="summary-item"><div class="v">'+(probRows.length?ap.toFixed(3):"-")+'</div><div class="l">均积极概率</div></div><div class="summary-item"><div class="v" style="color:var(--positive)">'+pc+'</div><div class="l">积极</div></div><div class="summary-item"><div class="v" style="color:var(--negative)">'+nc+'</div><div class="l">消极</div></div><div class="summary-item"><div class="v">'+uc+'</div><div class="l">中性</div></div><div class="summary-item"><div class="v">'+tc+'</div><div class="l">CES总计</div></div>'}else{sm.innerHTML=""}
+}
+async function askQuestion(){
+  var q=$("qaInput").value.trim();if(!q){$("qaAnswer").textContent="请先输入问题。";return}
+  $("qaAnswer").textContent="正在回答...";
+  try{
+    var local=lastResult?JSON.stringify({ces:lastResult.ces,reasons:lastResult.reasons}).slice(0,2500):"暂无当前分析结果";
+    var messages=[{role:"system",content:"你是 CES 研究助手。结合本地数据集上下文回答，简洁中文。"},{role:"user",content:"问题："+q+"\n\n本地数据集上下文：\n"+local}];
+    var kinds=selectedAiKinds();
+    var settled=await Promise.allSettled(kinds.map(async function(kind){return{cfg:getAiConfig(kind),raw:await callAi(kind,messages)}}));
+    var answers=[],errors=[];
+    settled.forEach(function(item,idx){
+      if(item.status==="fulfilled")answers.push("【"+item.value.cfg.label+"】\n"+item.value.raw);
+      else errors.push((kinds[idx]==="mimo"?"MiMo":"DeepSeek")+" 失败："+String(item.reason&&item.reason.message||item.reason));
+    });
+    if(!answers.length)throw new Error(errors.join("；")||"AI 模型均不可用");
+    var title=kinds.length>1?PROVIDER_BOTH:(answers[0].indexOf("MiMo")>=0?PROVIDER_MIMO:PROVIDER_DEEPSEEK);
+    $("qaAnswer").textContent=title+"\n\n"+answers.join("\n\n")+(errors.length?"\n\n部分模型未返回：\n"+errors.join("\n"):"");
+  }catch(e){
+    $("qaAnswer").textContent=PROVIDER_LOCAL+"\n\n"+browserLocalQa(q,e);
+  }
+}
+function browserLocalQa(question,error){
+  var ds=window.CES_BROWSER_DATASET||{}, taxonomy=Array.isArray(ds.taxonomy)?ds.taxonomy:[], stats=ds.training_stats||{};
+  var rows=[];
+  taxonomy.forEach(function(cat){
+    var hits=[];
+    if(question.indexOf(cat.category||"")>=0)hits.push(cat.category);
+    (cat.subcategories||[]).forEach(function(sub){
+      if(question.indexOf(sub.name||"")>=0)hits.push(sub.name);
+      (sub.keywords||[]).forEach(function(kw){if(kw&&question.indexOf(kw)>=0)hits.push(kw)});
+    });
+    if(hits.length)rows.push({cat:cat,hits:Array.from(new Set(hits))});
+  });
+  if(!rows.length)rows=taxonomy.slice(0,5).map(function(cat){return{cat:cat,hits:[]}});
+  var lines=["AI 模型当前不可用，以下回答基于浏览器内置本地 CES 数据集。","","本地数据概况：","- 一级类别："+taxonomy.length+" 类","- 训练样本："+(stats.sample_count||"未读取")+" 条"];
+  lines.push("","相关 CES 类别：");
+  rows.slice(0,5).forEach(function(row){
+    var subs=(row.cat.subcategories||[]).slice(0,5).map(function(s){return s.name}).join("、");
+    lines.push("- "+(row.cat.code||"")+" "+(row.cat.category||"")+"；相关词："+(row.hits.length?row.hits.join("、"):"未按问题命中，按本地分类树展示")+"；包含子类："+subs);
+  });
+  lines.push("","说明：浏览器本地兜底不调用外部 API，也不生成新引用。错误："+String(error&&error.message||error||"AI 模型不可用"));
+  return lines.join("\n");
+}
+async function checkHealth(){
+  var localOk=!!window.CES_BROWSER_DATASET;
+  $("deepseekBadge").textContent=localOk?"本地数据集可用":"本地数据集异常";
+  $("deepseekBadge").className="badge "+(localOk?"ok":"bad");
+  try{
+    var kinds=selectedAiKinds();
+    var checks=await Promise.allSettled(kinds.map(async function(kind){
+      var raw=await callAi(kind,[{role:"system",content:"只输出 JSON。"},{role:"user",content:'请只回复 {"ok":true}'}]);
+      return {kind:kind,ok:!!extractJson(raw).ok};
+    }));
+    var okCount=checks.filter(function(item){return item.status==="fulfilled"&&item.value.ok}).length;
+    $("backendBadge").textContent=okCount===kinds.length?"AI 后端已连接":"部分 AI 后端未连接";
+    $("backendBadge").className="badge "+(okCount?"ok":"bad");
+  }catch(e){
+    $("backendBadge").textContent=localOk?"AI 模型不可用，本地数据集回答":"AI 模型不可用，本地数据集异常";
+    $("backendBadge").className="badge bad";
+  }
+}
+function clearHistory(){diagHistory=[];renderHistory();$("histBody").innerHTML="";$("histSummary").innerHTML="";$("historyCount").textContent="共 0 条"}
+function copyJson(){if(!lastResult)return;navigator.clipboard.writeText(JSON.stringify(lastResult,null,2));var b=$("copyBtn");b.textContent="已复制!";setTimeout(function(){b.textContent="复制"},1500)}
+function clearAll(){$("commentInput").value="";$("statusMsg").textContent="";$("statusMsg").className="status";$("resultSection").style.display="none";$("asrText").value="";$("audioFileInput").value="";asrAudioBlob=null;asrAudioName="";setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MiMo ASR 支持的 WAV。");lastResult=null}
+loadDeepSeekSettings();
+checkHealth();
+</script>
+</body>
+</html>
