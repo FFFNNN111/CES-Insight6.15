@@ -104,6 +104,8 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <div><label>MiMo 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
       <div><label>MiMo 模型名</label><input id="mimoModel" value="mimo-v2.5-pro"></div>
       <div><label>MiMo API Key</label><input id="mimoApiKey" type="text" autocomplete="off" placeholder="填入 MiMo API Key"></div>
+      <div><label>双模型权重模式</label><select id="weightMode" onchange="updateWeightPreview()"><option value="equal">平权 50% + 50%</option><option value="custom">自定义</option></select></div>
+      <div><label>DeepSeek 权重(%)</label><input id="deepseekWeight" type="number" min="0" max="100" step="5" value="50" oninput="updateWeightPreview()"></div>
       <div><label>MiMo ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
       <div><label>MiMo ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
       <div><label>MiMo ASR API Key</label><input id="mimoAsrApiKey" type="text" autocomplete="off" placeholder="填入 MiMo ASR API Key"></div>
@@ -113,7 +115,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <button class="btn btn-outline btn-sm" onclick="checkHealth()">测试 AI 连接</button>
       <button class="btn btn-outline btn-sm" onclick="clearAiKeys()">清除 Key</button>
     </div>
-    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、MIMO V2.5pro 或两者 3:1 分析。连接失败时，软件只使用本地 CES 数据集。</p>
+    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、MIMO V2.5pro 或两者共同分析。双模型默认平权，也可自定义权重；当前：<span id="weightPreview">DeepSeek 50% + MiMo 50%</span>。连接失败时，软件只使用本地 CES 数据集。</p>
   </details>
 </div>
 
@@ -218,6 +220,8 @@ const STORAGE_MIMO_ASR_API_BASE = "ces_mimo_asr_api_base";
 const STORAGE_MIMO_ASR_API_KEY = "ces_mimo_asr_api_key";
 const STORAGE_MIMO_ASR_MODEL = "ces_mimo_asr_model";
 const STORAGE_AI_MODE = "ces_ai_mode";
+const STORAGE_WEIGHT_MODE = "ces_weight_mode";
+const STORAGE_DEEPSEEK_WEIGHT = "ces_deepseek_weight";
 const STORAGE_TENDENCY_HISTORY = "ces_tendency_history_v1";
 const STORAGE_FREQUENCY_HISTORY = "ces_frequency_history_v1";
 const DEEPSEEK_RETRIES = 5;
@@ -274,6 +278,24 @@ function getMimoModel(){return ($("mimoModel").value||DEFAULT_MIMO_MODEL).trim()
 function getMimoAsrApiBase(){return ($("mimoAsrApiBase").value||DEFAULT_MIMO_ASR_API_BASE).trim()}
 function getMimoAsrApiKey(){return ($("mimoAsrApiKey").value||"").trim()}
 function getMimoAsrModel(){return ($("mimoAsrModel").value||DEFAULT_MIMO_ASR_MODEL).trim()}
+function clampPercent(value){
+  var n=Number(value);
+  if(!Number.isFinite(n))n=50;
+  return Math.max(0,Math.min(100,n));
+}
+function getModelWeights(){
+  var mode=($("weightMode")&&$("weightMode").value)||"equal";
+  var deep=mode==="custom"?clampPercent($("deepseekWeight")&&$("deepseekWeight").value):50;
+  return {mode:mode,deepseek:deep/100,mimo:(100-deep)/100,deepseekPercent:deep,mimoPercent:100-deep};
+}
+function updateWeightPreview(){
+  var w=getModelWeights();
+  if($("deepseekWeight")){
+    $("deepseekWeight").disabled=w.mode!=="custom";
+    $("deepseekWeight").value=String(w.deepseekPercent);
+  }
+  if($("weightPreview"))$("weightPreview").textContent="DeepSeek "+w.deepseekPercent+"% + MiMo "+w.mimoPercent+"%";
+}
 function requireDeepSeekApiKey(){
   var key=getDeepSeekApiKey();
   if(!key)throw new Error("请先填写 DeepSeek API Key");
@@ -307,16 +329,22 @@ function loadDeepSeekSettings(){
   $("mimoApiBase").value=localStorage.getItem(STORAGE_MIMO_API_BASE)||DEFAULT_MIMO_API_BASE;
   $("mimoModel").value=localStorage.getItem(STORAGE_MIMO_MODEL)||DEFAULT_MIMO_MODEL;
   $("mimoApiKey").value=localStorage.getItem(STORAGE_MIMO_API_KEY)||"";
+  $("weightMode").value=localStorage.getItem(STORAGE_WEIGHT_MODE)||"equal";
+  $("deepseekWeight").value=String(clampPercent(localStorage.getItem(STORAGE_DEEPSEEK_WEIGHT)||50));
   $("mimoAsrApiBase").value=localStorage.getItem(STORAGE_MIMO_ASR_API_BASE)||DEFAULT_MIMO_ASR_API_BASE;
   $("mimoAsrModel").value=localStorage.getItem(STORAGE_MIMO_ASR_MODEL)||DEFAULT_MIMO_ASR_MODEL;
   $("mimoAsrApiKey").value=localStorage.getItem(STORAGE_MIMO_ASR_API_KEY)||"";
   updateAiModeButtons();
+  updateWeightPreview();
 }
 function saveAiSettings(){
   var base=getDeepSeekApiBase();
   var key=getDeepSeekApiKey(),mimoBase=getMimoApiBase(),mimoKey=getMimoApiKey(),mimoModel=getMimoModel();
   var asrBase=getMimoAsrApiBase(),asrKey=getMimoAsrApiKey(),asrModel=getMimoAsrModel();
+  var weights=getModelWeights();
   localStorage.setItem(STORAGE_AI_MODE,getAiMode());
+  localStorage.setItem(STORAGE_WEIGHT_MODE,weights.mode);
+  localStorage.setItem(STORAGE_DEEPSEEK_WEIGHT,String(weights.deepseekPercent));
   localStorage.setItem(STORAGE_DEEPSEEK_API_BASE,base||DEFAULT_DEEPSEEK_API_BASE);
   if(key)localStorage.setItem(STORAGE_DEEPSEEK_API_KEY,key);
   else localStorage.removeItem(STORAGE_DEEPSEEK_API_KEY);
@@ -1164,7 +1192,7 @@ function mergeEqualWeightResult(local,rows,task){
   if(!valid.length)throw new Error("DeepSeek 和 MiMo 均不可用");
   if(valid.length===1)return mergeResult(local,valid[0].parsed,valid[0].cfg,task);
   var deepRow=valid.find(function(r){return r.cfg&&r.cfg.kind==="deepseek"})||valid[0],mimoRow=valid.find(function(r){return r.cfg&&r.cfg.kind==="mimo"})||valid[1]||valid[0];
-  var n1=normalizeAiParsed(deepRow.parsed),n2=normalizeAiParsed(mimoRow.parsed),deepWeight=0.75,mimoWeight=0.25;
+  var n1=normalizeAiParsed(deepRow.parsed),n2=normalizeAiParsed(mimoRow.parsed),weights=getModelWeights(),deepWeight=weights.deepseek,mimoWeight=weights.mimo;
   var pos=((n1.positive_prob||0)*deepWeight)+((n2.positive_prob||0)*mimoWeight);
   var neg=((n1.negative_prob||0)*deepWeight)+((n2.negative_prob||0)*mimoWeight);
   var sentiment=1;
@@ -1175,11 +1203,11 @@ function mergeEqualWeightResult(local,rows,task){
   result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:r.cfg.kind==="deepseek"?deepWeight:mimoWeight}});
   result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
   result.mimo={ok:true,fallback:false,model:getMimoModel()};
-  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos,neg),note:"情感由 deepseek v4 pro 75% 与 MIMO V2.5pro 25% 合成；CES 分类由本地数据集输出。"};
+  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos,neg),note:"情感由 deepseek v4 pro "+weights.deepseekPercent+"% 与 MIMO V2.5pro "+weights.mimoPercent+"% 合成；CES 分类由本地数据集输出。"};
   result.perception_tendency=taskIncludesTendency(task)?combinePerceptionTendencies(valid):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
   result.perception_frequency_ai=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
   result.llm_perception={sentence_analysis:[].concat(n1.sentence_analysis||[],n2.sentence_analysis||[])};
-  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["deepseek v4 pro 与 MIMO V2.5pro 均参与分析，最终情感概率按 DeepSeek 75% + MiMo 25% 合成。"],n1.reasons||[],n2.reasons||[]);
+  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["deepseek v4 pro 与 MIMO V2.5pro 均参与分析，最终情感概率按 DeepSeek "+weights.deepseekPercent+"% + MiMo "+weights.mimoPercent+"% 合成。"],n1.reasons||[],n2.reasons||[]);
   return result;
 }
 

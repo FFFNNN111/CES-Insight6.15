@@ -67,7 +67,7 @@ Root directory: 留空
 - 本地 CES：使用 `ces_browser_dataset.js` 做轻量分类兜底。
 - CES 感知倾向：可单独运行，也可和感知频率一起运行；本地数据集先给出候选 CES 类别和关键词命中，deepseek v4 pro / MIMO V2.5pro 再给出倾向分值、依据和人工复核标记。
 - AI 感知频率复核：可单独运行，也可和感知倾向一起运行；本地数据集先给出关键词命中，deepseek v4 pro / MIMO V2.5pro 再按 `PFj = Nj / N` 输出语义级命中片段、判断原因和人工复核标记。
-- 双模型模式：deepseek v4 pro 与 MIMO V2.5pro 按 3:1 权重合成情感概率。
+- 双模型模式：deepseek v4 pro 与 MIMO V2.5pro 默认平权，也可在页面设置自定义权重。
 - 分析历史：感知倾向和感知频率分开保存，每类最多保留 100 条，保存在当前浏览器 `localStorage`。
 
 页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`，输入框会直接显示普通字符。
