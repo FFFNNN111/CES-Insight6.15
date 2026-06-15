@@ -65,11 +65,17 @@ Root directory: 留空
 - MiMo 2.5 Pro：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1`，本地双击 HTML 时浏览器直连。
 - MiMo 2.5 ASR：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1/chat/completions`，本地双击 HTML 时浏览器直连。
 - 本地 CES：使用 `ces_browser_dataset.js` 做轻量分类兜底。
+- CES 感知倾向：本地数据集先给出候选 CES 类别和关键词命中，DeepSeek / MiMo 再给出倾向分值、依据和人工复核标记。
+- AI 感知频率复核：本地数据集先给出关键词命中，DeepSeek / MiMo 再按 `PFj = Nj / N` 输出语义级命中片段、判断原因和人工复核标记。
 
 页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`，输入框会直接显示普通字符。
 
 ## 重要说明
 
 本地 CES 兜底只基于分类树和关键词，不是原来的 Python 机器学习模型。
+
+感知倾向功能使用的是轻量 CES 分类树、关键词和统计信息，不读取完整训练明细，也不运行机器学习模型。
+
+本地感知频率是关键词命中频率；AI 感知频率复核是语义辅助结果，不读取完整训练明细，也不替代人工复核。
 
 如果 DeepSeek 或 MiMo 服务端不允许浏览器跨域直连，AI 功能会失败，但本地 CES 兜底仍可用。
