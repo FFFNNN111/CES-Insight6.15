@@ -4,6 +4,8 @@ const JSON_HEADERS = {
   "access-control-allow-methods": "POST, OPTIONS",
   "access-control-allow-headers": "content-type",
 };
+const DEFAULT_UPSTREAM_TIMEOUT_MS = 25000;
+const MAX_UPSTREAM_TIMEOUT_MS = 120000;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -14,6 +16,14 @@ function json(data, status = 200) {
 
 function cleanMessage(value) {
   return String(value || "请求失败").replace(/sk-[A-Za-z0-9_-]+/g, "sk-***");
+}
+
+function normalizeTimeout(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) {
+    return DEFAULT_UPSTREAM_TIMEOUT_MS;
+  }
+  return Math.max(3000, Math.min(MAX_UPSTREAM_TIMEOUT_MS, Math.floor(n)));
 }
 
 function normalizeEndpoint(apiBase) {
@@ -71,15 +81,29 @@ export async function onRequestPost(context) {
       temperature: payload.temperature ?? 0.2,
       max_tokens: payload.max_tokens ?? 1000,
     };
+    const timeoutMs = normalizeTimeout(payload.timeout_ms);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    const upstream = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${String(payload.api_key).trim()}`,
-      },
-      body: JSON.stringify(upstreamPayload),
-    });
+    let upstream;
+    try {
+      upstream = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${String(payload.api_key).trim()}`,
+        },
+        body: JSON.stringify(upstreamPayload),
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        return json({ ok: false, message: `上游请求超时（${Math.round(timeoutMs / 1000)}秒）` }, 504);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
 
     const text = await upstream.text();
     let data;

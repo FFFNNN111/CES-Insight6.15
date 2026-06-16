@@ -226,6 +226,9 @@ const STORAGE_TENDENCY_HISTORY = "ces_tendency_history_v1";
 const STORAGE_FREQUENCY_HISTORY = "ces_frequency_history_v1";
 const DEEPSEEK_RETRIES = 5;
 const REQUEST_TIMEOUT_MS = 45000;
+const MIMO_RETRIES = 2;
+const MIMO_REQUEST_TIMEOUT_MS = 18000;
+const MIMO_CHECK_TIMEOUT_MS = 10000;
 const ASR_TIMEOUT_MS = 120000;
 const CHAT_PROXY_PATH = "/api/chat";
 const PROVIDER_DEEPSEEK = "deepseek v4 pro模型+本地数据集回答";
@@ -616,7 +619,7 @@ async function parseChatResponse(resp,label){
 }
 
 async function callChatProxy(cfg,payload,timeoutMs){
-  var body={api_key:cfg.api_key,api_base:cfg.api_base,model:cfg.model,messages:payload.messages,temperature:payload.temperature,max_tokens:payload.max_tokens};
+  var body={api_key:cfg.api_key,api_base:cfg.api_base,model:cfg.model,messages:payload.messages,temperature:payload.temperature,max_tokens:payload.max_tokens,timeout_ms:timeoutMs};
   var resp=await fetchWithTimeout(CHAT_PROXY_PATH,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)},timeoutMs);
   return await parseChatResponse(resp,cfg.label);
 }
@@ -709,18 +712,85 @@ function deepseekMessages(text,local,task){
   ];
 }
 
-function mimoMessages(text,local,task){
-  return deepseekMessages(text,local,task);
+function compactLocalHints(local){
+  var ces=local&&local.ces||{};
+  var dims=(ces.active_dimensions||[]).slice(0,8).map(function(d){
+    var kws=(d.keywords||[]).slice(0,6).join("、");
+    return (d.code||"")+" "+(d.category||d.name||"")+"："+(kws||"无关键词");
+  });
+  var subs=(ces.active_subcategories||[]).slice(0,12).map(function(s){
+    var kws=(s.keywords||[]).slice(0,4).join("、");
+    return (s.code||"")+" "+(s.subcategory||s.name||"")+"："+(kws||"无关键词");
+  });
+  var kws=(ces.matched_keywords||[]).slice(0,20).map(function(k){return typeof k==="string"?k:(k.keyword||k.term||"")}).filter(Boolean);
+  var parts=[];
+  if(dims.length)parts.push("一级候选："+dims.join("；"));
+  if(subs.length)parts.push("二级候选："+subs.join("；"));
+  if(kws.length)parts.push("命中关键词："+Array.from(new Set(kws)).join("、"));
+  return parts.join("\n")||"本地数据集未命中明确关键词，请按评论语义谨慎判断。";
 }
 
-function extractJson(raw){
+function mimoMessages(text,local,task){
+  var ctx=getContext();
+  var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
+  task=normalizeAnalysisTask(task);
+  var categories="1美学景观体验；2游憩活动与运动体验；3蓝空间亲水体验；4生态自然与生物感知；5文化遗产与地方认同；6教育科普与认知体验；7精神恢复与心理舒适；8社交亲子与全龄共享；9可达交通与游线导向；10设施维护与管理服务；11空间承载与秩序体验；12环境舒适与微气候。";
+  var baseSchema={
+    sentiment:"0消极/1中性/2积极",
+    positive_prob:"0到1",
+    negative_prob:"0到1",
+    sentence_analysis:[{sentence:"分句",sentiment:"0/1/2"}],
+    reasons:["简短原因"]
+  };
+  if(taskIncludesTendency(task)){
+    baseSchema.perception_tendency={
+      items:[{segment:"分句或片段",matched_text:"命中原文",ces_code:"1-12",ces_category:"CES类别",tendency_type:"正向/中性/负向",tendency_score:"0到1",evidence:"依据",review_required:false}],
+      category_summary:[{ces_code:"1-12",ces_category:"CES类别",hit_count:1,tendency_mean:0.5,positive_count:0,neutral_count:0,negative_count:0,positive_ratio:0,neutral_ratio:0,negative_ratio:0,note:""}],
+      review_required_count:0,
+      method_note:"MIMO V2.5pro 轻量感知倾向分析"
+    };
+  }
+  if(taskIncludesFrequency(task)){
+    baseSchema.perception_frequency_ai={
+      segments:[{segment:"有效分句或片段",valid:true,invalid_reason:""}],
+      items:[{segment:"分句或片段",matched_text:"命中原文",ces_code:"1-12",ces_category:"CES类别",reason:"依据",review_required:false}],
+      category_summary:[{ces_code:"1-12",ces_category:"CES类别",Nj:1,N:1,PFj:1,examples:["命中示例"],note:""}],
+      valid_segment_count:1,
+      review_required_count:0,
+      method_note:"MIMO V2.5pro 轻量感知频率复核"
+    };
+  }
+  var taskName=task==="both"?"感知倾向+感知频率":(task==="frequency"?"感知频率":"感知倾向");
+  return [
+    {role:"system",content:"你是 CES 评论分析助手。使用简短规则快速分析，必须只输出 JSON，不要 Markdown。CES 类别："+categories+" 感知频率表示被提及，不表示满意度；感知倾向按具体命中片段评分。无法判断时 review_required=true。"},
+    {role:"user",content:"任务："+taskName+"\n评论：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n本地候选：\n"+compactLocalHints(local)+"\n\n要求：按“。？！；”和明显停顿分句；同一句可多标签；每个命中必须给命中原文和依据；严格输出这个 JSON 结构：\n"+JSON.stringify(baseSchema)}
+  ];
+}
+
+function extractJson(raw,label){
   var s=String(raw||"").replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
   try{return JSON.parse(s)}catch(e){}
   var m=s.match(/\{[\s\S]*\}/);if(m)try{return JSON.parse(m[0])}catch(e){}
-  throw new Error("DeepSeek 未返回可解析 JSON");
+  throw new Error((label||"AI 模型")+" 未返回可解析 JSON");
 }
 
 function shouldRetry(status){return status===429||status>=500}
+
+function getAiRequestPolicy(kind,task){
+  task=normalizeAnalysisTask(task);
+  if(kind==="mimo"){
+    return {
+      retries:MIMO_RETRIES,
+      timeout_ms:task==="check"?MIMO_CHECK_TIMEOUT_MS:MIMO_REQUEST_TIMEOUT_MS,
+      max_tokens:task==="check"?80:(task==="both"?1600:1000)
+    };
+  }
+  return {
+    retries:DEEPSEEK_RETRIES,
+    timeout_ms:REQUEST_TIMEOUT_MS,
+    max_tokens:task==="check"?200:(task==="both"?4200:2600)
+  };
+}
 
 function getAiConfig(kind){
   if(kind==="mimo"){
@@ -738,14 +808,19 @@ function selectedAiKinds(){
 
 async function callAiDirect(kind,messages,task){
   var cfg=getAiConfig(kind);
-  var payload={model:cfg.model,messages:messages,temperature:0.2,max_tokens:task==="check"?200:(task==="both"?4200:2600)};
+  var policy=getAiRequestPolicy(kind,task);
+  var payload={model:cfg.model,messages:messages,temperature:0.2,max_tokens:policy.max_tokens};
   var lastError=null;
-  for(var i=0;i<DEEPSEEK_RETRIES;i++){
+  for(var i=0;i<policy.retries;i++){
     try{
-      var data=await requestChatCompletion(cfg,payload,REQUEST_TIMEOUT_MS);
+      var data=await requestChatCompletion(cfg,payload,policy.timeout_ms);
       var msg=data.choices&&data.choices[0]&&data.choices[0].message;
       return msg?(msg.content||msg.reasoning_content||""):"";
-    }catch(e){lastError=e;if(e.status===401||e.status===403||i===DEEPSEEK_RETRIES-1)break}
+    }catch(e){
+      lastError=e;
+      var retryable=!e.status||shouldRetry(e.status);
+      if(e.status===401||e.status===403||!retryable||i===policy.retries-1)break;
+    }
     await sleep(350*(i+1));
   }
   throw lastError||new Error(cfg.label+" 连接失败");
@@ -1177,7 +1252,8 @@ function mergeResult(local,parsed,cfg,task){
   task=normalizeAnalysisTask(task);
   result.ok=true;result.fallback=false;result.provider=provider;
   result.ai_models=[{provider:label,ok:true,model:cfg&&cfg.model||"deepseek-chat",weight:1}];
-  result.deepseek={ok:label==="DeepSeek",fallback:false,model:cfg&&cfg.model||"deepseek-chat"};
+  result.deepseek={ok:cfg&&cfg.kind==="deepseek",fallback:false,model:cfg&&cfg.kind==="deepseek"?(cfg.model||"deepseek-chat"):""};
+  result.mimo={ok:cfg&&cfg.kind==="mimo",fallback:false,model:cfg&&cfg.kind==="mimo"?(cfg.model||getMimoModel()):""};
   result.sentiment_item={sentiment:norm.sentiment,positive_prob:norm.positive_prob,negative_prob:norm.negative_prob,confidence:Math.max(norm.positive_prob||0,norm.negative_prob||0),note:"情感由 "+label+" 输出；CES 分类由本地数据集输出。"};
   result.perception_tendency=taskIncludesTendency(task)?normalizePerceptionTendency(parsed&&parsed.perception_tendency,label):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
   result.perception_frequency_ai=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(parsed&&parsed.perception_frequency_ai,label):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
@@ -1231,7 +1307,7 @@ async function runSelectedAiAnalysis(local,text,task){
     var cfg=getAiConfig(kind);
     var messages=kind==="mimo"?mimoMessages(text,local,task):deepseekMessages(text,local,task);
     var raw=await callAi(kind,messages,task);
-    return {ok:true,cfg:cfg,parsed:extractJson(raw)};
+    return {ok:true,cfg:cfg,parsed:extractJson(raw,cfg.label)};
   }));
   var rows=[],errors=[];
   settled.forEach(function(item,idx){
@@ -1262,7 +1338,8 @@ async function analyze(task){
     var result;
     try{
       result=await runSelectedAiAnalysis(local,text,task);
-      $("backendBadge").textContent="AI 后端已连接";$("backendBadge").className="badge ok";
+      $("backendBadge").textContent=result.ai_errors&&result.ai_errors.length?"部分 AI 后端未连接":"AI 后端已连接";
+      $("backendBadge").className="badge ok";
     }catch(e){
       result=localOnlyResult(local,e);
       $("backendBadge").textContent="AI 模型不可用，本地数据集回答";$("backendBadge").className="badge bad";
@@ -1457,7 +1534,7 @@ async function checkHealth(){
     var kinds=selectedAiKinds();
     var checks=await Promise.allSettled(kinds.map(async function(kind){
       var raw=await callAi(kind,[{role:"system",content:"只输出 JSON。"},{role:"user",content:'请只回复 {"ok":true}'}],"check");
-      return {kind:kind,ok:!!extractJson(raw).ok};
+      return {kind:kind,ok:!!extractJson(raw,getAiConfig(kind).label).ok};
     }));
     var okCount=checks.filter(function(item){return item.status==="fulfilled"&&item.value.ok}).length;
     $("backendBadge").textContent=okCount===kinds.length?"AI 后端已连接":"部分 AI 后端未连接";
