@@ -36,7 +36,7 @@ function normalizeEndpoint(apiBase) {
 
   const path = url.pathname.replace(/\/+$/, "");
   if (url.origin === "https://api.deepseek.com") {
-    if (!path || path === "/chat/completions") {
+    if (!path || path === "/chat/completions" || path === "/v1" || path === "/v1/chat/completions") {
       return "https://api.deepseek.com/chat/completions";
     }
   }

@@ -67,9 +67,11 @@ Root directory: 留空
 - 本地 CES：使用 `ces_browser_dataset.js` 做轻量分类兜底。
 - CES 感知倾向：可单独运行，也可和感知频率一起运行；本地数据集先给出候选 CES 类别和关键词命中，deepseek v4 pro / MIMO V2.5pro 再给出倾向分值、依据和人工复核标记。
 - AI 感知频率复核：可单独运行，也可和感知倾向一起运行；本地数据集先给出关键词命中，deepseek v4 pro / MIMO V2.5pro 再按 `PFj = Nj / N` 输出语义级命中片段、判断原因和人工复核标记。
-- MIMO V2.5pro：使用较短的轻量提示词、较短超时和较少重试，避免长时间卡在连接中。
+- MIMO V2.5pro：作为自然语言辅助模型参与分析，单独显示 `MIMO V2.5pro 分析`；结构化倾向和频率仍由 deepseek v4 pro 或本地数据集生成。
+- DeepSeek：兼容 `https://api.deepseek.com`、`https://api.deepseek.com/v1`、`/chat/completions` 和 `/v1/chat/completions`，仍是结构化感知倾向和感知频率主模型。
+- DeepSeek 的 `感知倾向+感知频率` 如果一次结构化请求失败，会自动拆成倾向和频率两次请求。
 - 双模型模式：deepseek v4 pro 与 MIMO V2.5pro 默认平权，也可在页面设置自定义权重。
-- 双模型容错：如果一个模型失败，页面会保留另一个成功模型和本地数据集结果，并在原因中写明失败模型。
+- 双模型容错：DeepSeek 结果会先显示，MIMO V2.5pro 成功后再补充；如果 MiMo 失败，页面会保留 DeepSeek 和本地数据集结果，并在原因中写明失败原因。
 - 分析历史：感知倾向和感知频率分开保存，每类最多保留 100 条，保存在当前浏览器 `localStorage`。
 
 页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`，输入框会直接显示普通字符。
