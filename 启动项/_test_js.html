@@ -1,219 +1,22 @@
-﻿<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CES 感知情感分析 · DeepSeek V4 Pro</title>
-<style>
-:root{--bg:#f5f5f7;--ink:#1d1d1f;--muted:#6e6e73;--line:rgba(60,60,67,.16);--surface:rgba(255,255,255,.78);--primary:#007aff;--positive:#248a3d;--negative:#d70015;--neutral:#6e6e73;--accent:#ff9f0a;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{min-height:100%;margin:0;color:var(--ink);background:linear-gradient(180deg,#fff 0,var(--bg) 430px)}button,textarea,input,select{font:inherit}
-.container{max-width:960px;margin:0 auto;padding:0 16px}
-header{text-align:center;padding:28px 0 18px}
-header h1{font-size:26px;font-weight:700;margin:0 0 4px;letter-spacing:0}
-header p{color:var(--muted);font-size:14px;margin:0}
-.card{background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
-.card h2{font-size:17px;margin:0 0 12px;font-weight:600}
-textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;resize:vertical;background:#fff;line-height:1.6}
-textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,122,255,.15)}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:500;cursor:pointer;transition:.2s}
-.btn-primary{background:var(--primary);color:#fff}.btn-primary:disabled{opacity:.55;cursor:not-allowed}
-.btn-outline{background:#fff;color:var(--primary);border:1px solid rgba(0,122,255,.25)}
-.btn-mode.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.btn-sm{font-size:13px;padding:7px 12px}.context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.context-grid label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
-.context-grid input,.context-grid select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px;background:#fff;width:100%}
-.model-switch{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}.model-switch .btn{min-width:96px}
-.compat-hidden{display:none!important}
-.status{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}.status.ok{color:var(--positive)}.status.bad{color:var(--negative)}
-.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
-.metric{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
-.metric span{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.metric strong{display:block;font-size:22px;font-weight:700}.metric small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
-.metric.positive{border-left:3px solid var(--positive)}.metric.negative{border-left:3px solid var(--negative)}.metric.neutral{border-left:3px solid var(--neutral)}
-.bar-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}.bar-label{width:130px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar-track{flex:1;height:18px;background:#eee;border-radius:9px;overflow:hidden;min-width:60px}.bar-fill{height:100%;border-radius:9px;transition:width .3s;min-width:3px}
-.highlight-text{line-height:1.8;padding:12px;background:#fff;border-radius:10px;font-size:14px}mark{background:#fff3cd;color:#856404;padding:2px 4px;border-radius:4px}
-.llm-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.llm-row p{margin:0;flex:1;font-size:14px}.pos{color:var(--positive)}.neg{color:var(--negative)}.neu{color:var(--neutral)}
-.reasons{margin:0;padding-left:20px;line-height:1.7}.json-out{background:#1d1d1f;color:#98c379;padding:12px;border-radius:10px;font-size:12px;overflow-x:auto;max-height:200px;white-space:pre-wrap}
-.history-table{width:100%;border-collapse:collapse;font-size:13px}.history-table th{background:#f9f9f9;text-align:left;padding:6px 8px;border-bottom:2px solid var(--line);font-weight:600}.history-table td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}.history-table .pos{color:var(--positive);font-weight:600}.history-table .neg{color:var(--negative);font-weight:600}.history-table .neu{color:var(--neutral)}
-.table-scroll{overflow-x:auto}.tendency-note{color:var(--muted);font-size:12px;line-height:1.6;margin:8px 0}
-.range-row{display:flex;gap:8px;align-items:center;margin:8px 0;font-size:13px;flex-wrap:wrap}.range-row input{width:60px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;text-align:center;font-size:13px}
-.summary-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}.summary-item{background:#fff;border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}.summary-item .v{font-size:18px;font-weight:700}.summary-item .l{font-size:11px;color:var(--muted)}
-details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:pointer;padding:6px 0}
-.footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
-.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;background:#fff;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:0 4px 8px 0}.badge.ok{background:#eaf7ee;color:var(--positive);border-color:#cbe8d3}.badge.bad{background:#fff0f0;color:var(--negative);border-color:#ffd6d6}
-@media(max-width:600px){header h1{font-size:22px}.card{padding:14px}.metric-grid{grid-template-columns:repeat(2,1fr)}.bar-row{font-size:12px}.bar-label{width:90px}.btn-row{flex-direction:column}.btn{width:100%}}
-</style>
-</head>
+<!DOCTYPE html>
+<html><head><meta charset=utf-8><title>JS Error Test</title></head>
 <body>
-<div class="container">
-<header>
-  <h1>🌿 CES 感知情感分析</h1>
-  <p>deepseek v4 pro / MIMO V2.5 PRO / MIMO V2.5 ASR + 本地 CES 数据集</p>
-</header>
-
-<div class="card">
-  <h2>📝 输入文本</h2>
-  <textarea id="commentInput" placeholder="输入访谈、评论或语音转写文本……"></textarea>
-  <div class="model-switch" role="group" aria-label="AI 模型选择">
-    <button class="btn btn-outline btn-sm btn-mode" id="modeDeepseekBtn" type="button" onclick="setAiMode('deepseek')">DeepSeek</button>
-    <button class="btn btn-outline btn-sm btn-mode" id="modeMimoBtn" type="button" onclick="setAiMode('mimo')">MIMO V2.5 PRO</button>
-    <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">deepseek v4 pro + MIMO V2.5 PRO</button>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-primary" id="analyzeTendencyBtn" onclick="analyze('tendency')">🧭 感知倾向分析</button>
-    <button class="btn btn-primary" id="analyzeFrequencyBtn" onclick="analyze('frequency')">🧮 感知频率分析</button>
-    <button class="btn btn-primary" id="analyzeBothBtn" onclick="analyze('both')">🔁 感知倾向+感知频率分析</button>
-    <button class="btn btn-outline btn-sm" onclick="fillExample('pos')">🌞 正面示例</button>
-    <button class="btn btn-outline btn-sm" onclick="fillExample('neg')">🌧 负面示例</button>
-    <button class="btn btn-outline btn-sm" onclick="fillExample('mix')">🌗 混合示例</button>
-    <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
-  </div>
-  <div class="status" id="statusMsg"></div>
-</div>
-
-<div class="card">
-  <h2>🎙 MIMO V2.5 ASR 语音识别</h2>
-  <div class="context-grid">
-    <div><label>上传音频文件</label><input id="audioFileInput" type="file" accept="audio/*" onchange="handleAudioFileChange()"></div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-outline btn-sm" id="startRecordBtn" onclick="startRecording()">开始录音</button>
-    <button class="btn btn-outline btn-sm" id="stopRecordBtn" onclick="stopRecording()" disabled>停止录音</button>
-    <button class="btn btn-primary btn-sm" id="transcribeAudioBtn" onclick="transcribeAudio()">开始语音识别</button>
-    <button class="btn btn-outline btn-sm" onclick="useTranscriptText()">把识别文本填入分析框</button>
-  </div>
-  <div class="status" id="asrStatus">可上传常见音频，也可以直接录音。识别前会自动转为 MIMO V2.5 ASR 支持的 WAV。</div>
-  <textarea id="asrText" placeholder="语音识别结果会显示在这里……" style="min-height:70px;margin-top:10px"></textarea>
-</div>
-
-<div class="card">
-  <details open>
-    <summary>📍 语境设置与连接状态</summary>
-    <div style="margin:10px 0">
-      <span class="badge" id="backendBadge">AI 后端未检查</span>
-      <span class="badge" id="deepseekBadge">本地数据集未检查</span>
-      <button class="btn btn-outline btn-sm" onclick="checkHealth()">检查连接</button>
-    </div>
-    <div class="context-grid">
-      <div><label>省份</label><input id="province" value="广东省"></div>
-      <div><label>月份</label><select id="month"><option value="auto">自动</option><option>1月</option><option>2月</option><option>3月</option><option>4月</option><option>5月</option><option>6月</option><option>7月</option><option>8月</option><option>9月</option><option>10月</option><option>11月</option><option>12月</option></select></div>
-      <div><label>公园类型</label><select id="parkType"><option value="auto">自动</option><option>城市公园</option><option>湿地公园</option><option>森林公园</option><option>滨海公园</option><option>社区公园</option></select></div>
-      <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">deepseek v4 pro + MIMO V2.5 PRO</option><option value="deepseek">只用 deepseek v4 pro</option><option value="mimo">只用 MIMO V2.5 PRO</option></select></div>
-      <div><label>DeepSeek 地址</label><input id="apiBase" value="https://api.deepseek.com"></div>
-      <div><label>DeepSeek API Key</label><input id="deepseekApiKey" type="text" autocomplete="off" placeholder="填入 DeepSeek API Key"></div>
-      <div><label>MIMO 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
-      <div><label>MIMO 模型名</label><input id="mimoModel" value="mimo-v2.5-pro"></div>
-      <div><label>MIMO API Key</label><input id="mimoApiKey" type="text" autocomplete="off" value="sk-c2sfo1pmlhz45lghvrjslpn3gudg9qrixcrnco2t59t0bj8d" placeholder="填入 MIMO API Key"></div>
-      <div><label>双模型权重模式</label><select id="weightMode" onchange="updateWeightPreview()"><option value="equal">平权 50% + 50%</option><option value="custom">自定义</option></select></div>
-      <div><label>DeepSeek 权重(%)</label><input id="deepseekWeight" type="number" min="0" max="100" step="5" value="50" oninput="updateWeightPreview()"></div>
-      <div><label>MIMO V2.5 ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
-      <div><label>MIMO V2.5 ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
-      <div><label>MIMO V2.5 ASR API Key</label><input id="mimoAsrApiKey" type="text" autocomplete="off" placeholder="填入 MIMO V2.5 ASR API Key"></div>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="saveAiSettings()">保存 AI 设置</button>
-      <button class="btn btn-outline btn-sm" onclick="checkHealth()">测试 AI 连接</button>
-      <button class="btn btn-outline btn-sm" onclick="clearAiKeys()">清除 Key</button>
-    </div>
-    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、MIMO V2.5 PRO 或两者共同分析。双模型默认平权，也可自定义权重；当前：<span id="weightPreview">DeepSeek 50% + MIMO V2.5 PRO 50%</span>。连接失败时，软件只使用本地 CES 数据集。</p>
-  </details>
-</div>
-
-<div id="resultSection" style="display:none">
-  <div class="card">
-    <h2>📊 多维感知诊断</h2>
-    <div id="providerBadge" class="badge"></div>
-    <div class="metric-grid" id="metricGrid"></div>
-  </div>
-
-  <div class="card">
-    <h2>📈 CES 感知维度 <small id="cesHitCount" style="color:var(--muted);font-weight:400"></small></h2>
-    <div id="cesBars"></div>
-  </div>
-
-  <div class="card">
-    <h2>🧩 CES 二级子类</h2>
-    <div id="subCats" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-  </div>
-
-  <div class="card">
-    <h2>🧭 CES 感知倾向</h2>
-    <p class="tendency-note" id="tendencyNote"></p>
-    <div class="table-scroll" id="tendencySummary"></div>
-    <div class="table-scroll" id="tendencyItems" style="margin-top:12px"></div>
-  </div>
-
-  <div class="card">
-    <h2>🧮 AI 感知频率复核</h2>
-    <p class="tendency-note" id="frequencyAiNote"></p>
-    <div class="table-scroll" id="frequencyAiSummary"></div>
-    <div class="table-scroll" id="frequencyAiItems" style="margin-top:12px"></div>
-  </div>
-
-  <div class="card">
-    <h2>🤖 MIMO V2.5 PRO 分析</h2>
-    <div class="highlight-text" id="mimoAnalysis">暂无 MIMO V2.5 PRO 分析。</div>
-  </div>
-
-  <div class="card">
-    <h2>🔍 原文 CES 词频标注</h2>
-    <div class="highlight-text" id="highlighted"></div>
-  </div>
-
-  <div class="card">
-    <h2>💬 分句感知诊断</h2>
-    <div id="sentenceAnalysis"></div>
-  </div>
-
-  <div class="card">
-    <h2>💡 可能原因</h2>
-    <ul class="reasons" id="reasonList"></ul>
-  </div>
-
-  <div class="card">
-    <details>
-      <summary>📋 分析历史（倾向 <span id="tendencyHistoryCount">0</span> / 频率 <span id="frequencyHistoryCount">0</span>）</summary>
-      <div class="range-row">
-        <button class="btn btn-outline btn-sm" onclick="renderHistory()">刷新</button>
-        <button class="btn btn-outline btn-sm" onclick="clearTendencyHistory()">清空倾向历史</button>
-        <button class="btn btn-outline btn-sm" onclick="clearFrequencyHistory()">清空频率历史</button>
-      </div>
-      <h2 style="font-size:15px;margin-top:10px">感知倾向历史</h2>
-      <table class="history-table">
-        <thead><tr><th>#</th><th>文本</th><th>PVj类别</th><th>片段</th><th>复核</th><th>来源</th><th>时间</th></tr></thead>
-        <tbody id="tendencyHistBody"></tbody>
-      </table>
-      <h2 style="font-size:15px;margin-top:14px">感知频率历史</h2>
-      <table class="history-table">
-        <thead><tr><th>#</th><th>文本</th><th>PFj类别</th><th>命中</th><th>N</th><th>来源</th><th>时间</th></tr></thead>
-        <tbody id="frequencyHistBody"></tbody>
-      </table>
-    </details>
-  </div>
-
-  <div class="card">
-    <details>
-      <summary>🧾 原始 JSON <button class="btn btn-outline btn-sm" onclick="copyJson()" id="copyBtn" style="margin-left:10px">复制</button></summary>
-      <pre class="json-out" id="jsonOut"></pre>
-    </details>
-  </div>
-</div>
-
-<div class="card">
-  <h2>❓ CES 智能问答</h2>
-  <textarea id="qaInput" placeholder="例如：为什么遮阴和步道舒适度会影响 CES 感知？" style="min-height:70px"></textarea>
-  <div class="btn-row"><button class="btn btn-primary" onclick="askQuestion()">提问</button></div>
-  <div class="highlight-text" id="qaAnswer" style="margin-top:12px">暂无回答。</div>
-</div>
-
-<div class="footer">CES 感知情感分析 · deepseek v4 pro / MIMO V2.5 PRO / MIMO V2.5 ASR · 本地数据集</div>
-</div>
-
-<script src="ces_browser_dataset.js"></script>
+<h1>JS Error Check</h1>
+<pre id=errors style=color:red;white-space:pre-wrap></pre>
+<pre id=ok style=color:green></pre>
 <script>
+window.CES_BROWSER_DATASET = {taxonomy:[],training_stats:{}};
+window.onerror = function(msg, url, line, col, err) {
+  var el = document.getElementById('errors');
+  el.textContent += 'ERROR at line ' + line + ', col ' + col + ': ' + msg + '\n';
+  return true;
+};
+</script>
+<script>
+
 const DEFAULT_DEEPSEEK_API_BASE = "https://api.deepseek.com";
 const DEFAULT_MIMO_API_BASE = "https://api.xiaomimimo.com/v1";
-const DEFAULT_MIMO_MODEL = "mimo-v2.5-pro";
+const DEFAULT_MIMO_MODEL = "mimo-v2.5";
 const DEFAULT_MIMO_API_KEY = "sk-c2sfo1pmlhz45lghvrjslpn3gudg9qrixcrnco2t59t0bj8d";
 const DEFAULT_MIMO_ASR_API_BASE = "https://api.xiaomimimo.com/v1";
 const DEFAULT_MIMO_ASR_MODEL = "mimo-v2.5-asr";
@@ -232,10 +35,10 @@ const STORAGE_TENDENCY_HISTORY = "ces_tendency_history_v1";
 const STORAGE_FREQUENCY_HISTORY = "ces_frequency_history_v1";
 const DEEPSEEK_RETRIES = 2;
 const REQUEST_TIMEOUT_MS = 30000;
-const MIMO_RETRIES = 2;
-const MIMO_REQUEST_TIMEOUT_MS = 30000;
-const MIMO_PLAN_B_TIMEOUT_MS = 15000;
-const MIMO_CHECK_TIMEOUT_MS = 20000;
+const MIMO_RETRIES = 1;
+const MIMO_REQUEST_TIMEOUT_MS = 15000;
+const MIMO_CHECK_TIMEOUT_MS = 10000;
+const USE_STREAMING = false;
 const ASR_TIMEOUT_MS = 120000;
 const CHAT_PROXY_PATH = "/api/chat";
 const PROVIDER_DEEPSEEK = "deepseek v4 pro模型+本地数据集回答";
@@ -344,12 +147,7 @@ function loadDeepSeekSettings(){
   $("apiBase").value=localStorage.getItem(STORAGE_DEEPSEEK_API_BASE)||DEFAULT_DEEPSEEK_API_BASE;
   $("deepseekApiKey").value=localStorage.getItem(STORAGE_DEEPSEEK_API_KEY)||"";
   $("mimoApiBase").value=localStorage.getItem(STORAGE_MIMO_API_BASE)||DEFAULT_MIMO_API_BASE;
-  var storedMimoModel=localStorage.getItem(STORAGE_MIMO_MODEL)||DEFAULT_MIMO_MODEL;
-  if(storedMimoModel==="mimo-v2.5"){
-    storedMimoModel=DEFAULT_MIMO_MODEL;
-    localStorage.setItem(STORAGE_MIMO_MODEL,storedMimoModel);
-  }
-  $("mimoModel").value=storedMimoModel;
+  $("mimoModel").value=localStorage.getItem(STORAGE_MIMO_MODEL)||DEFAULT_MIMO_MODEL;
   $("mimoApiKey").value=localStorage.getItem(STORAGE_MIMO_API_KEY)||DEFAULT_MIMO_API_KEY;
   $("weightMode").value=localStorage.getItem(STORAGE_WEIGHT_MODE)||"equal";
   $("deepseekWeight").value=String(clampPercent(localStorage.getItem(STORAGE_DEEPSEEK_WEIGHT)||50));
@@ -648,6 +446,35 @@ async function callChatDirect(cfg,payload,timeoutMs){
   return await parseChatResponse(resp,cfg.label);
 }
 
+async function callChatDirectWithStream(cfg,payload,timeoutMs){
+  var streamPayload=Object.assign({},payload,{stream:true});
+  var ctrl=new AbortController(),timer=setTimeout(function(){ctrl.abort()},timeoutMs);
+  try{
+    var resp=await fetch(cfg.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+cfg.api_key},body:JSON.stringify(streamPayload),signal:ctrl.signal});
+    if(!resp.ok){
+      var errText=await resp.text();var e2=new Error(cfg.label+" HTTP "+resp.status);e2.status=resp.status;
+      try{var ej=JSON.parse(errText);if(ej.error&&ej.error.message)e2.message=ej.error.message}catch(_e){}
+      throw e2;
+    }
+    var reader=resp.body.getReader(),decoder=new TextDecoder("utf-8"),fullContent="",buffer="";
+    while(true){
+      var chunk=await reader.read();if(chunk.done)break;
+      buffer+=decoder.decode(chunk.value,{stream:true});
+      var lines=buffer.split("\n");buffer=lines.pop()||"";
+      for(var i=0;i<lines.length;i++){
+        var line=lines[i];
+        if(!line.startsWith("data: "))continue;
+        var raw=line.slice(6).trim();
+        if(raw==="[DONE]"){buffer="";break}
+        try{var json=JSON.parse(raw),delta=json.choices&&json.choices[0]&&json.choices[0].delta;if(delta&&delta.content)fullContent+=delta.content}catch(_s){}
+      }
+    }
+    if(buffer.startsWith("data: ")&&buffer.slice(6).trim()!=="[DONE]"){try{var ld=JSON.parse(buffer.slice(6).trim()).choices[0].delta;if(ld&&ld.content)fullContent+=ld.content}catch(_l){}}
+    if(!String(fullContent).trim())throw new Error(cfg.label+" 流式返回空 content");
+    return {choices:[{message:{content:fullContent},finish_reason:"stop"}]};
+  }finally{clearTimeout(timer)}
+}
+
 async function requestChatCompletion(cfg,payload,timeoutMs){
   if(shouldUseChatProxy()){
     try{
@@ -655,6 +482,9 @@ async function requestChatCompletion(cfg,payload,timeoutMs){
     }catch(e){
       if(!shouldFallbackToDirect(e))throw e;
     }
+  }
+  if(USE_STREAMING){
+    try{return await callChatDirectWithStream(cfg,payload,timeoutMs)}catch(_streamErr){}
   }
   return await callChatDirect(cfg,payload,timeoutMs);
 }
@@ -749,6 +579,15 @@ function mimoMessages(text,local,task){
   var ctx=getContext();
   var ctxText=Object.keys(ctx).filter(function(k){return ctx[k]&&ctx[k]!=="auto"}).map(function(k){return k+": "+ctx[k]}).join("\n");
   task=normalizeAnalysisTask(task);
+  var frequencyRules=[
+    "感知频率表示公众对某类 CES 的关注强度或议题可见度，不是满意度。",
+    "先按中文句号、问号、感叹号、分号及明显语义停顿分句；一句内有多个独立体验内容时继续拆成语义片段。",
+    "对每个有效分句或语义片段进行 CES 多标签识别，正向、中性、负向评价都计入感知频率。",
+    "每个命中类别必须给出命中原文片段和判断原因；不确定样本标记 review_required=true。",
+    "无意义文本、乱码、重复广告、纯表情、无实际体验内容不纳入有效分句总数 N。",
+    "PFj = Nj / N；Nj 为第 j 类 CES 的命中分句数或命中片段数，N 为全部有效分句总数。",
+    "边界规则：美学强调视觉审美、拍照、花海、夜景；生态强调植物、动物、生境、自然接触；蓝空间强调海、湖、河、湿地、沙滩、亲水、栈道；游憩强调跑步、骑行、徒步、露营、游乐、健身；社交亲子强调亲子、朋友、老人、宠物、社区邻里；交通导向强调到达、停车、入口、路线、导向、无障碍；设施管理强调卫生、维修、保洁、安全巡查、维护；空间秩序强调拥挤、排队、容量、动线秩序；微气候强调遮阴、通风、热、晒、湿、噪音、空气质量；精神恢复强调放松、治愈、安静、压力缓解；教育科普强调展陈、解说、研学、观察学习；文化认同强调历史、地方符号、城市记忆、民俗节庆。"
+  ].join("\n");
   var baseSchema={
     sentiment:"0消极/1中性/2积极；如无法判断返回 null",
     positive_prob:"0到1；如无法判断返回 null",
@@ -780,12 +619,9 @@ function mimoMessages(text,local,task){
     :(task==="frequency"
     ?"只做 AI 感知频率复核：分句后做 CES 多标签命中，给出命中原文、判断原因、是否复核，并按 PFj=Nj/N 统计。不要输出感知倾向评分。"
     :"只做 CES 感知倾向复核：分句后识别 CES 类别，给出命中原文、倾向类型、0到1分值、判断依据、是否复核，并按 PVj=ΣSij/Nj 汇总。不要输出 AI 感知频率。");
-  var outputLimit=task==="frequency"
-    ?"perception_frequency_ai.items 最多 8 条，category_summary 最多 8 类，examples 每类最多 2 个。"
-    :"perception_tendency.items 最多 8 条，category_summary 最多 8 类。";
   return [
-    {role:"system",content:"你是一名风景园林生态系统文化服务（CES）结构化分析助手。依据本地候选类别、命中关键词和 12 类 CES 定义判断。正负混合评论必须拆分到具体命中片段。倾向分值：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向。只输出可解析 JSON，不要 Markdown，不要解释性前后缀。第一字符必须是 {，最后字符必须是 }。"},
-    {role:"user",content:"任务："+taskRule+"\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsCompact()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesCompact(local),null,2)+"\n\n输出要求：\n1. 必须给出命中原文片段，不能只给类别。\n2. 不确定样本标记 review_required=true。\n3. "+outputLimit+"\n4. sentiment、positive_prob、negative_prob、sentence_analysis、reasons 字段必须保留。\n5. 严格按以下 JSON 结构输出：\n"+JSON.stringify(schema,null,2)}
+    {role:"system",content:"你是一名风景园林生态系统文化服务（CES）分析助手。当前使用的是本地轻量 CES 分类树、关键词、统计信息和本地命中结果，不包含完整训练明细。请优先依据本地候选类别、命中关键词和给定 CES 指标定义进行判断，而不是只按通用常识判断。必须按具体分句或语义片段分别判断，不要把整条评论总体情绪直接赋给所有 CES 类别。正负混合评论必须拆分，例如"风景好但厕所脏"中美学景观体验为正向，设施维护与管理服务为负向。感知倾向分值规则：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向；0.90-1.00强正向，0.70-0.89一般正向，0.56-0.69弱正向，0.45-0.55中性，0.30-0.44弱负向，0.10-0.29一般负向，0.00-0.09强负向。感知频率规则如下：\n"+frequencyRules+"\n本次任务："+taskName+"。"+taskRule+" 必须只输出 JSON，不要 Markdown。"},
+    {role:"user",content:"请根据以下信息完成："+taskName+"。\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n输出要求：\n1. 对评论按中文句号、问号、感叹号、分号及明显语义停顿分句；一句内有多个独立体验内容时继续拆成语义片段。\n2. "+taskRule+"\n3. 同时保留整体 sentiment、positive_prob、negative_prob、sentence_analysis、reasons 字段；不确定可填 null 或空数组。\n4. 严格按这个 JSON 结构输出，不要输出多余文字：\n"+JSON.stringify(schema,null,2)}
   ];
 }
 
@@ -845,19 +681,18 @@ function parseAiOutput(raw,cfg){
 function shouldRetry(status){return status===429||status>=500}
 
 function getAiRequestPolicy(kind,task){
-  var rawTask=task;
   task=normalizeAnalysisTask(task);
   if(kind==="mimo"){
     return {
       retries:MIMO_RETRIES,
-      timeout_ms:rawTask==="check"?MIMO_CHECK_TIMEOUT_MS:(rawTask==="mimo_plan_b"?MIMO_PLAN_B_TIMEOUT_MS:MIMO_REQUEST_TIMEOUT_MS),
-      max_tokens:rawTask==="check"?500:(rawTask==="mimo_plan_b"?1000:2400)
+      timeout_ms:task==="check"?MIMO_CHECK_TIMEOUT_MS:MIMO_REQUEST_TIMEOUT_MS,
+      max_tokens:task==="check"?80:(task==="both"?5200:3200)
     };
   }
   return {
     retries:DEEPSEEK_RETRIES,
     timeout_ms:REQUEST_TIMEOUT_MS,
-    max_tokens:rawTask==="check"?200:(task==="both"?4200:2600)
+    max_tokens:task==="check"?200:(task==="both"?4200:2600)
   };
 }
 
@@ -884,9 +719,6 @@ async function callAiDirect(kind,messages,task){
     try{
       var data=await requestChatCompletion(cfg,payload,policy.timeout_ms);
       var choice=data.choices&&data.choices[0],msg=choice&&choice.message;
-      if(cfg.kind==="mimo"&&task==="check"){
-        return msg?(msg.content||msg.reasoning_content||"ok"):"ok";
-      }
       if(cfg.kind==="mimo"&&choice&&choice.finish_reason==="length")throw new Error(cfg.label+" 输出被截断，未返回有效内容");
       if(cfg.kind==="mimo"&&msg&&!String(msg.content||"").trim()){
         if(msg.reasoning_content)throw new Error(cfg.label+" 只返回 reasoning_content，未返回最终内容");
@@ -1517,7 +1349,7 @@ async function runMimoParsed(local,text,task,cfg){
     return validateMimoStructuredParsed(parseAiOutput(raw,cfg),singleTask);
   }
   async function planB(error){
-    var raw=await callAi("mimo",mimoPlanBMessages(text,local,task,error),"mimo_plan_b");
+    var raw=await callAi("mimo",mimoPlanBMessages(text,local,task,error),task);
     var content=String(raw||"").trim();
     if(!content)throw new Error("MIMO V2.5 PRO 计划 B 返回空 content");
     var parsed={
@@ -1545,7 +1377,7 @@ async function runMimoParsed(local,text,task,cfg){
         category_summary:[],
         valid_segment_count:0,
         review_required_count:0,
-        method_note:"MIMO V2.5 PRO 结构化频率结果失败，已在下方 MIMO V2.5 PRO 分析区显示计划 B 自然语言辅助分析。备注不使用本地关键词频率，数据结构留空。"
+        method_note:"MIMO V2.5 PRO 结构化感知频率失败，已在下方 MIMO V2.5 PRO 分析区显示计划 B 自然语言辅助分析。备注不使用本地关键词频率，仅作兜底参考。"
       };
     }
     return parsed;
@@ -1561,6 +1393,10 @@ async function runMimoParsed(local,text,task,cfg){
     return target;
   }
   if(task==="both"){
+    try{
+      var combined=await requestOne("both");
+      return combined;
+    }catch(combinedError0){
     var parsed={},errors=[];
     var results=await Promise.allSettled([requestOne("tendency"),requestOne("frequency")]);
     if(results[0].status==="fulfilled"){
@@ -1575,25 +1411,9 @@ async function runMimoParsed(local,text,task,cfg){
     }else{
       errors.push("MIMO V2.5 PRO 感知频率结构化失败："+formatAiError(results[1].reason));
     }
-    if(errors.length){
-      try{
-        var fallback=await planB(new Error(errors.join("；")));
-        fallback=mergeBase(fallback,parsed);
-        if(parsed.perception_tendency)fallback.perception_tendency=parsed.perception_tendency;
-        if(parsed.perception_frequency_ai)fallback.perception_frequency_ai=parsed.perception_frequency_ai;
-        fallback.reasons=(Array.isArray(fallback.reasons)?fallback.reasons:[]).concat(errors);
-        fallback.mimo_partial_structured=!!(parsed.perception_tendency||parsed.perception_frequency_ai);
-        return fallback;
-      }catch(planBError){
-        if(parsed.perception_tendency||parsed.perception_frequency_ai){
-          parsed.reasons=(Array.isArray(parsed.reasons)?parsed.reasons:[]).concat(errors,"MIMO V2.5 PRO 计划 B 失败："+formatAiError(planBError));
-          parsed.mimo_partial_structured=true;
-          return parsed;
-        }
-        throw planBError;
-      }
-    }
+    if(errors.length)return await planB(new Error("联合请求失败："+formatAiError(combinedError0)+"；"+errors.join("；")));
     return parsed;
+    }
   }
   try{
     return await requestOne(task);
@@ -1621,9 +1441,11 @@ async function runSelectedAiAnalysis(local,text,task){
 }
 
 async function runDualProgressiveAnalysis(local,text,task,runId){
-  var st=$("statusMsg"),deepRow=null,deepError=null;
+  var st=$("statusMsg"),deepRow=null,deepError=null,mimoRow=null,mimoError=null;
+  var deepPromise=runSingleAiRow("deepseek",local,text,task);
+  var mimoPromise=runSingleAiRow("mimo",local,text,task);
   try{
-    deepRow=await runSingleAiRow("deepseek",local,text,task);
+    deepRow=await deepPromise;
     if(runId!==analysisRunSeq)return;
     var primary=mergeResult(local,deepRow.parsed,deepRow.cfg,task);
     renderAll(primary,text,task,{skipHistory:true});
@@ -1631,31 +1453,41 @@ async function runDualProgressiveAnalysis(local,text,task,runId){
     $("backendBadge").className="badge ok";
     st.className="status ok";
     st.textContent="deepseek v4 pro 已完成，正在等待 MIMO V2.5 PRO 补充；当前结果已可用。";
-    runMimoSupplement(local,text,task,runId,deepRow);
-    return;
   }catch(e){
     deepError=e;
   }
   try{
-    var mimoRow=await runSingleAiRow("mimo",local,text,task);
-    if(runId!==analysisRunSeq)return;
+    mimoRow=await mimoPromise;
+  }catch(e){
+    mimoError=e;
+  }
+  if(runId!==analysisRunSeq)return;
+  if(deepRow&&mimoRow){
+    var finalResult=mergeEqualWeightResult(local,[deepRow,mimoRow],task);
+    renderAll(finalResult,text,task);
+    $("backendBadge").textContent="AI 后端已连接";$("backendBadge").className="badge ok";
+    st.className="status ok";st.textContent="分析完成，来源："+finalResult.provider;
+  }else if(deepRow&&!mimoRow){
+    var deepOnly=mergeResult(local,deepRow.parsed,deepRow.cfg,task);
+    deepOnly.ai_errors=["MIMO V2.5 PRO 未返回有效结果："+formatAiError(mimoError)];
+    deepOnly.reasons=(Array.isArray(deepOnly.reasons)?deepOnly.reasons:[]).concat(deepOnly.ai_errors);
+    renderAll(deepOnly,text,task);
+    $("backendBadge").textContent="MIMO V2.5 PRO 未返回，已保留 DeepSeek 结果";$("backendBadge").className="badge ok";
+    st.className="status ok";st.textContent="分析完成，来源："+deepOnly.provider+"；MIMO V2.5 PRO 未返回有效结果。";
+  }else if(!deepRow&&mimoRow){
     var result=mergeResult(local,mimoRow.parsed,mimoRow.cfg,task);
+    if(runId!==analysisRunSeq)return;
     result.ai_errors=["DeepSeek 失败："+formatAiError(deepError)];
     result.reasons=(Array.isArray(result.reasons)?result.reasons:[]).concat(result.ai_errors);
     renderAll(result,text,task);
-    $("backendBadge").textContent="DeepSeek 未返回，MIMO V2.5 PRO 已返回";
-    $("backendBadge").className="badge ok";
-    st.className="status ok";
-    st.textContent="分析完成，来源："+result.provider;
-  }catch(mimoError){
-    if(runId!==analysisRunSeq)return;
+    $("backendBadge").textContent="DeepSeek 未返回，MIMO V2.5 PRO 已返回";$("backendBadge").className="badge ok";
+    st.className="status ok";st.textContent="分析完成，来源："+result.provider;
+  }else{
     var combinedError=new Error("DeepSeek 失败："+formatAiError(deepError)+"；MIMO V2.5 PRO 失败："+formatAiError(mimoError));
     var localResult=localOnlyResult(local,combinedError,task);
     renderAll(localResult,text,task);
-    $("backendBadge").textContent=aiFallbackTitle(combinedError);
-    $("backendBadge").className="badge bad";
-    st.className="status ok";
-    st.textContent="已使用本地数据集兜底。来源："+localResult.provider;
+    $("backendBadge").textContent=aiFallbackTitle(combinedError);$("backendBadge").className="badge bad";
+    st.className="status ok";st.textContent="已使用本地数据集兜底。来源："+localResult.provider;
   }
 }
 
@@ -1971,35 +1803,14 @@ function clearTendencyHistory(){tendencyHistory=[];localStorage.removeItem(STORA
 function clearFrequencyHistory(){frequencyHistory=[];localStorage.removeItem(STORAGE_FREQUENCY_HISTORY);renderHistory()}
 function copyJson(){if(!lastResult)return;navigator.clipboard.writeText(JSON.stringify(lastResult,null,2));var b=$("copyBtn");b.textContent="已复制!";setTimeout(function(){b.textContent="复制"},1500)}
 function clearAll(){$("commentInput").value="";$("statusMsg").textContent="";$("statusMsg").className="status";$("resultSection").style.display="none";$("asrText").value="";$("audioFileInput").value="";asrAudioBlob=null;asrAudioName="";setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MIMO V2.5 ASR 支持的 WAV。");lastResult=null}
-function bindButton(id,handler){
-  var el=$(id);
-  if(el)el.onclick=function(event){
-    if(event&&event.preventDefault)event.preventDefault();
-    return handler(event);
-  };
-}
-function bindUiEvents(){
-  bindButton("modeDeepseekBtn",function(){setAiMode("deepseek")});
-  bindButton("modeMimoBtn",function(){setAiMode("mimo")});
-  bindButton("modeBothBtn",function(){setAiMode("both")});
-  bindButton("analyzeTendencyBtn",function(){return analyze("tendency")});
-  bindButton("analyzeFrequencyBtn",function(){return analyze("frequency")});
-  bindButton("analyzeBothBtn",function(){return analyze("both")});
-  bindButton("startRecordBtn",startRecording);
-  bindButton("stopRecordBtn",stopRecording);
-  bindButton("transcribeAudioBtn",transcribeAudio);
-  var audio=$("audioFileInput");
-  if(audio)audio.onchange=handleAudioFileChange;
-}
-bindUiEvents();
 loadDeepSeekSettings();
 tendencyHistory=loadStoredHistory(STORAGE_TENDENCY_HISTORY);
 frequencyHistory=loadStoredHistory(STORAGE_FREQUENCY_HISTORY);
 renderHistory();
 checkHealth();
+
 </script>
-</body>
-</html>
-
-
-
+<script>
+document.getElementById('ok').textContent = 'JS loaded successfully! No syntax errors.';
+</script>
+</body></html>

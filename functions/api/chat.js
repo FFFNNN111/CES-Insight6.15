@@ -80,6 +80,7 @@ export async function onRequestPost(context) {
       messages: payload.messages,
       temperature: payload.temperature ?? 0.2,
       max_tokens: payload.max_tokens ?? 1000,
+      stream: payload.stream || false,
     };
     const timeoutMs = normalizeTimeout(payload.timeout_ms);
     const controller = new AbortController();
@@ -103,6 +104,18 @@ export async function onRequestPost(context) {
       throw error;
     } finally {
       clearTimeout(timer);
+    }
+    // 如果是流式请求，直接透传 SSE 流
+    if (upstreamPayload.stream && upstream.ok) {
+      return new Response(upstream.body, {
+        status: upstream.status,
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+          "access-control-allow-origin": "*",
+          "cache-control": "no-cache",
+          "connection": "keep-alive",
+        },
+      });
     }
 
     const text = await upstream.text();
