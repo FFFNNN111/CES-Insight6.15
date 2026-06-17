@@ -1,13 +1,16 @@
+# 渲染缓存
+_renders/
+
+# 文档自动提取（临时文件）
+_docx_extract/
+_extract_check/
+
+# 重复副本
+*_fixed.htm
+*_fixed.html
+
+# 系统文件
 .DS_Store
 Thumbs.db
-desktop.ini
-*.log
-*.tmp
-*.bak
-*.swp
 __pycache__/
-.cache/
-.venv/
-venv/
-node_modules/
-dist/
+*.pyc

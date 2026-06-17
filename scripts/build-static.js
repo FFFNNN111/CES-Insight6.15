@@ -1,30 +1,35 @@
-const fs = require("fs");
-const path = require("path");
+// Cloudflare Pages build script
+// Copies CES情感分析.html to dist/ for deployment
 
-const root = path.resolve(__dirname, "..");
-const dist = path.join(root, "dist");
+var fs = require("fs");
+var path = require("path");
 
-const entries = [
-  "index.html",
-  ".nojekyll",
-  "README.md",
-  path.join("启动项", "CES情感分析.html"),
-  path.join("启动项", "ces_browser_dataset.js"),
+var distDir = path.join(__dirname, "..", "dist");
+var srcDir = path.join(__dirname, "..");
+
+// Ensure dist directory exists
+if (!fs.existsSync(distDir)) {
+  fs.mkdirSync(distDir, { recursive: true });
+}
+
+// Required files: [source (relative to repo root), dest (relative to dist/)]
+var files = [
+  ["CES情感分析.html", "index.html"],
 ];
 
-function copyFile(relativePath) {
-  const from = path.join(root, relativePath);
-  const to = path.join(dist, relativePath);
-  if (!fs.existsSync(from)) {
-    throw new Error(`Missing required file: ${relativePath}`);
+files.forEach(function (pair) {
+  var src = path.join(srcDir, pair[0]);
+  var dest = path.join(distDir, pair[1]);
+  if (!fs.existsSync(src)) {
+    console.error("Missing required file: " + pair[0]);
+    process.exit(1);
   }
-  fs.mkdirSync(path.dirname(to), { recursive: true });
-  fs.copyFileSync(from, to);
-}
+  var destParent = path.dirname(dest);
+  if (!fs.existsSync(destParent)) {
+    fs.mkdirSync(destParent, { recursive: true });
+  }
+  fs.copyFileSync(src, dest);
+  console.log("Copied: " + pair[0] + " -> dist/" + pair[1]);
+});
 
-fs.rmSync(dist, { recursive: true, force: true });
-for (const entry of entries) {
-  copyFile(entry);
-}
-
-console.log(`Static build completed: ${dist}`);
+console.log("Build complete.");
