@@ -62,19 +62,19 @@ Root directory: 留空
 ## 当前工作方式
 
 - DeepSeek：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.deepseek.com`，本地双击 HTML 时浏览器直连。
-- MIMO V2.5 PRO：默认模型 ID 为 `mimo-v2.5-pro`，默认地址为 `https://api.xiaomimimo.com/v1`，Cloudflare 部署后经 `/api/chat` 转发。
+- MIMO V2.5pro：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1`，本地双击 HTML 时浏览器直连。
 - MiMo 2.5 ASR：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1/chat/completions`，本地双击 HTML 时浏览器直连。
 - 本地 CES：使用 `ces_browser_dataset.js` 做轻量分类兜底。
-- CES 感知倾向：可单独运行，也可和感知频率一起运行；本地数据集先给出候选 CES 类别和关键词命中，deepseek v4 pro / MIMO V2.5 PRO 再给出倾向分值、依据和人工复核标记。
-- AI 感知频率复核：可单独运行，也可和感知倾向一起运行；本地数据集先给出关键词命中，deepseek v4 pro / MIMO V2.5 PRO 再按 `PFj = Nj / N` 输出语义级命中片段、判断原因和人工复核标记。
-- MIMO V2.5 PRO：优先尝试结构化复核；`感知倾向+感知频率` 会拆成两次较小请求，并限制明细数量来提高返回速度；如果超时、空内容、只有推理内容或非 JSON，会自动切到计划 B，在 `MIMO V2.5 PRO 分析` 区显示自然语言辅助判断。
+- CES 感知倾向：可单独运行，也可和感知频率一起运行；本地数据集先给出候选 CES 类别和关键词命中，deepseek v4 pro / MIMO V2.5pro 再给出倾向分值、依据和人工复核标记。
+- AI 感知频率复核：可单独运行，也可和感知倾向一起运行；本地数据集先给出关键词命中，deepseek v4 pro / MIMO V2.5pro 再按 `PFj = Nj / N` 输出语义级命中片段、判断原因和人工复核标记。
+- MIMO V2.5pro：优先尝试结构化复核；如果超时、空内容或非 JSON，会自动切到计划 B，在 `MIMO V2.5pro 分析` 区显示自然语言辅助判断。
 - DeepSeek：兼容 `https://api.deepseek.com`、`https://api.deepseek.com/v1`、`/chat/completions` 和 `/v1/chat/completions`，仍是结构化感知倾向和感知频率主模型。
 - DeepSeek 的 `感知倾向+感知频率` 如果一次结构化请求失败，会自动拆成倾向和频率两次请求。
-- 双模型模式：deepseek v4 pro 与 MIMO V2.5 PRO 默认平权，也可在页面设置自定义权重。
-- 双模型容错：DeepSeek 结果会先显示；MIMO V2.5 PRO 结构化成功则合并进表格，结构化失败但计划 B 成功则追加自然语言分析，完全失败时保留 DeepSeek 和本地数据集结果。
+- 双模型模式：deepseek v4 pro 与 MIMO V2.5pro 默认平权，也可在页面设置自定义权重。
+- 双模型容错：DeepSeek 结果会先显示；MIMO V2.5pro 结构化成功则合并进表格，结构化失败但计划 B 成功则追加自然语言分析，完全失败时保留 DeepSeek 和本地数据集结果。
 - 分析历史：感知倾向和感知频率分开保存，每类最多保留 100 条，保存在当前浏览器 `localStorage`。
 
-DeepSeek 和 ASR Key 仍由用户自行填写并保存到当前浏览器 `localStorage`。MIMO V2.5 PRO 文本分析 Key 按当前需求已写入页面默认值，公开部署后访问者可以看到该 Key。
+页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`，输入框会直接显示普通字符。
 
 ## 重要说明
 

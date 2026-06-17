@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -48,7 +48,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 <div class="container">
 <header>
   <h1>🌿 CES 感知情感分析</h1>
-  <p>deepseek v4 pro / MIMO V2.5 PRO / MIMO V2.5 ASR + 本地 CES 数据集</p>
+  <p>deepseek v4 pro / MIMO V2.5pro / MiMo ASR + 本地 CES 数据集</p>
 </header>
 
 <div class="card">
@@ -56,8 +56,8 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <textarea id="commentInput" placeholder="输入访谈、评论或语音转写文本……"></textarea>
   <div class="model-switch" role="group" aria-label="AI 模型选择">
     <button class="btn btn-outline btn-sm btn-mode" id="modeDeepseekBtn" type="button" onclick="setAiMode('deepseek')">DeepSeek</button>
-    <button class="btn btn-outline btn-sm btn-mode" id="modeMimoBtn" type="button" onclick="setAiMode('mimo')">MIMO V2.5 PRO</button>
-    <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">deepseek v4 pro + MIMO V2.5 PRO</button>
+    <button class="btn btn-outline btn-sm btn-mode" id="modeMimoBtn" type="button" onclick="setAiMode('mimo')">MiMo</button>
+    <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">deepseek v4 pro + MIMO V2.5pro</button>
   </div>
   <div class="btn-row">
     <button class="btn btn-primary" id="analyzeTendencyBtn" onclick="analyze('tendency')">🧭 感知倾向分析</button>
@@ -72,7 +72,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 </div>
 
 <div class="card">
-  <h2>🎙 MIMO V2.5 ASR 语音识别</h2>
+  <h2>🎙 MiMo 2.5 ASR 语音识别</h2>
   <div class="context-grid">
     <div><label>上传音频文件</label><input id="audioFileInput" type="file" accept="audio/*" onchange="handleAudioFileChange()"></div>
   </div>
@@ -82,7 +82,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
     <button class="btn btn-primary btn-sm" id="transcribeAudioBtn" onclick="transcribeAudio()">开始语音识别</button>
     <button class="btn btn-outline btn-sm" onclick="useTranscriptText()">把识别文本填入分析框</button>
   </div>
-  <div class="status" id="asrStatus">可上传常见音频，也可以直接录音。识别前会自动转为 MIMO V2.5 ASR 支持的 WAV。</div>
+  <div class="status" id="asrStatus">可上传常见音频，也可以直接录音。识别前会自动转为 MiMo ASR 支持的 WAV。</div>
   <textarea id="asrText" placeholder="语音识别结果会显示在这里……" style="min-height:70px;margin-top:10px"></textarea>
 </div>
 
@@ -98,24 +98,24 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <div><label>省份</label><input id="province" value="广东省"></div>
       <div><label>月份</label><select id="month"><option value="auto">自动</option><option>1月</option><option>2月</option><option>3月</option><option>4月</option><option>5月</option><option>6月</option><option>7月</option><option>8月</option><option>9月</option><option>10月</option><option>11月</option><option>12月</option></select></div>
       <div><label>公园类型</label><select id="parkType"><option value="auto">自动</option><option>城市公园</option><option>湿地公园</option><option>森林公园</option><option>滨海公园</option><option>社区公园</option></select></div>
-      <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">deepseek v4 pro + MIMO V2.5 PRO</option><option value="deepseek">只用 deepseek v4 pro</option><option value="mimo">只用 MIMO V2.5 PRO</option></select></div>
+      <div class="compat-hidden"><label>AI 分析模式</label><select id="aiMode"><option value="both">deepseek v4 pro + MIMO V2.5pro</option><option value="deepseek">只用 deepseek v4 pro</option><option value="mimo">只用 MIMO V2.5pro</option></select></div>
       <div><label>DeepSeek 地址</label><input id="apiBase" value="https://api.deepseek.com"></div>
       <div><label>DeepSeek API Key</label><input id="deepseekApiKey" type="text" autocomplete="off" placeholder="填入 DeepSeek API Key"></div>
-      <div><label>MIMO 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
-      <div><label>MIMO 模型名</label><input id="mimoModel" value="mimo-v2.5-pro"></div>
-      <div><label>MIMO API Key</label><input id="mimoApiKey" type="text" autocomplete="off" value="sk-c2sfo1pmlhz45lghvrjslpn3gudg9qrixcrnco2t59t0bj8d" placeholder="填入 MIMO API Key"></div>
+      <div><label>MiMo 地址</label><input id="mimoApiBase" value="https://api.xiaomimimo.com/v1"></div>
+      <div><label>MiMo 模型名</label><input id="mimoModel" value="mimo-v2.5-pro"></div>
+      <div><label>MiMo API Key</label><input id="mimoApiKey" type="text" autocomplete="off" placeholder="填入 MiMo API Key"></div>
       <div><label>双模型权重模式</label><select id="weightMode" onchange="updateWeightPreview()"><option value="equal">平权 50% + 50%</option><option value="custom">自定义</option></select></div>
       <div><label>DeepSeek 权重(%)</label><input id="deepseekWeight" type="number" min="0" max="100" step="5" value="50" oninput="updateWeightPreview()"></div>
-      <div><label>MIMO V2.5 ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
-      <div><label>MIMO V2.5 ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
-      <div><label>MIMO V2.5 ASR API Key</label><input id="mimoAsrApiKey" type="text" autocomplete="off" placeholder="填入 MIMO V2.5 ASR API Key"></div>
+      <div><label>MiMo ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
+      <div><label>MiMo ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
+      <div><label>MiMo ASR API Key</label><input id="mimoAsrApiKey" type="text" autocomplete="off" placeholder="填入 MiMo ASR API Key"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-outline btn-sm" onclick="saveAiSettings()">保存 AI 设置</button>
       <button class="btn btn-outline btn-sm" onclick="checkHealth()">测试 AI 连接</button>
       <button class="btn btn-outline btn-sm" onclick="clearAiKeys()">清除 Key</button>
     </div>
-    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、MIMO V2.5 PRO 或两者共同分析。双模型默认平权，也可自定义权重；当前：<span id="weightPreview">DeepSeek 50% + MIMO V2.5 PRO 50%</span>。连接失败时，软件只使用本地 CES 数据集。</p>
+    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、MIMO V2.5pro 或两者共同分析。双模型默认平权，也可自定义权重；当前：<span id="weightPreview">DeepSeek 50% + MiMo 50%</span>。连接失败时，软件只使用本地 CES 数据集。</p>
   </details>
 </div>
 
@@ -151,8 +151,8 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   </div>
 
   <div class="card">
-    <h2>🤖 MIMO V2.5 PRO 分析</h2>
-    <div class="highlight-text" id="mimoAnalysis">暂无 MIMO V2.5 PRO 分析。</div>
+    <h2>🤖 MIMO V2.5pro 分析</h2>
+    <div class="highlight-text" id="mimoAnalysis">暂无 MIMO V2.5pro 分析。</div>
   </div>
 
   <div class="card">
@@ -206,7 +206,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <div class="highlight-text" id="qaAnswer" style="margin-top:12px">暂无回答。</div>
 </div>
 
-<div class="footer">CES 感知情感分析 · deepseek v4 pro / MIMO V2.5 PRO / MIMO V2.5 ASR · 本地数据集</div>
+<div class="footer">CES 感知情感分析 · deepseek v4 pro / MIMO V2.5pro / MiMo ASR · 本地数据集</div>
 </div>
 
 <script src="ces_browser_dataset.js"></script>
@@ -214,14 +214,13 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 const DEFAULT_DEEPSEEK_API_BASE = "https://api.deepseek.com";
 const DEFAULT_MIMO_API_BASE = "https://api.xiaomimimo.com/v1";
 const DEFAULT_MIMO_MODEL = "mimo-v2.5-pro";
-const DEFAULT_MIMO_API_KEY = "sk-c2sfo1pmlhz45lghvrjslpn3gudg9qrixcrnco2t59t0bj8d";
 const DEFAULT_MIMO_ASR_API_BASE = "https://api.xiaomimimo.com/v1";
 const DEFAULT_MIMO_ASR_MODEL = "mimo-v2.5-asr";
 const STORAGE_DEEPSEEK_API_BASE = "ces_deepseek_api_base";
 const STORAGE_DEEPSEEK_API_KEY = "ces_deepseek_api_key";
 const STORAGE_MIMO_API_BASE = "ces_mimo_api_base";
-const STORAGE_MIMO_API_KEY = "ces_mimo_v25_api_key";
-const STORAGE_MIMO_MODEL = "ces_mimo_v25_model";
+const STORAGE_MIMO_API_KEY = "ces_mimo_api_key";
+const STORAGE_MIMO_MODEL = "ces_mimo_model";
 const STORAGE_MIMO_ASR_API_BASE = "ces_mimo_asr_api_base";
 const STORAGE_MIMO_ASR_API_KEY = "ces_mimo_asr_api_key";
 const STORAGE_MIMO_ASR_MODEL = "ces_mimo_asr_model";
@@ -230,17 +229,16 @@ const STORAGE_WEIGHT_MODE = "ces_weight_mode";
 const STORAGE_DEEPSEEK_WEIGHT = "ces_deepseek_weight";
 const STORAGE_TENDENCY_HISTORY = "ces_tendency_history_v1";
 const STORAGE_FREQUENCY_HISTORY = "ces_frequency_history_v1";
-const DEEPSEEK_RETRIES = 2;
-const REQUEST_TIMEOUT_MS = 30000;
-const MIMO_RETRIES = 2;
+const DEEPSEEK_RETRIES = 5;
+const REQUEST_TIMEOUT_MS = 45000;
+const MIMO_RETRIES = 1;
 const MIMO_REQUEST_TIMEOUT_MS = 30000;
-const MIMO_PLAN_B_TIMEOUT_MS = 15000;
-const MIMO_CHECK_TIMEOUT_MS = 20000;
+const MIMO_CHECK_TIMEOUT_MS = 10000;
 const ASR_TIMEOUT_MS = 120000;
 const CHAT_PROXY_PATH = "/api/chat";
 const PROVIDER_DEEPSEEK = "deepseek v4 pro模型+本地数据集回答";
-const PROVIDER_MIMO = "MIMO V2.5 PRO模型+本地数据集回答";
-const PROVIDER_BOTH = "deepseek v4 pro模型+MIMO V2.5 PRO模型+本地数据集回答";
+const PROVIDER_MIMO = "MIMO V2.5pro模型+本地数据集回答";
+const PROVIDER_BOTH = "deepseek v4 pro模型+MIMO V2.5pro模型+本地数据集回答";
 const PROVIDER_LOCAL = "本地数据集回答";
 const MAX_HISTORY = 100;
 let lastResult = null;
@@ -268,7 +266,7 @@ function normalizeDeepSeekUrl(base){
 function normalizeMimoUrl(base){return normalizeChatUrl(base,DEFAULT_MIMO_API_BASE)}
 function normalizeMimoAsrUrl(base){return normalizeChatUrl(base,DEFAULT_MIMO_ASR_API_BASE)}
 function getAiMode(){return ($("aiMode").value||"both")}
-function aiModeLabel(mode){return mode==="deepseek"?"deepseek v4 pro":mode==="mimo"?"MIMO V2.5 PRO":"deepseek v4 pro + MIMO V2.5 PRO"}
+function aiModeLabel(mode){return mode==="deepseek"?"deepseek v4 pro":mode==="mimo"?"MIMO V2.5pro":"deepseek v4 pro + MIMO V2.5pro"}
 function updateAiModeButtons(){
   var mode=getAiMode();
   [["deepseek","modeDeepseekBtn"],["mimo","modeMimoBtn"],["both","modeBothBtn"]].forEach(function(row){
@@ -311,7 +309,7 @@ function updateWeightPreview(){
     $("deepseekWeight").disabled=w.mode!=="custom";
     $("deepseekWeight").value=String(w.deepseekPercent);
   }
-  if($("weightPreview"))$("weightPreview").textContent="DeepSeek "+w.deepseekPercent+"% + MIMO V2.5 PRO "+w.mimoPercent+"%";
+  if($("weightPreview"))$("weightPreview").textContent="DeepSeek "+w.deepseekPercent+"% + MiMo "+w.mimoPercent+"%";
 }
 function requireDeepSeekApiKey(){
   var key=getDeepSeekApiKey();
@@ -320,12 +318,12 @@ function requireDeepSeekApiKey(){
 }
 function requireMimoApiKey(){
   var key=getMimoApiKey();
-  if(!key)throw new Error("请先填写 MIMO API Key");
+  if(!key)throw new Error("请先填写 MiMo API Key");
   return key;
 }
 function requireMimoAsrApiKey(){
   var key=getMimoAsrApiKey();
-  if(!key)throw new Error("请先填写 MIMO V2.5 ASR API Key");
+  if(!key)throw new Error("请先填写 MiMo ASR API Key");
   return key;
 }
 function normalizeAnalysisTask(task){
@@ -344,13 +342,8 @@ function loadDeepSeekSettings(){
   $("apiBase").value=localStorage.getItem(STORAGE_DEEPSEEK_API_BASE)||DEFAULT_DEEPSEEK_API_BASE;
   $("deepseekApiKey").value=localStorage.getItem(STORAGE_DEEPSEEK_API_KEY)||"";
   $("mimoApiBase").value=localStorage.getItem(STORAGE_MIMO_API_BASE)||DEFAULT_MIMO_API_BASE;
-  var storedMimoModel=localStorage.getItem(STORAGE_MIMO_MODEL)||DEFAULT_MIMO_MODEL;
-  if(storedMimoModel==="mimo-v2.5"){
-    storedMimoModel=DEFAULT_MIMO_MODEL;
-    localStorage.setItem(STORAGE_MIMO_MODEL,storedMimoModel);
-  }
-  $("mimoModel").value=storedMimoModel;
-  $("mimoApiKey").value=localStorage.getItem(STORAGE_MIMO_API_KEY)||DEFAULT_MIMO_API_KEY;
+  $("mimoModel").value=localStorage.getItem(STORAGE_MIMO_MODEL)||DEFAULT_MIMO_MODEL;
+  $("mimoApiKey").value=localStorage.getItem(STORAGE_MIMO_API_KEY)||"";
   $("weightMode").value=localStorage.getItem(STORAGE_WEIGHT_MODE)||"equal";
   $("deepseekWeight").value=String(clampPercent(localStorage.getItem(STORAGE_DEEPSEEK_WEIGHT)||50));
   $("mimoAsrApiBase").value=localStorage.getItem(STORAGE_MIMO_ASR_API_BASE)||DEFAULT_MIMO_ASR_API_BASE;
@@ -404,7 +397,7 @@ function handleAudioFileChange(){
   asrAudioBlob=null;
   asrAudioName="";
   if(file)setAsrStatus("已选择音频："+file.name,true);
-  else setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MIMO V2.5 ASR 支持的 WAV。");
+  else setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MiMo ASR 支持的 WAV。");
 }
 
 async function startRecording(){
@@ -455,12 +448,12 @@ function getSelectedAudio(){
 function parseAsrError(error){
   var msg=String(error&&error.message||error||"语音识别失败");
   if(msg.indexOf("Failed to fetch")>=0){
-    return "MIMO V2.5 ASR 连接失败。请检查网络、API 地址或浏览器是否允许连接 MiMo。";
+    return "MiMo ASR 连接失败。请检查网络、API 地址或浏览器是否允许连接 MiMo。";
   }
-  if(msg.indexOf("401")>=0||msg.indexOf("403")>=0)return "MIMO V2.5 ASR Key 错误或没有权限。";
-  if(msg.indexOf("429")>=0)return "MIMO V2.5 ASR 请求过多，请稍后重试。";
-  if(msg.indexOf("Param Incorrect")>=0)return "MIMO V2.5 ASR 参数错误。请优先上传较短、清晰的 WAV/MP3/M4A 音频，或重新录音后再试。";
-  if(msg.indexOf("AbortError")>=0||msg.indexOf("timeout")>=0||msg.indexOf("超时")>=0)return "MIMO V2.5 ASR 请求超时，请缩短音频或稍后重试。";
+  if(msg.indexOf("401")>=0||msg.indexOf("403")>=0)return "MiMo ASR Key 错误或没有权限。";
+  if(msg.indexOf("429")>=0)return "MiMo ASR 请求过多，请稍后重试。";
+  if(msg.indexOf("Param Incorrect")>=0)return "MiMo ASR 参数错误。请优先上传较短、清晰的 WAV/MP3/M4A 音频，或重新录音后再试。";
+  if(msg.indexOf("AbortError")>=0||msg.indexOf("timeout")>=0||msg.indexOf("超时")>=0)return "MiMo ASR 请求超时，请缩短音频或稍后重试。";
   return msg;
 }
 
@@ -475,7 +468,7 @@ function readAsrText(data){
     var text=String(values[i]||"").trim();
     if(text)return text;
   }
-  throw new Error("MIMO V2.5 ASR 没有返回识别文本");
+  throw new Error("MiMo ASR 没有返回识别文本");
 }
 
 function getAudioFormat(audio){
@@ -562,7 +555,7 @@ function blobToDataUrl(audio){
 
 async function callMimoAsrDirect(audio){
   var dataUrl=await audioToWavDataUrl(audio);
-  var cfg={label:"MIMO V2.5 ASR",api_key:requireMimoAsrApiKey(),api_base:getMimoAsrApiBase(),model:getMimoAsrModel(),endpoint:normalizeMimoAsrUrl(getMimoAsrApiBase())};
+  var cfg={label:"MiMo 2.5 ASR",api_key:requireMimoAsrApiKey(),api_base:getMimoAsrApiBase(),model:getMimoAsrModel(),endpoint:normalizeMimoAsrUrl(getMimoAsrApiBase())};
   var payload={
     model:cfg.model,
     messages:[{role:"user",content:[{type:"input_audio",input_audio:{data:dataUrl,format:"wav"}}]}],
@@ -581,7 +574,7 @@ async function transcribeAudio(){
   }
   var btn=$("transcribeAudioBtn");
   btn.disabled=true;
-  setAsrStatus("正在直连 MIMO V2.5 ASR 识别语音...",true);
+  setAsrStatus("正在直连 MiMo 2.5 ASR 识别语音...",true);
   try{
     var text=await callMimoAsrDirect(audio);
     $("asrText").value=text;
@@ -666,12 +659,6 @@ function cesDefinitionsForPrompt(){
     return (cat.code||"")+" "+(cat.category||"")+"："+(cat.description||"")+"；二级："+subs;
   }).join("\n");
 }
-function cesDefinitionsCompact(){
-  var ds=window.CES_BROWSER_DATASET||{}, taxonomy=Array.isArray(ds.taxonomy)?ds.taxonomy:[];
-  return taxonomy.map(function(cat){
-    return (cat.code||"")+" "+(cat.category||"")+"："+(cat.description||"");
-  }).join("\n");
-}
 
 function localCandidatesForPrompt(local){
   var ces=local&&local.ces||{}, dims=ces.active_dimensions||[], subs=ces.active_subcategories||[], stats=(window.CES_BROWSER_DATASET&&window.CES_BROWSER_DATASET.training_stats)||{};
@@ -683,14 +670,6 @@ function localCandidatesForPrompt(local){
     active_dimensions:dims.slice(0,12).map(function(d){return{code:d.code,category:d.category||d.name,matched_keywords:d.keywords||[],frequency:d.frequency||0}}),
     active_subcategories:subs.slice(0,30).map(function(s){return{code:s.code,category:s.category,subcategory:s.subcategory||s.name,matched_keywords:s.keywords||[],frequency:s.frequency||0}}),
     matched_keywords:ces.matched_keywords||[]
-  };
-}
-function localCandidatesCompact(local){
-  var ces=local&&local.ces||{}, dims=ces.active_dimensions||[], subs=ces.active_subcategories||[];
-  return {
-    active_dimensions:dims.slice(0,12).map(function(d){return{code:d.code,category:d.category||d.name,hits:(d.keywords||[]).slice(0,5),freq:d.frequency||0}}),
-    active_subcategories:subs.slice(0,30).map(function(s){return{code:s.code,subcategory:s.subcategory||s.name,hits:(s.keywords||[]).slice(0,3)}}),
-    matched_keywords:(ces.matched_keywords||[]).slice(0,20)
   };
 }
 
@@ -774,18 +753,13 @@ function mimoMessages(text,local,task){
       method_note:"方法说明"
     }
   };
-  var schema=Object.assign({},baseSchema,task==="both"?Object.assign({},tendencySchema,frequencySchema):(task==="frequency"?frequencySchema:tendencySchema));
-  var taskRule=task==="both"
-    ?"同时执行 CES 感知倾向分析和 AI 感知频率复核：感知倾向统计 PVj = ΣSij / Nj；感知频率统计 PFj = Nj / N。两类结果都必须给出命中原文片段、判断依据和是否人工复核。"
-    :(task==="frequency"
+  var schema=Object.assign({},baseSchema,task==="frequency"?frequencySchema:tendencySchema);
+  var taskRule=task==="frequency"
     ?"只做 AI 感知频率复核：分句后做 CES 多标签命中，给出命中原文、判断原因、是否复核，并按 PFj=Nj/N 统计。不要输出感知倾向评分。"
-    :"只做 CES 感知倾向复核：分句后识别 CES 类别，给出命中原文、倾向类型、0到1分值、判断依据、是否复核，并按 PVj=ΣSij/Nj 汇总。不要输出 AI 感知频率。");
-  var outputLimit=task==="frequency"
-    ?"perception_frequency_ai.items 最多 8 条，category_summary 最多 8 类，examples 每类最多 2 个。"
-    :"perception_tendency.items 最多 8 条，category_summary 最多 8 类。";
+    :"只做 CES 感知倾向复核：分句后识别 CES 类别，给出命中原文、倾向类型、0到1分值、判断依据、是否复核，并按 PVj=ΣSij/Nj 汇总。不要输出 AI 感知频率。";
   return [
-    {role:"system",content:"你是一名风景园林生态系统文化服务（CES）结构化分析助手。依据本地候选类别、命中关键词和 12 类 CES 定义判断。正负混合评论必须拆分到具体命中片段。倾向分值：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向。只输出可解析 JSON，不要 Markdown，不要解释性前后缀。第一字符必须是 {，最后字符必须是 }。"},
-    {role:"user",content:"任务："+taskRule+"\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsCompact()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesCompact(local),null,2)+"\n\n输出要求：\n1. 必须给出命中原文片段，不能只给类别。\n2. 不确定样本标记 review_required=true。\n3. "+outputLimit+"\n4. sentiment、positive_prob、negative_prob、sentence_analysis、reasons 字段必须保留。\n5. 严格按以下 JSON 结构输出：\n"+JSON.stringify(schema,null,2)}
+    {role:"system",content:"你是风景园林生态系统文化服务（CES）结构化分析助手。必须只输出可解析 JSON，不要 Markdown，不要解释性前后缀。依据本地候选类别、命中关键词和 12 类 CES 定义判断。正负混合评论必须拆分到具体命中片段。"},
+    {role:"user",content:"任务："+taskRule+"\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n输出要求：\n1. 必须给出命中原文片段，不能只给类别。\n2. 不确定样本标记 review_required=true。\n3. 感知倾向分值：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向。\n4. 感知频率只表示被提及频率，不表示满意度。\n5. 严格按以下 JSON 结构输出：\n"+JSON.stringify(schema,null,2)}
   ];
 }
 
@@ -796,25 +770,8 @@ function mimoPlanBMessages(text,local,task,structuredError){
   var taskText=task==="both"?"感知倾向和感知频率":(task==="frequency"?"感知频率":"感知倾向");
   return [
     {role:"system",content:"你是风景园林生态系统文化服务（CES）分析助手。用简洁中文回答，不要 JSON，不要 Markdown。"},
-    {role:"user",content:"MIMO V2.5 PRO 结构化 JSON 失败，现改用计划 B：自然语言辅助分析。\n\n请分析这条评论的"+taskText+"，必须包含：\n1. 命中内容；\n2. 涉及的 CES 类别；\n3. 感知倾向判断；\n4. 感知频率关注点；\n5. 判断依据。\n\n控制在 300 字以内。\n\n评论：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n结构化失败原因：\n"+formatAiError(structuredError)}
+    {role:"user",content:"MIMO V2.5pro 结构化 JSON 失败，现改用计划 B：自然语言辅助分析。\n\n请分析这条评论的"+taskText+"，必须包含：\n1. 命中内容；\n2. 涉及的 CES 类别；\n3. 感知倾向判断；\n4. 感知频率关注点；\n5. 判断依据。\n\n控制在 300 字以内。\n\n评论：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n结构化失败原因：\n"+formatAiError(structuredError)}
   ];
-}
-
-function validateMimoStructuredParsed(parsed,task){
-  task=normalizeAnalysisTask(task);
-  if(!parsed||typeof parsed!=="object")throw new Error("MIMO V2.5 PRO 返回内容不是 JSON 对象");
-  if(taskIncludesTendency(task)){
-    if(!parsed.perception_tendency||typeof parsed.perception_tendency!=="object")parsed.perception_tendency={items:[],category_summary:[],review_required_count:0,method_note:"自动补充"};
-    if(!Array.isArray(parsed.perception_tendency.items))parsed.perception_tendency.items=[];
-    if(!Array.isArray(parsed.perception_tendency.category_summary))parsed.perception_tendency.category_summary=[];
-  }
-  if(taskIncludesFrequency(task)){
-    if(!parsed.perception_frequency_ai||typeof parsed.perception_frequency_ai!=="object")parsed.perception_frequency_ai={segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"自动补充"};
-    if(!Array.isArray(parsed.perception_frequency_ai.segments))parsed.perception_frequency_ai.segments=[];
-    if(!Array.isArray(parsed.perception_frequency_ai.items))parsed.perception_frequency_ai.items=[];
-    if(!Array.isArray(parsed.perception_frequency_ai.category_summary))parsed.perception_frequency_ai.category_summary=[];
-  }
-  return parsed;
 }
 
 function extractJson(raw,label){
@@ -845,25 +802,24 @@ function parseAiOutput(raw,cfg){
 function shouldRetry(status){return status===429||status>=500}
 
 function getAiRequestPolicy(kind,task){
-  var rawTask=task;
   task=normalizeAnalysisTask(task);
   if(kind==="mimo"){
     return {
       retries:MIMO_RETRIES,
-      timeout_ms:rawTask==="check"?MIMO_CHECK_TIMEOUT_MS:(rawTask==="mimo_plan_b"?MIMO_PLAN_B_TIMEOUT_MS:MIMO_REQUEST_TIMEOUT_MS),
-      max_tokens:rawTask==="check"?500:(rawTask==="mimo_plan_b"?1000:2400)
+      timeout_ms:task==="check"?MIMO_CHECK_TIMEOUT_MS:MIMO_REQUEST_TIMEOUT_MS,
+      max_tokens:task==="check"?80:2200
     };
   }
   return {
     retries:DEEPSEEK_RETRIES,
     timeout_ms:REQUEST_TIMEOUT_MS,
-    max_tokens:rawTask==="check"?200:(task==="both"?4200:2600)
+    max_tokens:task==="check"?200:(task==="both"?4200:2600)
   };
 }
 
 function getAiConfig(kind){
   if(kind==="mimo"){
-    return {kind:"mimo",label:"MIMO V2.5 PRO",provider:PROVIDER_MIMO,api_key:requireMimoApiKey(),api_base:getMimoApiBase(),model:getMimoModel(),endpoint:normalizeMimoUrl(getMimoApiBase())};
+    return {kind:"mimo",label:"MIMO V2.5pro",provider:PROVIDER_MIMO,api_key:requireMimoApiKey(),api_base:getMimoApiBase(),model:getMimoModel(),endpoint:normalizeMimoUrl(getMimoApiBase())};
   }
   return {kind:"deepseek",label:"deepseek v4 pro",provider:PROVIDER_DEEPSEEK,api_key:requireDeepSeekApiKey(),api_base:getDeepSeekApiBase(),model:"deepseek-chat",endpoint:normalizeDeepSeekUrl(getDeepSeekApiBase())};
 }
@@ -884,12 +840,9 @@ async function callAiDirect(kind,messages,task){
     try{
       var data=await requestChatCompletion(cfg,payload,policy.timeout_ms);
       var choice=data.choices&&data.choices[0],msg=choice&&choice.message;
-      if(cfg.kind==="mimo"&&task==="check"){
-        return msg?(msg.content||msg.reasoning_content||"ok"):"ok";
-      }
       if(cfg.kind==="mimo"&&choice&&choice.finish_reason==="length")throw new Error(cfg.label+" 输出被截断，未返回有效内容");
       if(cfg.kind==="mimo"&&msg&&!String(msg.content||"").trim()){
-        if(msg.reasoning_content)throw new Error(cfg.label+" 只返回 reasoning_content，未返回最终内容");
+        if(msg.reasoning_content)throw new Error(cfg.label+" 只返回 reasoning_content，未返回最终 JSON");
         throw new Error(cfg.label+" 返回空 content");
       }
       return msg?(msg.content||msg.reasoning_content||""):"";
@@ -1040,7 +993,7 @@ function localFrequencyAiFallback(local,error){
     }),
     valid_segment_count:total,
     review_required_count:0,
-    method_note:"MIMO V2.5 PRO 未返回有效频率 JSON，本次为本地数据集回答。错误："+String(error&&error.message||error||"未知错误")
+    method_note:"MIMO V2.5pro 未返回有效频率 JSON，本次为本地数据集回答。错误："+String(error&&error.message||error||"未知错误")
   };
 }
 
@@ -1206,7 +1159,7 @@ function combinePerceptionTendencies(rows){
     items:items,
     category_summary:summary,
     review_required_count:items.filter(function(item){return item.review_required}).length,
-    method_note:"deepseek v4 pro 与 MIMO V2.5 PRO 的感知倾向结果已合并。"
+    method_note:"deepseek v4 pro 与 MIMO V2.5pro 的感知倾向结果已合并。"
   };
 }
 
@@ -1362,7 +1315,7 @@ function combinePerceptionFrequencyAi(rows){
     category_summary:summary,
     valid_segment_count:validCounts.length?Math.max.apply(null,validCounts):0,
     review_required_count:items.filter(function(item){return item.review_required}).length,
-    method_note:"deepseek v4 pro 与 MIMO V2.5 PRO 的 AI 感知频率复核结果已合并。"
+    method_note:"deepseek v4 pro 与 MIMO V2.5pro 的 AI 感知频率复核结果已合并。"
   };
 }
 
@@ -1387,7 +1340,7 @@ function mergeResult(local,parsed,cfg,task){
 function mergeEqualWeightResult(local,rows,task){
   var result=JSON.parse(JSON.stringify(local)),valid=rows.filter(function(r){return r&&r.ok});
   task=normalizeAnalysisTask(task);
-  if(!valid.length)throw new Error("DeepSeek 和 MIMO V2.5 PRO 均不可用");
+  if(!valid.length)throw new Error("DeepSeek 和 MiMo 均不可用");
   if(valid.length===1)return mergeResult(local,valid[0].parsed,valid[0].cfg,task);
   var deepRow=valid.find(function(r){return r.cfg&&r.cfg.kind==="deepseek"})||valid[0],mimoRow=valid.find(function(r){return r.cfg&&r.cfg.kind==="mimo"})||valid[1]||valid[0];
   var n1=normalizeAiParsed(deepRow.parsed),n2=normalizeAiParsed(mimoRow.parsed),weights=getModelWeights(),deepWeight=weights.deepseek,mimoWeight=weights.mimo;
@@ -1413,14 +1366,14 @@ function mergeEqualWeightResult(local,rows,task){
   result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:r.cfg.kind==="deepseek"?deepWeight:mimoWeight}});
   result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
   result.mimo={ok:true,fallback:false,model:getMimoModel()};
-  var note=hasDeepProb&&hasMimoProb?"情感由 deepseek v4 pro "+weights.deepseekPercent+"% 与 MIMO V2.5 PRO "+weights.mimoPercent+"% 合成；CES 分类由本地数据集输出。":"情感数值由可结构化返回的模型输出；CES 复核结果按可用模型结构化结果显示。";
+  var note=hasDeepProb&&hasMimoProb?"情感由 deepseek v4 pro "+weights.deepseekPercent+"% 与 MIMO V2.5pro "+weights.mimoPercent+"% 合成；CES 分类由本地数据集输出。":"情感数值由可结构化返回的模型输出；CES 复核结果按可用模型结构化结果显示。";
   result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos||0,neg||0),note:note};
   var structuredRows=valid.filter(function(r){return !(r.cfg&&r.cfg.kind==="mimo"&&r.parsed&&r.parsed.mimo_plan_b)});
   result.perception_tendency=taskIncludesTendency(task)?combinePerceptionTendencies(structuredRows.length?structuredRows:valid):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
   result.perception_frequency_ai=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(structuredRows.length?structuredRows:valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
   result.mimo_analysis=(mimoRow.parsed&&mimoRow.parsed.mimo_analysis)||"";
   result.llm_perception={sentence_analysis:[].concat(n1.sentence_analysis||[],n2.sentence_analysis||[])};
-  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["deepseek v4 pro 与 MIMO V2.5 PRO 均参与分析，最终情感概率按 DeepSeek "+weights.deepseekPercent+"% + MIMO V2.5 PRO "+weights.mimoPercent+"% 合成。"],n1.reasons||[],n2.reasons||[]);
+  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["deepseek v4 pro 与 MIMO V2.5pro 均参与分析，最终情感概率按 DeepSeek "+weights.deepseekPercent+"% + MiMo "+weights.mimoPercent+"% 合成。"],n1.reasons||[],n2.reasons||[]);
   return result;
 }
 
@@ -1436,15 +1389,15 @@ function formatAiError(error){
 
 function isMimoInvalidContent(error){
   var msg=String(error&&error.message||error||"");
-  return msg.indexOf("MIMO V2.5 PRO")>=0&&(msg.indexOf("reasoning_content")>=0||msg.indexOf("空 content")>=0||msg.indexOf("可解析 JSON")>=0||msg.indexOf("有效结果")>=0);
+  return msg.indexOf("MIMO V2.5pro")>=0&&(msg.indexOf("reasoning_content")>=0||msg.indexOf("空 content")>=0||msg.indexOf("可解析 JSON")>=0||msg.indexOf("有效结果")>=0);
 }
 
 function aiFallbackTitle(error){
   var msg=String(error&&error.message||error||"");
-  if(isMimoInvalidContent(error))return "MIMO V2.5 PRO 未返回有效内容，本地数据集回答";
-  if(msg.indexOf("MIMO API Key")>=0)return "请先填写 MIMO API Key，本地数据集回答";
+  if(isMimoInvalidContent(error))return "MIMO V2.5pro 未返回有效内容，本地数据集回答";
+  if(msg.indexOf("MiMo API Key")>=0)return "请先填写 MiMo API Key，本地数据集回答";
   if(msg.indexOf("DeepSeek API Key")>=0)return "请先填写 DeepSeek API Key，本地数据集回答";
-  if(msg.indexOf("MIMO V2.5 PRO")>=0||msg.indexOf("MiMo")>=0)return "MIMO V2.5 PRO 连接失败，本地数据集回答";
+  if(msg.indexOf("MIMO V2.5pro")>=0||msg.indexOf("MiMo")>=0)return "MIMO V2.5pro 连接失败，本地数据集回答";
   if(msg.indexOf("DeepSeek")>=0||msg.indexOf("deepseek")>=0)return "deepseek v4 pro 连接失败，本地数据集回答";
   return "AI 模型不可用，本地数据集回答";
 }
@@ -1514,18 +1467,18 @@ async function runMimoParsed(local,text,task,cfg){
   task=normalizeAnalysisTask(task);
   async function requestOne(singleTask){
     var raw=await callAi("mimo",mimoMessages(text,local,singleTask),singleTask);
-    return validateMimoStructuredParsed(parseAiOutput(raw,cfg),singleTask);
+    return parseAiOutput(raw,cfg);
   }
   async function planB(error){
-    var raw=await callAi("mimo",mimoPlanBMessages(text,local,task,error),"mimo_plan_b");
+    var raw=await callAi("mimo",mimoPlanBMessages(text,local,task,error),task);
     var content=String(raw||"").trim();
-    if(!content)throw new Error("MIMO V2.5 PRO 计划 B 返回空 content");
+    if(!content)throw new Error("MIMO V2.5pro 计划 B 返回空 content");
     var parsed={
       sentiment:null,
       positive_prob:null,
       negative_prob:null,
       sentence_analysis:[],
-      reasons:["MIMO V2.5 PRO 结构化结果失败，已自动切换计划 B：自然语言辅助分析。","MIMO V2.5 PRO 结构化失败原因："+formatAiError(error)],
+      reasons:["MIMO V2.5pro 结构化结果失败，已自动切换计划 B：自然语言辅助分析。","MIMO V2.5pro 结构化失败原因："+formatAiError(error)],
       mimo_analysis:"计划 B：自然语言辅助分析\n"+content,
       mimo_plan_b:true,
       mimo_structured_error:formatAiError(error)
@@ -1535,18 +1488,11 @@ async function runMimoParsed(local,text,task,cfg){
         items:[],
         category_summary:[],
         review_required_count:0,
-        method_note:"MIMO V2.5 PRO 结构化感知倾向失败，已在下方 MIMO V2.5 PRO 分析区显示计划 B 自然语言辅助分析。"
+        method_note:"MIMO V2.5pro 结构化感知倾向失败，已在下方 MIMO V2.5pro 分析区显示计划 B 自然语言辅助分析。"
       };
     }
     if(taskIncludesFrequency(task)){
-      parsed.perception_frequency_ai={
-        segments:[],
-        items:[],
-        category_summary:[],
-        valid_segment_count:0,
-        review_required_count:0,
-        method_note:"MIMO V2.5 PRO 结构化频率结果失败，已在下方 MIMO V2.5 PRO 分析区显示计划 B 自然语言辅助分析。备注不使用本地关键词频率，数据结构留空。"
-      };
+      parsed.perception_frequency_ai=localFrequencyAiFallback(local,new Error("MIMO V2.5pro 结构化感知频率失败，已在下方 MIMO V2.5pro 分析区显示计划 B 自然语言辅助分析"));
     }
     return parsed;
   }
@@ -1562,37 +1508,22 @@ async function runMimoParsed(local,text,task,cfg){
   }
   if(task==="both"){
     var parsed={},errors=[];
-    var results=await Promise.allSettled([requestOne("tendency"),requestOne("frequency")]);
-    if(results[0].status==="fulfilled"){
-      parsed=mergeBase(parsed,results[0].value);
-      parsed.perception_tendency=results[0].value.perception_tendency;
-    }else{
-      errors.push("MIMO V2.5 PRO 感知倾向结构化失败："+formatAiError(results[0].reason));
+    try{
+      var tendencyParsed=await requestOne("tendency");
+      parsed=mergeBase(parsed,tendencyParsed);
+      parsed.perception_tendency=tendencyParsed.perception_tendency;
+    }catch(tendencyError){
+      errors.push("MIMO V2.5pro 感知倾向结构化失败："+formatAiError(tendencyError));
     }
-    if(results[1].status==="fulfilled"){
-      parsed=mergeBase(parsed,results[1].value);
-      parsed.perception_frequency_ai=results[1].value.perception_frequency_ai;
-    }else{
-      errors.push("MIMO V2.5 PRO 感知频率结构化失败："+formatAiError(results[1].reason));
+    try{
+      var frequencyParsed=await requestOne("frequency");
+      parsed=mergeBase(parsed,frequencyParsed);
+      parsed.perception_frequency_ai=frequencyParsed.perception_frequency_ai;
+    }catch(frequencyError){
+      errors.push("MIMO V2.5pro 感知频率结构化失败："+formatAiError(frequencyError));
     }
-    if(errors.length){
-      try{
-        var fallback=await planB(new Error(errors.join("；")));
-        fallback=mergeBase(fallback,parsed);
-        if(parsed.perception_tendency)fallback.perception_tendency=parsed.perception_tendency;
-        if(parsed.perception_frequency_ai)fallback.perception_frequency_ai=parsed.perception_frequency_ai;
-        fallback.reasons=(Array.isArray(fallback.reasons)?fallback.reasons:[]).concat(errors);
-        fallback.mimo_partial_structured=!!(parsed.perception_tendency||parsed.perception_frequency_ai);
-        return fallback;
-      }catch(planBError){
-        if(parsed.perception_tendency||parsed.perception_frequency_ai){
-          parsed.reasons=(Array.isArray(parsed.reasons)?parsed.reasons:[]).concat(errors,"MIMO V2.5 PRO 计划 B 失败："+formatAiError(planBError));
-          parsed.mimo_partial_structured=true;
-          return parsed;
-        }
-        throw planBError;
-      }
-    }
+    if(errors.length===2)return await planB(new Error(errors.join("；")));
+    if(errors.length)parsed.reasons=(Array.isArray(parsed.reasons)?parsed.reasons:[]).concat(errors);
     return parsed;
   }
   try{
@@ -1609,7 +1540,7 @@ async function runSelectedAiAnalysis(local,text,task){
   var rows=[],errors=[];
   settled.forEach(function(item,idx){
     if(item.status==="fulfilled")rows.push(item.value);
-    else errors.push((kinds[idx]==="mimo"?"MIMO V2.5 PRO":"DeepSeek")+" 失败："+String(item.reason&&item.reason.message||item.reason));
+    else errors.push((kinds[idx]==="mimo"?"MiMo":"DeepSeek")+" 失败："+String(item.reason&&item.reason.message||item.reason));
   });
   if(!rows.length)throw new Error(errors.join("；")||"AI 模型均不可用");
   var result=kinds.length>1?mergeEqualWeightResult(local,rows,task):mergeResult(local,rows[0].parsed,rows[0].cfg,task);
@@ -1627,15 +1558,16 @@ async function runDualProgressiveAnalysis(local,text,task,runId){
     if(runId!==analysisRunSeq)return;
     var primary=mergeResult(local,deepRow.parsed,deepRow.cfg,task);
     renderAll(primary,text,task,{skipHistory:true});
-    $("backendBadge").textContent="deepseek v4 pro 已返回，MIMO V2.5 PRO 补充中";
+    $("backendBadge").textContent="deepseek v4 pro 已返回，MIMO V2.5pro 补充中";
     $("backendBadge").className="badge ok";
     st.className="status ok";
-    st.textContent="deepseek v4 pro 已完成，正在等待 MIMO V2.5 PRO 补充；当前结果已可用。";
+    st.textContent="deepseek v4 pro 已完成，正在等待 MIMO V2.5pro 补充；当前结果已可用。";
     runMimoSupplement(local,text,task,runId,deepRow);
     return;
   }catch(e){
     deepError=e;
   }
+
   try{
     var mimoRow=await runSingleAiRow("mimo",local,text,task);
     if(runId!==analysisRunSeq)return;
@@ -1643,13 +1575,13 @@ async function runDualProgressiveAnalysis(local,text,task,runId){
     result.ai_errors=["DeepSeek 失败："+formatAiError(deepError)];
     result.reasons=(Array.isArray(result.reasons)?result.reasons:[]).concat(result.ai_errors);
     renderAll(result,text,task);
-    $("backendBadge").textContent="DeepSeek 未返回，MIMO V2.5 PRO 已返回";
+    $("backendBadge").textContent="DeepSeek 未返回，MIMO V2.5pro 已返回";
     $("backendBadge").className="badge ok";
     st.className="status ok";
     st.textContent="分析完成，来源："+result.provider;
   }catch(mimoError){
     if(runId!==analysisRunSeq)return;
-    var combinedError=new Error("DeepSeek 失败："+formatAiError(deepError)+"；MIMO V2.5 PRO 失败："+formatAiError(mimoError));
+    var combinedError=new Error("DeepSeek 失败："+formatAiError(deepError)+"；MIMO V2.5pro 失败："+formatAiError(mimoError));
     var localResult=localOnlyResult(local,combinedError,task);
     renderAll(localResult,text,task);
     $("backendBadge").textContent=aiFallbackTitle(combinedError);
@@ -1673,13 +1605,13 @@ function runMimoSupplement(local,text,task,runId,deepRow){
     }catch(e){
       if(runId!==analysisRunSeq)return;
       var deepOnly=mergeResult(local,deepRow.parsed,deepRow.cfg,task);
-      deepOnly.ai_errors=["MIMO V2.5 PRO 未返回有效结果："+formatAiError(e)];
+      deepOnly.ai_errors=["MIMO V2.5pro 未返回有效结果："+formatAiError(e)];
       deepOnly.reasons=(Array.isArray(deepOnly.reasons)?deepOnly.reasons:[]).concat(deepOnly.ai_errors);
       renderAll(deepOnly,text,task);
-      $("backendBadge").textContent="MIMO V2.5 PRO 未返回，已保留 DeepSeek 结果";
+      $("backendBadge").textContent="MIMO V2.5pro 未返回，已保留 DeepSeek 结果";
       $("backendBadge").className="badge ok";
       $("statusMsg").className="status ok";
-      $("statusMsg").textContent="分析完成，来源："+deepOnly.provider+"；MIMO V2.5 PRO 未返回有效结果。";
+      $("statusMsg").textContent="分析完成，来源："+deepOnly.provider+"；MIMO V2.5pro 未返回有效结果。";
     }
   })();
 }
@@ -1801,16 +1733,16 @@ function renderMimoAnalysis(result){
     return;
   }
   var models=Array.isArray(result&&result.ai_models)?result.ai_models:[];
-  var hasMimo=models.some(function(model){return String(model.provider||"").indexOf("MIMO V2.5 PRO")>=0});
+  var hasMimo=models.some(function(model){return String(model.provider||"").indexOf("MIMO V2.5pro")>=0});
   if(hasMimo){
-    var tCount=((result&&result.perception_tendency&&result.perception_tendency.items)||[]).filter(function(item){return String(item.source_model||"").indexOf("MIMO V2.5 PRO")>=0}).length;
-    var fCount=((result&&result.perception_frequency_ai&&result.perception_frequency_ai.items)||[]).filter(function(item){return String(item.source_model||"").indexOf("MIMO V2.5 PRO")>=0}).length;
-    el.textContent="MIMO V2.5 PRO 已输出结构化复核结果：感知倾向 "+tCount+" 条，感知频率 "+fCount+" 条。具体内容见上方两个复核表。";
+    var tCount=((result&&result.perception_tendency&&result.perception_tendency.items)||[]).filter(function(item){return String(item.source_model||"").indexOf("MIMO V2.5pro")>=0}).length;
+    var fCount=((result&&result.perception_frequency_ai&&result.perception_frequency_ai.items)||[]).filter(function(item){return String(item.source_model||"").indexOf("MIMO V2.5pro")>=0}).length;
+    el.textContent="MIMO V2.5pro 已输出结构化复核结果：感知倾向 "+tCount+" 条，感知频率 "+fCount+" 条。具体内容见上方两个复核表。";
     return;
   }
   var errors=Array.isArray(result&&result.ai_errors)?result.ai_errors:[];
   var mimoError=errors.find(function(e){return String(e).indexOf("MIMO")>=0||String(e).indexOf("MiMo")>=0});
-  el.textContent=mimoError||"暂无 MIMO V2.5 PRO 结构化结果。";
+  el.textContent=mimoError||"暂无 MIMO V2.5pro 结构化结果。";
 }
 function renderHighlight(text,kws){
   var el=$("highlighted");if(!kws.length){el.innerHTML=esc(text);return}
@@ -1883,7 +1815,7 @@ async function askQuestion(){
       try{
         var deepCfg=getAiConfig("deepseek"),deepRaw=await callAi("deepseek",messages);
         if(runId!==qaRunSeq)return;
-        $("qaAnswer").textContent=PROVIDER_DEEPSEEK+"\n\n【"+deepCfg.label+"】\n"+deepRaw+"\n\nMIMO V2.5 PRO 补充中...";
+        $("qaAnswer").textContent=PROVIDER_DEEPSEEK+"\n\n【"+deepCfg.label+"】\n"+deepRaw+"\n\nMIMO V2.5pro 补充中...";
         (async function(){
           try{
             var mimoCfg=getAiConfig("mimo"),mimoRaw=await callAi("mimo",messages);
@@ -1891,7 +1823,7 @@ async function askQuestion(){
             $("qaAnswer").textContent=PROVIDER_BOTH+"\n\n【"+deepCfg.label+"】\n"+deepRaw+"\n\n【"+mimoCfg.label+"】\n"+mimoRaw;
           }catch(e){
             if(runId!==qaRunSeq)return;
-            $("qaAnswer").textContent=PROVIDER_DEEPSEEK+"\n\n【"+deepCfg.label+"】\n"+deepRaw+"\n\nMIMO V2.5 PRO 未返回有效结果："+formatAiError(e);
+            $("qaAnswer").textContent=PROVIDER_DEEPSEEK+"\n\n【"+deepCfg.label+"】\n"+deepRaw+"\n\nMIMO V2.5pro 未返回有效结果："+formatAiError(e);
           }
         })();
         return;
@@ -1902,7 +1834,7 @@ async function askQuestion(){
           $("qaAnswer").textContent=PROVIDER_MIMO+"\n\n【"+mimoCfgOnly.label+"】\n"+mimoRawOnly+"\n\nDeepSeek 失败："+formatAiError(deepError);
           return;
         }catch(mimoError){
-          throw new Error("DeepSeek 失败："+formatAiError(deepError)+"；MIMO V2.5 PRO 失败："+formatAiError(mimoError));
+          throw new Error("DeepSeek 失败："+formatAiError(deepError)+"；MIMO V2.5pro 失败："+formatAiError(mimoError));
         }
       }
     }
@@ -1910,7 +1842,7 @@ async function askQuestion(){
     var answers=[],errors=[];
     settled.forEach(function(item,idx){
       if(item.status==="fulfilled")answers.push("【"+item.value.cfg.label+"】\n"+item.value.raw);
-      else errors.push((kinds[idx]==="mimo"?"MIMO V2.5 PRO":"DeepSeek")+" 失败："+String(item.reason&&item.reason.message||item.reason));
+      else errors.push((kinds[idx]==="mimo"?"MiMo":"DeepSeek")+" 失败："+String(item.reason&&item.reason.message||item.reason));
     });
     if(!answers.length)throw new Error(errors.join("；")||"AI 模型均不可用");
     var title=kinds.length>1?PROVIDER_BOTH:(answers[0].indexOf("MiMo")>=0||answers[0].indexOf("MIMO")>=0?PROVIDER_MIMO:PROVIDER_DEEPSEEK);
@@ -1958,7 +1890,7 @@ async function checkHealth(){
     var okCount=checks.filter(function(item){return item.status==="fulfilled"&&item.value.ok}).length;
     var failMsgs=[];
     checks.forEach(function(item,idx){
-      if(item.status!=="fulfilled"||!item.value.ok)failMsgs.push(aiFallbackTitle(item.reason||new Error((kinds[idx]==="mimo"?"MIMO V2.5 PRO":"DeepSeek")+" 未返回有效结果")));
+      if(item.status!=="fulfilled"||!item.value.ok)failMsgs.push(aiFallbackTitle(item.reason||new Error((kinds[idx]==="mimo"?"MIMO V2.5pro":"DeepSeek")+" 未返回有效结果")));
     });
     $("backendBadge").textContent=okCount===kinds.length?"AI 后端已连接":(failMsgs[0]||"部分 AI 后端未连接");
     $("backendBadge").className="badge "+(okCount?"ok":"bad");
@@ -1970,28 +1902,7 @@ async function checkHealth(){
 function clearTendencyHistory(){tendencyHistory=[];localStorage.removeItem(STORAGE_TENDENCY_HISTORY);renderHistory()}
 function clearFrequencyHistory(){frequencyHistory=[];localStorage.removeItem(STORAGE_FREQUENCY_HISTORY);renderHistory()}
 function copyJson(){if(!lastResult)return;navigator.clipboard.writeText(JSON.stringify(lastResult,null,2));var b=$("copyBtn");b.textContent="已复制!";setTimeout(function(){b.textContent="复制"},1500)}
-function clearAll(){$("commentInput").value="";$("statusMsg").textContent="";$("statusMsg").className="status";$("resultSection").style.display="none";$("asrText").value="";$("audioFileInput").value="";asrAudioBlob=null;asrAudioName="";setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MIMO V2.5 ASR 支持的 WAV。");lastResult=null}
-function bindButton(id,handler){
-  var el=$(id);
-  if(el)el.onclick=function(event){
-    if(event&&event.preventDefault)event.preventDefault();
-    return handler(event);
-  };
-}
-function bindUiEvents(){
-  bindButton("modeDeepseekBtn",function(){setAiMode("deepseek")});
-  bindButton("modeMimoBtn",function(){setAiMode("mimo")});
-  bindButton("modeBothBtn",function(){setAiMode("both")});
-  bindButton("analyzeTendencyBtn",function(){return analyze("tendency")});
-  bindButton("analyzeFrequencyBtn",function(){return analyze("frequency")});
-  bindButton("analyzeBothBtn",function(){return analyze("both")});
-  bindButton("startRecordBtn",startRecording);
-  bindButton("stopRecordBtn",stopRecording);
-  bindButton("transcribeAudioBtn",transcribeAudio);
-  var audio=$("audioFileInput");
-  if(audio)audio.onchange=handleAudioFileChange;
-}
-bindUiEvents();
+function clearAll(){$("commentInput").value="";$("statusMsg").textContent="";$("statusMsg").className="status";$("resultSection").style.display="none";$("asrText").value="";$("audioFileInput").value="";asrAudioBlob=null;asrAudioName="";setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MiMo ASR 支持的 WAV。");lastResult=null}
 loadDeepSeekSettings();
 tendencyHistory=loadStoredHistory(STORAGE_TENDENCY_HISTORY);
 frequencyHistory=loadStoredHistory(STORAGE_FREQUENCY_HISTORY);
@@ -2000,6 +1911,3 @@ checkHealth();
 </script>
 </body>
 </html>
-
-
-
