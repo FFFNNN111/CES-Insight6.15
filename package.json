@@ -1,0 +1,9 @@
+{
+  "name": "ces-insight",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A static web app for real-time CES perception analysis.",
+  "scripts": {
+    "build": "node scripts/build-static.js"
+  }
+}
