@@ -2,7 +2,8 @@
   "name": "ces-insight",
   "version": "1.0.0",
   "private": true,
+  "description": "A static web app for real-time CES perception analysis.",
   "scripts": {
-    "build": "node -e \"var fs=require('fs');if(!fs.existsSync('dist'))fs.mkdirSync('dist');fs.copyFileSync('CES情感分析.html','dist/index.html');console.log('Build: copied CES情感分析.html to dist/index.html')\""
+    "build": "node scripts/build-static.js"
   }
 }
