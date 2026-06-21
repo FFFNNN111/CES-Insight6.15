@@ -41,7 +41,7 @@ textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgb
 details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:pointer;padding:6px 0}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 .badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;background:#fff;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:0 4px 8px 0}.badge.ok{background:#eaf7ee;color:var(--positive);border-color:#cbe8d3}.badge.bad{background:#fff0f0;color:var(--negative);border-color:#ffd6d6}
-@media(max-width:600px){header h1{font-size:22px}.card{padding:14px}.metric-grid{grid-template-columns:repeat(2,1fr)}.bar-row{font-size:12px}.bar-label{width:90px}.btn-row{flex-direction:column}.btn{width:100%}}
+@media(max-width:600px){header h1{font-size:22px}.card{padding:14px}.metric-grid{grid-template-columns:repeat(2,1fr)}.bar-row{font-size:12px}.bar-label{width:90px}.btn-row{flex-direction:column}.btn{width:100%}.compare-charts{grid-template-columns:1fr}.compare-chart-row{grid-template-columns:100px 1fr}}
 
 .batch-progress-bar{height:6px;background:#eee;border-radius:3px;margin:4px 0;overflow:hidden}
 .batch-progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .3s}
@@ -52,6 +52,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 .compare-table{width:100%;border-collapse:collapse;font-size:12px}
 .compare-table th{background:#f9f9f9;padding:4px 6px;border-bottom:2px solid var(--line)}
 .compare-table td{padding:3px 6px;border-bottom:1px solid var(--line)}
+.compare-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}.compare-chart{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}.compare-chart h3{font-size:14px;margin:0 0 8px}.compare-chart-scroll{overflow-x:auto}.compare-chart-body{min-width:620px}.compare-chart-row{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;margin:8px 0}.compare-chart-label{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compare-bar-set{display:grid;gap:4px}.compare-bar-line{display:grid;grid-template-columns:58px 1fr 44px;gap:6px;align-items:center;font-size:11px}.compare-bar-track{height:10px;background:#edf0f3;border-radius:6px;overflow:hidden}.compare-bar-fill{height:100%;min-width:2px;border-radius:6px}.compare-bar-fill.deepseek{background:#007aff}.compare-bar-fill.kimi{background:#ff9f0a}.compare-stat-grid{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.compare-stat{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px}.compare-stat strong{font-size:16px;display:block}
 .taxonomy-tree{margin:0;padding:0;list-style:none}
 .taxonomy-tree li{margin:2px 0}
 .taxonomy-tree .cat-toggle{cursor:pointer;user-select:none;font-weight:600;color:var(--ink)}
@@ -192,7 +193,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   </div>
 
   <div class="card">
-    <h2>🧮 AI 感知频率复核</h2>
+    <h2>🧮 感知频率</h2>
     <p class="tendency-note" id="frequencyAiNote"></p>
     <div class="table-scroll" id="frequencyAiSummary"></div>
     <div class="table-scroll" id="frequencyAiItems" style="margin-top:12px"></div>
@@ -200,6 +201,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 
 <div class="card" id="compareCard" style="display:none">
   <h2>⚖️ 双模型对比视图 <small style="font-weight:400;color:var(--muted);font-size:13px">DeepSeek vs Kimi AI</small></h2>
+  <div id="compareCharts"></div>
   <div id="compareSummary"></div>
   <div id="compareDeepseekSummary" style="margin-top:10px"></div>
 </div>
@@ -220,7 +222,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   </div>
 
   <div class="card">
-    <h2>💡 可能原因</h2>
+    <h2>💡 评论可能原因（DeepSeek）</h2>
     <ul class="reasons" id="reasonList"></ul>
   </div>
 
@@ -236,12 +238,12 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       </div>
       <h2 style="font-size:15px;margin-top:10px">感知倾向历史</h2>
       <table class="history-table">
-        <thead><tr><th>#</th><th>文本</th><th>PVj类别</th><th>片段</th><th>复核</th><th>来源</th><th>时间</th></tr></thead>
+        <thead><tr><th>#</th><th>文本</th><th>感知倾向类别</th><th>片段</th><th>来源</th><th>时间</th></tr></thead>
         <tbody id="tendencyHistBody"></tbody>
       </table>
       <h2 style="font-size:15px;margin-top:14px">感知频率历史</h2>
       <table class="history-table">
-        <thead><tr><th>#</th><th>文本</th><th>PFj类别</th><th>命中</th><th>N</th><th>来源</th><th>时间</th></tr></thead>
+        <thead><tr><th>#</th><th>文本</th><th>感知频率类别</th><th>命中数</th><th>总数</th><th>来源</th><th>时间</th></tr></thead>
         <tbody id="frequencyHistBody"></tbody>
       </table>
     </details>
@@ -759,7 +761,7 @@ function deepseekMessages(text,local,task){
     "感知频率表示公众对某类 CES 的关注强度或议题可见度，不是满意度。",
     "先按中文句号、问号、感叹号、分号及明显语义停顿分句；一句内有多个独立体验内容时继续拆成语义片段。",
     "对每个有效分句或语义片段进行 CES 多标签识别，正向、中性、负向评价都计入感知频率。",
-    "每个命中类别必须给出命中原文片段和判断原因；不确定样本标记 review_required=true。",
+    "每个命中类别必须给出命中原文片段和判断原因；不确定时说明判断限制。",
     "无意义文本、乱码、重复广告、纯表情、无实际体验内容不纳入有效分句总数 N。",
     "PFj = Nj / N；Nj 为第 j 类 CES 的命中分句数或命中片段数，N 为全部有效分句总数。",
     "边界规则：美学强调视觉审美、拍照、花海、夜景；生态强调植物、动物、生境、自然接触；蓝空间强调海、湖、河、湿地、沙滩、亲水、栈道；游憩强调跑步、骑行、徒步、露营、游乐、健身；社交亲子强调亲子、朋友、老人、宠物、社区邻里；交通导向强调到达、停车、入口、路线、导向、无障碍；设施管理强调卫生、维修、保洁、安全巡查、维护；空间秩序强调拥挤、排队、容量、动线秩序；微气候强调遮阴、通风、热、晒、湿、噪音、空气质量；精神恢复强调放松、治愈、安静、压力缓解；教育科普强调展陈、解说、研学、观察学习；文化认同强调历史、地方符号、城市记忆、民俗节庆。"
@@ -773,29 +775,27 @@ function deepseekMessages(text,local,task){
   };
   var tendencySchema={
     perception_tendency:{
-      items:[{comment_id:"当前评论",original_text:"原评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",tendency_type:"正向/中性/负向",tendency_score:"0到1连续分值",evidence:"判断依据",review_required:"true/false"}],
+      items:[{comment_id:"当前评论",original_text:"原评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",tendency_type:"正向/中性/负向",tendency_score:"0到1连续分值",evidence:"判断依据"}],
       category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",hit_count:"命中片段数",tendency_mean:"PVj均值",positive_count:"正向数",neutral_count:"中性数",negative_count:"负向数",positive_ratio:"正向比例",neutral_ratio:"中性比例",negative_ratio:"负向比例",note:"备注"}],
-      review_required_count:"需人工复核数量",
       method_note:"方法说明"
     }
   };
   var frequencySchema={
     perception_frequency_ai:{
       segments:[{comment_id:"当前评论",original_text:"原评论",segment:"有效分句或语义片段",valid:"true/false",invalid_reason:"无意义/广告/乱码/纯表情/无实际体验内容或空"}],
-      items:[{comment_id:"当前评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",reason:"判断原因",review_required:"true/false"}],
+      items:[{comment_id:"当前评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",reason:"判断原因"}],
       category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",Nj:"命中片段数",N:"有效分句总数",PFj:"Nj/N",examples:["命中内容示例"],note:"备注"}],
       valid_segment_count:"有效分句总数 N",
-      review_required_count:"需人工复核数量",
       method_note:"方法说明"
     }
   };
   var schema=Object.assign({},baseSchema,task==="both"?Object.assign({},tendencySchema,frequencySchema):(task==="frequency"?frequencySchema:tendencySchema));
-  var taskName=task==="both"?"CES 感知倾向与 AI 感知频率复核":(task==="frequency"?"AI 感知频率复核":"CES 感知倾向分析");
+  var taskName=task==="both"?"CES 感知倾向与感知频率":(task==="frequency"?"感知频率":"CES 感知倾向分析");
   var taskRule=task==="both"
-    ?"同时执行 CES 感知倾向分析和 AI 感知频率复核：感知倾向统计 PVj = ΣSij / Nj；感知频率统计 PFj = Nj / N。两类结果都必须给出命中原文片段、判断依据和是否人工复核。"
+    ?"同时执行 CES 感知倾向分析和感知频率：感知倾向统计 PVj = ΣSij / Nj；感知频率统计 PFj = Nj / N。两类结果都必须给出命中原文片段和判断依据。"
     :(task==="frequency"
-    ?"只执行 AI 感知频率复核：对有效分句或语义片段做 CES 多标签命中，给出命中原文片段、判断原因、是否人工复核，并统计每类 CES 的 Nj、N、PFj = Nj / N。感知频率表示关注强度，不表示满意度。不要输出感知倾向评分。"
-    :"只执行 CES 感知倾向分析：对每个命中片段分别给出 CES 类别、命中内容、倾向类型、倾向分值、判断依据、是否需要人工复核；统计 PVj = ΣSij / Nj，以及正向、中性、负向数量和比例。不要输出 AI 感知频率复核。");
+    ?"只执行感知频率：对有效分句或语义片段做 CES 多标签命中，给出命中原文片段和判断原因，并统计每类 CES 的 Nj、N、PFj = Nj / N。感知频率表示关注强度，不表示满意度。不要输出感知倾向评分。"
+    :"只执行 CES 感知倾向分析：对每个命中片段分别给出 CES 类别、命中内容、倾向类型、倾向分值和判断依据；统计 PVj = ΣSij / Nj，以及正向、中性、负向数量和比例。不要输出感知频率。");
   return [
     {role:"system",content:"你是一名风景园林生态系统文化服务（CES）分析助手。当前使用的是本地轻量 CES 分类树、关键词、统计信息和本地命中结果，不包含完整训练明细。请优先依据本地候选类别、命中关键词和给定 CES 指标定义进行判断，而不是只按通用常识判断。必须按具体分句或语义片段分别判断，不要把整条评论总体情绪直接赋给所有 CES 类别。正负混合评论必须拆分，例如“风景好但厕所脏”中美学景观体验为正向，设施维护与管理服务为负向。感知倾向分值规则：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向；0.90-1.00强正向，0.70-0.89一般正向，0.56-0.69弱正向，0.45-0.55中性，0.30-0.44弱负向，0.10-0.29一般负向，0.00-0.09强负向。感知频率规则如下：\n"+frequencyRules+"\n本次任务："+taskName+"。"+taskRule+" 必须只输出 JSON，不要 Markdown。"},
     {role:"user",content:"请根据以下信息完成："+taskName+"。\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n输出要求：\n1. 对评论按中文句号、问号、感叹号、分号及明显语义停顿分句；一句内有多个独立体验内容时继续拆成语义片段。\n2. "+taskRule+"\n3. 同时保留整体 sentiment、positive_prob、negative_prob、sentence_analysis、reasons 字段；不确定可填 null 或空数组。\n4. 严格按这个 JSON 结构输出，不要输出多余文字：\n"+JSON.stringify(schema,null,2)}
@@ -815,29 +815,27 @@ function mimoMessages(text,local,task){
   };
   var tendencySchema={
     perception_tendency:{
-      items:[{comment_id:"当前评论",original_text:"原评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",tendency_type:"正向/中性/负向",tendency_score:"0到1连续分值",evidence:"判断依据",review_required:"true/false"}],
+      items:[{comment_id:"当前评论",original_text:"原评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",tendency_type:"正向/中性/负向",tendency_score:"0到1连续分值",evidence:"判断依据"}],
       category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",hit_count:"命中片段数",tendency_mean:"PVj均值",positive_count:"正向数",neutral_count:"中性数",negative_count:"负向数",positive_ratio:"正向比例",neutral_ratio:"中性比例",negative_ratio:"负向比例",note:"备注"}],
-      review_required_count:"需人工复核数量",
       method_note:"方法说明"
     }
   };
   var frequencySchema={
     perception_frequency_ai:{
       segments:[{comment_id:"当前评论",original_text:"原评论",segment:"有效分句或语义片段",valid:"true/false",invalid_reason:"无意义/广告/乱码/纯表情/无实际体验内容或空"}],
-      items:[{comment_id:"当前评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",reason:"判断原因",review_required:"true/false"}],
+      items:[{comment_id:"当前评论",segment:"分句或语义片段",matched_text:"命中原文片段",ces_code:"CES编号",ces_category:"CES一级类别",ces_subcategory:"CES二级类别或空",reason:"判断原因"}],
       category_summary:[{ces_code:"CES编号",ces_category:"CES一级类别",Nj:"命中片段数",N:"有效分句总数",PFj:"Nj/N",examples:["命中内容示例"],note:"备注"}],
       valid_segment_count:"有效分句总数 N",
-      review_required_count:"需人工复核数量",
       method_note:"方法说明"
     }
   };
   var schema=Object.assign({},baseSchema,task==="frequency"?frequencySchema:tendencySchema);
   var taskRule=task==="frequency"
-    ?"只做 AI 感知频率复核：分句后做 CES 多标签命中，给出命中原文、判断原因、是否复核，并按 PFj=Nj/N 统计。不要输出感知倾向评分。"
-    :"只做 CES 感知倾向复核：分句后识别 CES 类别，给出命中原文、倾向类型、0到1分值、判断依据、是否复核，并按 PVj=ΣSij/Nj 汇总。不要输出 AI 感知频率。";
+    ?"只做感知频率：分句后做 CES 多标签命中，给出命中原文和判断原因，并按 PFj=Nj/N 统计。最多 8 条明细和 8 个类别汇总。不要输出感知倾向评分。"
+    :"只做 CES 感知倾向：分句后识别 CES 类别，给出命中原文、倾向类型、0到1分值和判断依据，并按 PVj=ΣSij/Nj 汇总。最多 8 条明细和 8 个类别汇总。不要输出感知频率。";
   return [
     {role:"system",content:"你是风景园林生态系统文化服务（CES）结构化分析助手。必须只输出可解析 JSON，不要 Markdown，不要解释性前后缀。依据本地候选类别、命中关键词和 12 类 CES 定义判断。正负混合评论必须拆分到具体命中片段。"},
-    {role:"user",content:"任务："+taskRule+"\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n输出要求：\n1. 必须给出命中原文片段，不能只给类别。\n2. 不确定样本标记 review_required=true。\n3. 感知倾向分值：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向。\n4. 感知频率只表示被提及频率，不表示满意度。\n5. 严格按以下 JSON 结构输出：\n"+JSON.stringify(schema,null,2)}
+    {role:"user",content:"任务："+taskRule+"\n\n评论ID：当前评论\n评论原文：\n"+text+"\n\n语境：\n"+(ctxText||"无")+"\n\n12类 CES 指标定义：\n"+cesDefinitionsForPrompt()+"\n\n本地候选类别和命中结果：\n"+JSON.stringify(localCandidatesForPrompt(local),null,2)+"\n\n输出要求：\n1. 必须给出命中原文片段，不能只给类别。\n2. 不确定样本说明判断限制。\n3. 感知倾向分值：0.00-0.44负向，0.45-0.55中性，0.56-1.00正向。\n4. 感知频率只表示被提及频率，不表示满意度。\n5. 严格按以下 JSON 结构输出：\n"+JSON.stringify(schema,null,2)}
   ];
 }
 
@@ -909,9 +907,9 @@ function selectedAiKinds(){
   return["deepseek","kimi"];
 }
 
-async function callAiDirect(kind,messages,task){
+async function callAiDirect(kind,messages,task,policyOverride){
   var cfg=getAiConfig(kind);
-  var policy=getAiRequestPolicy(kind,task);
+  var policy=policyOverride||getAiRequestPolicy(kind,task);
   var payload={model:cfg.model,messages:messages,temperature:0.2,max_tokens:policy.max_tokens};
   var lastError=null;
   for(var i=0;i<policy.retries;i++){
@@ -934,8 +932,8 @@ async function callAiDirect(kind,messages,task){
   throw lastError||new Error(cfg.label+" 连接失败");
 }
 
-async function callAi(kind,messages,task){
-  return await callAiDirect(kind,messages,task);
+async function callAi(kind,messages,task,policyOverride){
+  return await callAiDirect(kind,messages,task,policyOverride);
 }
 
 async function callDeepSeek(messages){
@@ -1019,7 +1017,6 @@ function browserLocalAnalysis(text,error){
     perception_tendency:{
       items:[],
       category_summary:[],
-      review_required_count:0,
       method_note:"本地数据集只提供 CES 候选类别和关键词命中；AI 不可用时不生成感知倾向评分。"
     },
     perception_frequency_ai:{
@@ -1027,8 +1024,7 @@ function browserLocalAnalysis(text,error){
       items:[],
       category_summary:[],
       valid_segment_count:0,
-      review_required_count:0,
-      method_note:"本地数据集只提供关键词感知频率；AI 不可用时不生成语义复核频率。"
+      method_note:"本地数据集只提供关键词感知频率；AI 不可用时不生成语义分析频率。"
     },
     llm_perception:{sentence_analysis:[]},
     reasons:reasons
@@ -1049,8 +1045,7 @@ function localFrequencyAiFallback(local,error){
         ces_code:String(d.code||""),
         ces_category:d.category||d.name||"",
         ces_subcategory:"",
-        reason:"本地 CES 关键词命中。",
-        review_required:false
+        reason:"本地 CES 关键词命中。"
       });
     });
   });
@@ -1070,7 +1065,6 @@ function localFrequencyAiFallback(local,error){
       };
     }),
     valid_segment_count:total,
-    review_required_count:0,
     method_note:"Kimi AI 未返回有效频率 JSON，本次为本地数据集回答。错误："+String(error&&error.message||error||"未知错误")
   };
 }
@@ -1107,10 +1101,6 @@ function tendencyTypeFromScore(score,type){
   return "中性";
 }
 
-function truthyReview(value){
-  return value===true||value==="true"||value==="是"||value==="需人工复核"||value===1;
-}
-
 function normalizeTendencyItems(rawItems,sourceModel){
   if(!Array.isArray(rawItems))return[];
   return rawItems.map(function(item){
@@ -1127,8 +1117,7 @@ function normalizeTendencyItems(rawItems,sourceModel){
       ces_subcategory:item.ces_subcategory||item.subcategory||"",
       tendency_type:type,
       tendency_score:score,
-      evidence:item.evidence||item.reason||item.basis||"",
-      review_required:truthyReview(item.review_required)
+      evidence:item.evidence||item.reason||item.basis||""
     };
   }).filter(function(item){return item.ces_category||item.matched_text||item.segment});
 }
@@ -1137,14 +1126,13 @@ function computeTendencySummary(items){
   var groups={};
   items.forEach(function(item){
     var key=(item.ces_code||"")+"|"+(item.ces_category||"未分类");
-    if(!groups[key])groups[key]={ces_code:item.ces_code,ces_category:item.ces_category||"未分类",scores:[],positive_count:0,neutral_count:0,negative_count:0,review_count:0};
+    if(!groups[key])groups[key]={ces_code:item.ces_code,ces_category:item.ces_category||"未分类",scores:[],positive_count:0,neutral_count:0,negative_count:0};
     var g=groups[key],score=item.tendency_score;
     if(score!=null)g.scores.push(score);
     var type=tendencyTypeFromScore(score,item.tendency_type);
     if(type==="正向")g.positive_count++;
     else if(type==="负向")g.negative_count++;
     else g.neutral_count++;
-    if(item.review_required)g.review_count++;
   });
   return Object.keys(groups).map(function(key){
     var g=groups[key],n=g.positive_count+g.neutral_count+g.negative_count,mean=g.scores.length?g.scores.reduce(function(s,v){return s+v},0)/g.scores.length:null;
@@ -1159,7 +1147,7 @@ function computeTendencySummary(items){
       positive_ratio:n?g.positive_count/n:0,
       neutral_ratio:n?g.neutral_count/n:0,
       negative_ratio:n?g.negative_count/n:0,
-      note:n<2?"样本较少，结果需谨慎解释":(g.review_count?"含需人工复核片段":"")
+      note:n<2?"样本较少，结果需谨慎解释":""
     };
   }).sort(function(a,b){return (b.hit_count||0)-(a.hit_count||0)});
 }
@@ -1190,13 +1178,10 @@ function normalizeTendencySummary(rawSummary,items){
 function normalizePerceptionTendency(raw,sourceModel){
   raw=raw&&typeof raw==="object"?raw:{};
   var items=normalizeTendencyItems(raw.items||raw.detail||raw.details,sourceModel);
-  var summary=normalizeTendencySummary(raw.category_summary||raw.summary,items);
-  var reviewCount=Number(raw.review_required_count);
-  if(!Number.isFinite(reviewCount))reviewCount=items.filter(function(item){return item.review_required}).length;
+  var summary=normalizeTendencySummary(raw.category_summary||raw.summary,items).map(function(item){item.source_model=sourceModel||item.source_model||"";return item});
   return {
     items:items,
     category_summary:summary,
-    review_required_count:reviewCount,
     method_note:raw.method_note||"由本地 CES 候选类别和 AI 感知倾向评分生成。"
   };
 }
@@ -1236,7 +1221,6 @@ function combinePerceptionTendencies(rows){
   return {
     items:items,
     category_summary:summary,
-    review_required_count:items.filter(function(item){return item.review_required}).length,
     method_note:"deepseek v4 pro 与 Kimi AI 的感知倾向结果已合并。"
   };
 }
@@ -1267,8 +1251,7 @@ function normalizeFrequencyItems(rawItems,sourceModel){
       ces_code:String(item.ces_code||item.code||""),
       ces_category:item.ces_category||item.category||"",
       ces_subcategory:item.ces_subcategory||item.subcategory||"",
-      reason:item.reason||item.evidence||item.basis||"",
-      review_required:truthyReview(item.review_required)
+      reason:item.reason||item.evidence||item.basis||""
     };
   }).filter(function(item){return item.ces_category||item.matched_text||item.segment});
 }
@@ -1288,11 +1271,10 @@ function computeFrequencySummary(items,validCount){
   var groups={};
   items.forEach(function(item){
     var key=(item.ces_code||"")+"|"+(item.ces_category||"未分类");
-    if(!groups[key])groups[key]={ces_code:item.ces_code,ces_category:item.ces_category||"未分类",Nj:0,examples:[],review_count:0};
+    if(!groups[key])groups[key]={ces_code:item.ces_code,ces_category:item.ces_category||"未分类",Nj:0,examples:[]};
     var g=groups[key];
     g.Nj++;
     if(item.matched_text&&g.examples.indexOf(item.matched_text)<0&&g.examples.length<3)g.examples.push(item.matched_text);
-    if(item.review_required)g.review_count++;
   });
   return Object.keys(groups).map(function(key){
     var g=groups[key],pf=n?g.Nj/n:0;
@@ -1303,7 +1285,7 @@ function computeFrequencySummary(items,validCount){
       N:n,
       PFj:pf,
       examples:g.examples,
-      note:g.review_count?"含需人工复核片段":""
+      note:""
     };
   }).sort(function(a,b){return (b.PFj||0)-(a.PFj||0)});
 }
@@ -1340,16 +1322,13 @@ function normalizePerceptionFrequencyAi(raw,sourceModel){
   var validCount=Number(raw.valid_segment_count??raw.N??raw.valid_count);
   if(!Number.isFinite(validCount))validCount=segments.filter(function(seg){return seg.valid}).length;
   var items=normalizeFrequencyItems(raw.items||raw.hits||raw.detail||raw.details,sourceModel);
-  var summary=normalizeFrequencySummary(raw.category_summary||raw.summary,items,validCount);
-  var reviewCount=Number(raw.review_required_count);
-  if(!Number.isFinite(reviewCount))reviewCount=items.filter(function(item){return item.review_required}).length;
+  var summary=normalizeFrequencySummary(raw.category_summary||raw.summary,items,validCount).map(function(item){item.source_model=sourceModel||item.source_model||"";return item});
   return {
     segments:segments,
     items:items,
     category_summary:summary,
     valid_segment_count:validCount||0,
-    review_required_count:reviewCount,
-    method_note:raw.method_note||"由本地 CES 候选类别和 AI 语义复核生成；PFj 表示关注强度，不表示满意度。"
+    method_note:raw.method_note||"由本地 CES 候选类别和 AI 语义分析生成；感知频率表示关注强度，不表示满意度。"
   };
 }
 
@@ -1392,8 +1371,7 @@ function combinePerceptionFrequencyAi(rows){
     items:items,
     category_summary:summary,
     valid_segment_count:validCounts.length?Math.max.apply(null,validCounts):0,
-    review_required_count:items.filter(function(item){return item.review_required}).length,
-    method_note:"deepseek v4 pro 与 Kimi AI 的 AI 感知频率复核结果已合并。"
+    method_note:"deepseek v4 pro 与 Kimi AI 的感知频率结果已合并。"
   };
 }
 
@@ -1406,12 +1384,13 @@ function mergeResult(local,parsed,cfg,task){
   result.deepseek={ok:cfg&&cfg.kind==="deepseek",fallback:false,model:cfg&&cfg.kind==="deepseek"?(cfg.model||"deepseek-chat"):""};
   result.mimo={ok:cfg&&cfg.kind==="kimi",fallback:false,model:cfg&&cfg.kind==="kimi"?(cfg.model||getKimiModel()):""};
   result.sentiment_item={sentiment:norm.sentiment,positive_prob:norm.positive_prob,negative_prob:norm.negative_prob,confidence:Math.max(norm.positive_prob||0,norm.negative_prob||0),note:"情感由 "+label+" 输出；CES 分类由本地数据集输出。"};
-  result.perception_tendency=taskIncludesTendency(task)?normalizePerceptionTendency(parsed&&parsed.perception_tendency,label):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
-  result.perception_frequency_ai=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(parsed&&parsed.perception_frequency_ai,label):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
+  result.perception_tendency=taskIncludesTendency(task)?normalizePerceptionTendency(parsed&&parsed.perception_tendency,label):{items:[],category_summary:[],method_note:"本次只执行感知频率分析，未请求感知倾向。"};
+  result.perception_frequency_ai=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(parsed&&parsed.perception_frequency_ai,label):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"本次只执行感知倾向分析，未请求感知频率。"};
   result.mimo_analysis=parsed&&parsed.mimo_analysis||"";
+  result.kimi_strategy=parsed&&parsed.kimi_strategy||null;
   result.ai_raw_text=parsed&&parsed.ai_raw_text||"";
   result.llm_perception={sentence_analysis:norm.sentence_analysis};
-  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(norm.reasons);
+  result.reasons=[];
   return result;
 }
 
@@ -1444,14 +1423,20 @@ function mergeEqualWeightResult(local,rows,task){
   result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:r.cfg.kind==="deepseek"?deepWeight:mimoWeight}});
   result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
   result.mimo={ok:true,fallback:false,model:getKimiModel()};
-  var note=hasDeepProb&&hasMimoProb?"情感由 deepseek v4 pro "+weights.deepseekPercent+"% 与 Kimi AI "+weights.mimoPercent+"% 合成；CES 分类由本地数据集输出。":"情感数值由可结构化返回的模型输出；CES 复核结果按可用模型结构化结果显示。";
+  var note=hasDeepProb&&hasMimoProb?"情感由 DeepSeek "+weights.deepseekPercent+"% 与 Kimi AI "+weights.mimoPercent+"% 合成；CES 分类由本地数据集输出。":"情感数值由可结构化返回的模型输出；CES 结果按可用模型结构化结果显示。";
   result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos||0,neg||0),note:note};
   var structuredRows=valid.filter(function(r){return !(r.cfg&&r.cfg.kind==="kimi"&&r.parsed&&r.parsed.mimo_plan_b)});
-  result.perception_tendency=taskIncludesTendency(task)?combinePerceptionTendencies(structuredRows.length?structuredRows:valid):{items:[],category_summary:[],review_required_count:0,method_note:"本次只执行感知频率分析，未请求 AI 感知倾向。"};
-  result.perception_frequency_ai=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(structuredRows.length?structuredRows:valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
+  var deepTendency=taskIncludesTendency(task)?normalizePerceptionTendency(deepRow.parsed&&deepRow.parsed.perception_tendency,"DeepSeek"):{items:[],category_summary:[],method_note:"未执行感知倾向分析。"};
+  var kimiTendency=taskIncludesTendency(task)?normalizePerceptionTendency(mimoRow.parsed&&mimoRow.parsed.perception_tendency,"Kimi AI"):{items:[],category_summary:[],method_note:"未执行感知倾向分析。"};
+  var deepFrequency=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(deepRow.parsed&&deepRow.parsed.perception_frequency_ai,"DeepSeek"):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"未执行感知频率分析。"};
+  var kimiFrequency=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(mimoRow.parsed&&mimoRow.parsed.perception_frequency_ai,"Kimi AI"):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"未执行感知频率分析。"};
+  result.model_comparison={deepseek:{label:"DeepSeek",perception_tendency:deepTendency,perception_frequency:deepFrequency},kimi:{label:"Kimi AI",perception_tendency:kimiTendency,perception_frequency:kimiFrequency}};
+  result.perception_tendency=taskIncludesTendency(task)?combinePerceptionTendencies(structuredRows.length?structuredRows:valid):{items:[],category_summary:[],method_note:"本次只执行感知频率分析，未请求感知倾向。"};
+  result.perception_frequency_ai=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(structuredRows.length?structuredRows:valid):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"本次只执行感知倾向分析，未请求感知频率。"};
   result.mimo_analysis=(mimoRow.parsed&&mimoRow.parsed.mimo_analysis)||"";
+  result.kimi_strategy=(mimoRow.parsed&&mimoRow.parsed.kimi_strategy)||null;
   result.llm_perception={sentence_analysis:[].concat(n1.sentence_analysis||[],n2.sentence_analysis||[])};
-  result.reasons=(Array.isArray(local.reasons)?local.reasons:[]).concat(["deepseek v4 pro 与 Kimi AI 均参与分析，最终情感概率按 DeepSeek "+weights.deepseekPercent+"% + Kimi "+weights.mimoPercent+"% 合成。"],n1.reasons||[],n2.reasons||[]);
+  result.reasons=[];
   return result;
 }
 
@@ -1488,11 +1473,10 @@ function localOnlyResult(local,error,task){
   var title=aiFallbackTitle(error);
   result.deepseek={ok:false,fallback:true,message:String(error&&error.message||error||title)};
   result.sentiment_item={sentiment:null,positive_prob:null,negative_prob:null,confidence:result.model&&result.model.confidence,note:title+"。"};
-  result.perception_tendency={items:[],category_summary:[],review_required_count:0,method_note:title+"；本次只显示本地 CES 候选类别，不生成 AI 感知倾向评分。"};
-  result.perception_frequency_ai=taskIncludesFrequency(task)?localFrequencyAiFallback(local,error):{segments:[],items:[],category_summary:[],valid_segment_count:0,review_required_count:0,method_note:"本次只执行感知倾向分析，未请求 AI 感知频率复核。"};
+  result.perception_tendency={items:[],category_summary:[],method_note:title+"；本次只显示本地 CES 候选类别，不生成 AI 感知倾向评分。"};
+  result.perception_frequency_ai=taskIncludesFrequency(task)?localFrequencyAiFallback(local,error):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"本次只执行感知倾向分析，未请求感知频率。"};
   result.llm_perception={sentence_analysis:[]};
-  var reasons=Array.isArray(local.reasons)?local.reasons:[];
-  result.reasons=reasons.concat([title+"。错误："+formatAiError(error)]);
+  result.reasons=[];
   return result;
 }
 
@@ -1544,37 +1528,6 @@ async function runDeepSeekParsed(local,text,task,cfg){
 
 async function runMimoParsed(local,text,task,cfg){
   task=normalizeAnalysisTask(task);
-  async function requestOne(singleTask){
-    var raw=await callAi("kimi",mimoMessages(text,local,singleTask),singleTask);
-    return parseAiOutput(raw,cfg);
-  }
-  async function planB(error){
-    var raw=await callAi("kimi",mimoPlanBMessages(text,local,task,error),task);
-    var content=String(raw||"").trim();
-    if(!content)throw new Error("Kimi AI 计划 B 返回空 content");
-    var parsed={
-      sentiment:null,
-      positive_prob:null,
-      negative_prob:null,
-      sentence_analysis:[],
-      reasons:["Kimi AI 结构化结果失败，已自动切换计划 B：自然语言辅助分析。","Kimi AI 结构化失败原因："+formatAiError(error)],
-      mimo_analysis:"计划 B：自然语言辅助分析\n"+content,
-      mimo_plan_b:true,
-      mimo_structured_error:formatAiError(error)
-    };
-    if(taskIncludesTendency(task)){
-      parsed.perception_tendency={
-        items:[],
-        category_summary:[],
-        review_required_count:0,
-        method_note:"Kimi AI 结构化感知倾向失败，已在下方 Kimi AI 分析区显示计划 B 自然语言辅助分析。"
-      };
-    }
-    if(taskIncludesFrequency(task)){
-      parsed.perception_frequency_ai=localFrequencyAiFallback(local,new Error("Kimi AI 结构化感知频率失败，已在下方 Kimi AI 分析区显示计划 B 自然语言辅助分析"));
-    }
-    return parsed;
-  }
   function mergeBase(target,source){
     target=target||{};
     source=source||{};
@@ -1585,31 +1538,112 @@ async function runMimoParsed(local,text,task,cfg){
     target.reasons=[].concat(target.reasons||[],source.reasons||[]);
     return target;
   }
-  if(task==="both"){
-    var parsed={},errors=[];
-    try{
-      var tendencyParsed=await requestOne("tendency");
-      parsed=mergeBase(parsed,tendencyParsed);
-      parsed.perception_tendency=tendencyParsed.perception_tendency;
-    }catch(tendencyError){
-      errors.push("Kimi AI 感知倾向结构化失败："+formatAiError(tendencyError));
-    }
-    try{
-      var frequencyParsed=await requestOne("frequency");
-      parsed=mergeBase(parsed,frequencyParsed);
-      parsed.perception_frequency_ai=frequencyParsed.perception_frequency_ai;
-    }catch(frequencyError){
-      errors.push("Kimi AI 感知频率结构化失败："+formatAiError(frequencyError));
-    }
-    if(errors.length===2)return await planB(new Error(errors.join("；")));
-    if(errors.length)parsed.reasons=(Array.isArray(parsed.reasons)?parsed.reasons:[]).concat(errors);
-    return parsed;
+  function policy(level,singleTask){
+    if(level===1)return{retries:1,timeout_ms:35000,max_tokens:singleTask==="both"?4200:2800};
+    if(level===2)return{retries:1,timeout_ms:20000,max_tokens:1800};
+    return{retries:1,timeout_ms:8000,max_tokens:600};
   }
+  function isConfigError(error){
+    var status=error&&error.status,msg=String(error&&error.message||error||"");
+    return status===400||status===401||status===403||msg.indexOf("API Key")>=0||msg.indexOf("模型 ID")>=0||msg.indexOf("地址")>=0;
+  }
+  function hasSection(parsed,section){
+    return !!(parsed&&parsed[section]&&typeof parsed[section]==="object");
+  }
+  async function request(messages,singleTask,level){
+    var raw=await callAi("kimi",messages,singleTask,policy(level,singleTask));
+    return parseAiOutput(raw,cfg);
+  }
+  var parsed={sentiment:null,positive_prob:null,negative_prob:null,sentence_analysis:[],reasons:[]};
+  var missing=[];
+  if(taskIncludesTendency(task))missing.push("tendency");
+  if(taskIncludesFrequency(task))missing.push("frequency");
+  var levels=[],errors=[],terminalError=null;
+  function accept(candidate,sections,levelLabel){
+    var accepted=false;
+    sections.forEach(function(section){
+      var key=section==="tendency"?"perception_tendency":"perception_frequency_ai";
+      if(missing.indexOf(section)>=0&&hasSection(candidate,key)){
+        parsed[key]=candidate[key];
+        missing=missing.filter(function(item){return item!==section});
+        accepted=true;
+      }
+    });
+    if(accepted){
+      parsed=mergeBase(parsed,candidate);
+      if(levels.indexOf(levelLabel)<0)levels.push(levelLabel);
+    }
+    return accepted;
+  }
+  async function runPlanB(failedTasks,error){
+    var fallbackTask=failedTasks.length===2?"both":failedTasks[0];
+    var raw=await callAi("kimi",mimoPlanBMessages(text,local,fallbackTask,error),fallbackTask,policy(3,fallbackTask));
+    var content=String(raw||"").trim();
+    if(!content)throw new Error("Kimi AI 计划 B 返回空内容");
+    parsed.mimo_analysis="三级：自然语言辅助分析\n"+content;
+    parsed.mimo_plan_b=true;
+    parsed.mimo_structured_error=formatAiError(error);
+    levels.push("三级：自然语言辅助分析");
+  }
+
+  var levelOneAccepted=false,levelOneError=null;
   try{
-    return await requestOne(task);
+    var fullParsed=await request(deepseekMessages(text,local,task),task,1);
+    levelOneAccepted=accept(fullParsed,task==="both"?["tendency","frequency"]:[task],"一级：完整结构化分析");
+    if(!levelOneAccepted)throw new Error("Kimi AI 一级结果缺少所需结构化字段");
   }catch(error){
-    return await planB(error);
+    levelOneError=error;
+    errors.push("一级完整结构化分析失败："+formatAiError(error));
+    if(isConfigError(error))throw error;
   }
+
+  if(levelOneAccepted&&task==="both"&&missing.length){
+    var fullTargets=missing.slice();
+    var fullSupplement=await Promise.allSettled(fullTargets.map(function(section){
+      return request(deepseekMessages(text,local,section),section,1);
+    }));
+    fullSupplement.forEach(function(item,index){
+      var section=fullTargets[index];
+      if(item.status==="fulfilled"){
+        if(!accept(item.value,[section],"一级：完整结构化分析"))errors.push("一级补充"+section+"失败：缺少结构化字段");
+      }else{
+        if(isConfigError(item.reason))terminalError=item.reason;
+        errors.push("一级补充"+section+"失败："+formatAiError(item.reason));
+      }
+    });
+  }
+
+  if(missing.length){
+    var secondTargets=missing.slice();
+    var compactResults=await Promise.allSettled(secondTargets.map(function(section){
+      return request(mimoMessages(text,local,section),section,2);
+    }));
+    compactResults.forEach(function(item,index){
+      var section=secondTargets[index];
+      if(item.status==="fulfilled"){
+        if(!accept(item.value,[section],"二级：轻量结构化分析"))errors.push("二级"+section+"失败：缺少结构化字段");
+      }else{
+        if(isConfigError(item.reason))terminalError=item.reason;
+        errors.push("二级"+section+"失败："+formatAiError(item.reason));
+      }
+    });
+  }
+
+  if(missing.length){
+    var latestError=levelOneError||new Error(errors.join("；"));
+    if(!terminalError&&!isConfigError(latestError)){
+      try{
+        await runPlanB(missing.slice(),latestError);
+      }catch(planBError){
+        errors.push("三级自然语言辅助分析失败："+formatAiError(planBError));
+      }
+    }
+  }
+  if(terminalError&&!levels.length)throw terminalError;
+  if(!levels.length&&!parsed.mimo_analysis)throw new Error(errors.join("；")||"Kimi AI 未返回有效结果");
+  parsed.kimi_strategy={levels:levels.length?levels:["未完成"],errors:errors};
+  if(errors.length)parsed.reasons=(parsed.reasons||[]).concat(errors);
+  return parsed;
 }
 
 async function runSelectedAiAnalysis(local,text,task){
@@ -1737,9 +1771,24 @@ function renderAll(result,text,task,options){
   lastResult=result;
   var ces=result.ces||{},item=result.sentiment_item||{},dims=ces.active_dimensions||[],kws=ces.matched_keywords||[],sents=(result.llm_perception&&result.llm_perception.sentence_analysis)||[];
   $("providerBadge").textContent=result.provider||"-";$("providerBadge").className="badge "+(result.provider&&result.provider!==PROVIDER_LOCAL?"ok":"bad");
-  renderMetrics(result);renderCesBars(dims);renderSubcategories(ces.active_subcategories||[]);renderTendency(result.perception_tendency||{});renderFrequencyAi(result.perception_frequency_ai||{});renderKimiAnalysis(result);renderHighlight(text,kws);renderSentences(sents);renderReasons(result.reasons||[]);
+  renderMetrics(result);renderCesBars(dims);renderSubcategories(ces.active_subcategories||[]);renderTendency(result.perception_tendency||{});renderFrequencyAi(result.perception_frequency_ai||{});renderKimiAnalysis(result);renderHighlight(text,kws);renderSentences(sents);renderPossibleCauses(result,text,task);
   if(!options.skipHistory)addHistory(task,result,text);
-  renderHistory();$("jsonOut").textContent=JSON.stringify(result,null,2);$("resultSection").style.display="";
+  renderHistory();$("jsonOut").textContent=userVisibleJson(result);$("resultSection").style.display="";
+}
+
+function userVisibleJson(value){
+  var labels={PVj:"感知倾向",tendency_mean:"感知倾向",PFj:"感知频率",Nj:"命中数",N:"总数",review_required:"",review_required_count:""};
+  function convert(item){
+    if(Array.isArray(item))return item.map(convert);
+    if(!item||typeof item!=="object")return item;
+    var output={};
+    Object.keys(item).forEach(function(key){
+      var label=Object.prototype.hasOwnProperty.call(labels,key)?labels[key]:key;
+      if(label)output[label]=convert(item[key]);
+    });
+    return output;
+  }
+  return JSON.stringify(convert(value),null,2);
 }
 
 function renderMetrics(r){
@@ -1765,7 +1814,7 @@ function renderTendency(tendency){
   var note=$("tendencyNote"),summaryEl=$("tendencySummary"),itemsEl=$("tendencyItems"),summary=tendency.category_summary||[],items=tendency.items||[];
   note.textContent=tendency.method_note||"暂无感知倾向结果。";
   if(summary.length){
-    summaryEl.innerHTML='<table class="history-table"><thead><tr><th>CES 类别</th><th>PVj</th><th>命中</th><th>正向</th><th>中性</th><th>负向</th><th>备注</th></tr></thead><tbody>'+
+    summaryEl.innerHTML='<table class="history-table"><thead><tr><th>CES 类别</th><th>感知倾向</th><th>命中数</th><th>正向</th><th>中性</th><th>负向</th><th>备注</th></tr></thead><tbody>'+
       summary.map(function(s){
         return '<tr><td>'+esc((s.ces_code? s.ces_code+" ":"")+(s.ces_category||"-"))+'</td><td>'+fmt(s.tendency_mean)+'</td><td>'+esc(s.hit_count??0)+'</td><td class="pos">'+esc(s.positive_count??0)+' / '+fmt(s.positive_ratio)+'</td><td class="neu">'+esc(s.neutral_count??0)+' / '+fmt(s.neutral_ratio)+'</td><td class="neg">'+esc(s.negative_count??0)+' / '+fmt(s.negative_ratio)+'</td><td>'+esc(s.note||"")+'</td></tr>';
       }).join("")+'</tbody></table>';
@@ -1773,10 +1822,10 @@ function renderTendency(tendency){
     summaryEl.innerHTML='<p style="color:var(--muted)">暂无 CES 感知倾向汇总。</p>';
   }
   if(items.length){
-    itemsEl.innerHTML='<table class="history-table"><thead><tr><th>命中内容</th><th>CES 类别</th><th>倾向</th><th>分值</th><th>依据</th><th>复核</th><th>模型</th></tr></thead><tbody>'+
+    itemsEl.innerHTML='<table class="history-table"><thead><tr><th>命中内容</th><th>CES 类别</th><th>倾向</th><th>分值</th><th>依据</th><th>模型</th></tr></thead><tbody>'+
       items.slice(0,40).map(function(item){
         var cls=item.tendency_type==="正向"?"pos":item.tendency_type==="负向"?"neg":"neu";
-        return '<tr><td>'+esc(item.matched_text||item.segment||"-")+'</td><td>'+esc((item.ces_code?item.ces_code+" ":"")+(item.ces_category||"-")+(item.ces_subcategory?" / "+item.ces_subcategory:""))+'</td><td class="'+cls+'">'+esc(item.tendency_type||"-")+'</td><td>'+fmt(item.tendency_score)+'</td><td>'+esc(item.evidence||"")+'</td><td>'+esc(item.review_required?"是":"否")+'</td><td>'+esc(item.source_model||"")+'</td></tr>';
+        return '<tr><td>'+esc(item.matched_text||item.segment||"-")+'</td><td>'+esc((item.ces_code?item.ces_code+" ":"")+(item.ces_category||"-")+(item.ces_subcategory?" / "+item.ces_subcategory:""))+'</td><td class="'+cls+'">'+esc(item.tendency_type||"-")+'</td><td>'+fmt(item.tendency_score)+'</td><td>'+esc(item.evidence||"")+'</td><td>'+esc(item.source_model||"")+'</td></tr>';
       }).join("")+'</tbody></table>';
   }else{
     itemsEl.innerHTML='<p style="color:var(--muted)">暂无逐片段感知倾向明细。</p>';
@@ -1784,31 +1833,33 @@ function renderTendency(tendency){
 }
 function renderFrequencyAi(freq){
   var note=$("frequencyAiNote"),summaryEl=$("frequencyAiSummary"),itemsEl=$("frequencyAiItems"),summary=freq.category_summary||[],items=freq.items||[];
-  note.textContent=freq.method_note||"暂无 AI 感知频率复核结果。";
+  note.textContent=freq.method_note||"暂无感知频率结果。";
   if(summary.length){
-    summaryEl.innerHTML='<table class="history-table"><thead><tr><th>CES 类别</th><th>Nj</th><th>N</th><th>PFj</th><th>命中示例</th><th>备注</th></tr></thead><tbody>'+
+    summaryEl.innerHTML='<table class="history-table"><thead><tr><th>CES 类别</th><th>命中数</th><th>总数</th><th>感知频率</th><th>命中示例</th><th>备注</th></tr></thead><tbody>'+
       summary.map(function(s){
         var examples=Array.isArray(s.examples)?s.examples.join("；"):String(s.examples||"");
         return '<tr><td>'+esc((s.ces_code? s.ces_code+" ":"")+(s.ces_category||"-"))+'</td><td>'+fmtCount(s.Nj)+'</td><td>'+fmtCount(s.N)+'</td><td>'+fmt(s.PFj)+'</td><td>'+esc(examples)+'</td><td>'+esc(s.note||"")+'</td></tr>';
       }).join("")+'</tbody></table>';
   }else{
-    summaryEl.innerHTML='<p style="color:var(--muted)">暂无 AI 感知频率汇总。</p>';
+    summaryEl.innerHTML='<p style="color:var(--muted)">暂无感知频率汇总。</p>';
   }
   if(items.length){
-    itemsEl.innerHTML='<table class="history-table"><thead><tr><th>分句</th><th>命中内容</th><th>CES 类别</th><th>判断原因</th><th>复核</th><th>模型</th></tr></thead><tbody>'+
+    itemsEl.innerHTML='<table class="history-table"><thead><tr><th>分句</th><th>命中内容</th><th>CES 类别</th><th>判断原因</th><th>模型</th></tr></thead><tbody>'+
       items.slice(0,60).map(function(item){
-        return '<tr><td>'+esc(item.segment||"-")+'</td><td>'+esc(item.matched_text||"-")+'</td><td>'+esc((item.ces_code?item.ces_code+" ":"")+(item.ces_category||"-")+(item.ces_subcategory?" / "+item.ces_subcategory:""))+'</td><td>'+esc(item.reason||"")+'</td><td>'+esc(item.review_required?"是":"否")+'</td><td>'+esc(item.source_model||"")+'</td></tr>';
+        return '<tr><td>'+esc(item.segment||"-")+'</td><td>'+esc(item.matched_text||"-")+'</td><td>'+esc((item.ces_code?item.ces_code+" ":"")+(item.ces_category||"-")+(item.ces_subcategory?" / "+item.ces_subcategory:""))+'</td><td>'+esc(item.reason||"")+'</td><td>'+esc(item.source_model||"")+'</td></tr>';
       }).join("")+'</tbody></table>';
   }else{
-    itemsEl.innerHTML='<p style="color:var(--muted)">暂无逐片段 AI 感知频率明细。</p>';
+    itemsEl.innerHTML='<p style="color:var(--muted)">暂无逐片段感知频率明细。</p>';
   }
 }
 function renderKimiAnalysis(result){
   var el=$("kimiAnalysis");
   if(!el)return;
+  var strategy=result&&result.kimi_strategy||{},levels=Array.isArray(strategy.levels)?strategy.levels:[];
+  var prefix=levels.length?"Kimi AI 当前结果："+levels.join(" + ")+"。\n\n":"";
   var text=String(result&&result.mimo_analysis||"").trim();
   if(text){
-    el.textContent=text;
+    el.textContent=prefix+text;
     return;
   }
   var models=Array.isArray(result&&result.ai_models)?result.ai_models:[];
@@ -1816,7 +1867,7 @@ function renderKimiAnalysis(result){
   if(hasMimo){
     var tCount=((result&&result.perception_tendency&&result.perception_tendency.items)||[]).filter(function(item){return String(item.source_model||"").indexOf("Kimi AI")>=0}).length;
     var fCount=((result&&result.perception_frequency_ai&&result.perception_frequency_ai.items)||[]).filter(function(item){return String(item.source_model||"").indexOf("Kimi AI")>=0}).length;
-    el.textContent="Kimi AI 已输出结构化复核结果：感知倾向 "+tCount+" 条，感知频率 "+fCount+" 条。具体内容见上方两个复核表。";
+    el.textContent=prefix+"Kimi AI 已输出结构化结果：感知倾向 "+tCount+" 条，感知频率 "+fCount+" 条。具体内容见上方两个结果表。";
     return;
   }
   var errors=Array.isArray(result&&result.ai_errors)?result.ai_errors:[];
@@ -1832,7 +1883,42 @@ function renderSentences(ss){
   var labels={2:"积极",1:"中性",0:"消极"},cls={2:"pos",1:"neu",0:"neg"};
   $("sentenceAnalysis").innerHTML=ss.map(function(s){return '<div class="llm-row"><p>'+esc(s.sentence||"")+'</p><span class="'+(cls[s.sentiment]||"neu")+'" style="font-size:12px">→ '+(labels[s.sentiment]||"-")+'</span></div>'}).join("")||"<p>AI 模型未返回分句情感。</p>";
 }
-function renderReasons(rs){$("reasonList").innerHTML=rs.map(function(r){return"<li>"+esc(r)+"</li>"}).join("")||"<li>暂无可分析原因</li>"}
+var possibleCauseRunSeq=0;
+function renderPossibleCauses(result,text,task){
+  var el=$("reasonList");
+  if(!el)return;
+  text=String(text||$("commentInput").value||"").trim();
+  if(result&&result.possible_causes){
+    el.innerHTML="<li>"+esc(result.possible_causes)+"</li>";
+    return;
+  }
+  if(!getDeepSeekApiKey().trim()){
+    el.innerHTML="<li>未生成：请先填写 DeepSeek API Key。</li>";
+    return;
+  }
+  if(!text){el.innerHTML="<li>未生成：没有可分析的评论文本。</li>";return}
+  var runId=++possibleCauseRunSeq;
+  el.innerHTML="<li>DeepSeek 正在分析这条评论可能呈现这种体验的原因...</li>";
+  var ctx=getContext();
+  var contextText=Object.keys(ctx).filter(function(key){return ctx[key]&&ctx[key]!=="auto"}).map(function(key){return key+"："+ctx[key]}).join("；")||"无";
+  var snapshot={ces:result&&result.ces||{},感知倾向:result&&result.perception_tendency&&result.perception_tendency.category_summary||[],感知频率:result&&result.perception_frequency_ai&&result.perception_frequency_ai.category_summary||[]};
+  var messages=[
+    {role:"system",content:"你是风景园林 CES 评论成因分析助手。只能说明评论呈现这种体验的可能原因，不把推测写成事实；使用中文简洁回答，不要 JSON。"},
+    {role:"user",content:"评论原文：\n"+text+"\n\n语境：\n"+contextText+"\n\n已得到的 CES 结果：\n"+JSON.stringify(snapshot,null,2)+"\n\n请回答：这条评论呈现这种体验，可能导致的原因是什么？结合评论中的具体内容说明，控制在 180 字以内。"}
+  ];
+  (async function(){
+    try{
+      var raw=await callAi("deepseek",messages,"cause",{retries:1,timeout_ms:20000,max_tokens:600});
+      if(runId!==possibleCauseRunSeq||lastResult!==result)return;
+      result.possible_causes=String(raw||"").trim()||"DeepSeek 未返回成因说明。";
+      el.innerHTML="<li>"+esc(result.possible_causes)+"</li>";
+      $("jsonOut").textContent=userVisibleJson(result);
+    }catch(error){
+      if(runId!==possibleCauseRunSeq||lastResult!==result)return;
+      el.innerHTML="<li>DeepSeek 未生成可能原因："+esc(formatAiError(error))+"</li>";
+    }
+  })();
+}
 function loadStoredHistory(key){
   try{
     var data=JSON.parse(localStorage.getItem(key)||"[]");
@@ -1865,8 +1951,7 @@ function addHistory(task,result,text){
       text:shortText,
       provider:provider,
       category_count:ts.length,
-      item_count:ti.length,
-      review_required_count:tendency.review_required_count||0
+      item_count:ti.length
     });
     tendencyHistory=tendencyHistory.slice(0,MAX_HISTORY);
     saveStoredHistory(STORAGE_TENDENCY_HISTORY,tendencyHistory);
@@ -1876,8 +1961,8 @@ function renderHistory(){
   $("tendencyHistoryCount").textContent=tendencyHistory.length;
   $("frequencyHistoryCount").textContent=frequencyHistory.length;
   $("tendencyHistBody").innerHTML=tendencyHistory.map(function(e,i){
-    return '<tr><td>'+(i+1)+'</td><td title="'+esc(e.text)+'">'+esc(e.text||"").substring(0,34)+'</td><td>'+fmtCount(e.category_count)+'</td><td>'+fmtCount(e.item_count)+'</td><td>'+fmtCount(e.review_required_count)+'</td><td>'+esc(e.provider)+'</td><td style="font-size:11px">'+esc(String(e.time||"").substring(5,16))+'</td></tr>';
-  }).join("")||'<tr><td colspan="7" style="color:var(--muted)">暂无感知倾向历史。</td></tr>';
+    return '<tr><td>'+(i+1)+'</td><td title="'+esc(e.text)+'">'+esc(e.text||"").substring(0,34)+'</td><td>'+fmtCount(e.category_count)+'</td><td>'+fmtCount(e.item_count)+'</td><td>'+esc(e.provider)+'</td><td style="font-size:11px">'+esc(String(e.time||"").substring(5,16))+'</td></tr>';
+  }).join("")||'<tr><td colspan="6" style="color:var(--muted)">暂无感知倾向历史。</td></tr>';
   $("frequencyHistBody").innerHTML=frequencyHistory.map(function(e,i){
     return '<tr><td>'+(i+1)+'</td><td title="'+esc(e.text)+'">'+esc(e.text||"").substring(0,34)+'</td><td>'+fmtCount(e.category_count)+'</td><td>'+fmtCount(e.hit_count)+'</td><td>'+fmtCount(e.valid_segment_count)+'</td><td>'+esc(e.provider)+'</td><td style="font-size:11px">'+esc(String(e.time||"").substring(5,16))+'</td></tr>';
   }).join("")||'<tr><td colspan="7" style="color:var(--muted)">暂无感知频率历史。</td></tr>';
@@ -2061,13 +2146,13 @@ async function startBatchAnalysis(task){
   });
   html+="</tbody></table>";
   if(Object.keys(allTend).length){
-    html+="<h3 style='margin:8px 0'>📈 感知倾向均值</h3><table class=batch-table><thead><tr><th>CES类别</th><th>样本数</th><th>平均PVj</th></tr></thead><tbody>";
+    html+="<h3 style='margin:8px 0'>📈 感知倾向均值</h3><table class=batch-table><thead><tr><th>CES类别</th><th>样本数</th><th>平均感知倾向</th></tr></thead><tbody>";
     Object.keys(allTend).sort(function(a,b){return allTend[b].count-allTend[a].count}).forEach(function(k){
       html+="<tr><td>"+esc(k)+"</td><td>"+allTend[k].count+"</td><td>"+(allTend[k].sumTend/allTend[k].count).toFixed(3)+"</td></tr>";
     });
     html+="</tbody></table>";
   }
-  html+="<details style=margin-top:8px><summary>📋 逐条详情</summary><table class=batch-table><thead><tr><th>#</th><th>评论</th><th>命中CES</th><th>PVj</th></tr></thead><tbody>";
+  html+="<details style=margin-top:8px><summary>📋 逐条详情</summary><table class=batch-table><thead><tr><th>#</th><th>评论</th><th>命中CES</th><th>感知倾向</th></tr></thead><tbody>";
   results.forEach(function(r,i){
     var dims=(r.result.ces||{}).active_dimensions||[];
     var pvj=(r.result.perception_tendency||{}).overall_tendency_mean;
@@ -2087,39 +2172,34 @@ function renderCompareView(result){
   card.style.display="none";
   var models=result.ai_models||[];
   if(models.length<2)return;
-  var ds=models.find(function(m){var p=String(m.provider||"");return p.indexOf("deepseek")>=0||p.indexOf("DeepSeek")>=0});
-  var mm=models.find(function(m){var p=String(m.provider||"");return p.indexOf("Kimi")>=0||p.indexOf("kimi")>=0||p.indexOf("Kimi")>=0||p.indexOf("MiMo")>=0});
-  if(!ds||!mm)return;
+  var deepseekModel=models.find(function(m){return String(m.provider||"").indexOf("DeepSeek")>=0||String(m.provider||"").indexOf("deepseek")>=0});
+  var kimiModel=models.find(function(m){return String(m.provider||"").indexOf("Kimi")>=0||String(m.provider||"").indexOf("kimi")>=0});
+  if(!deepseekModel||!kimiModel)return;
   card.style.display="";
   var comparison=buildModelComparisonData(result);
   var rows=comparison.rows;
-  var sh="<table class=compare-table><thead><tr><th>CES类别</th><th>DeepSeek PFj / Nj</th><th>Kimi PFj / Nj</th><th>DeepSeek PVj</th><th>Kimi PVj</th><th>命中内容</th><th>差异说明</th></tr></thead><tbody>";
+  $("compareCharts").innerHTML=renderComparisonCharts(comparison);
+  var sh="<div class=table-scroll><table class=compare-table><thead><tr><th>CES类别</th><th>DeepSeek 感知频率 / 命中数</th><th>Kimi AI 感知频率 / 命中数</th><th>DeepSeek 感知倾向</th><th>Kimi AI 感知倾向</th><th>命中内容</th><th>差异说明</th></tr></thead><tbody>";
   rows.forEach(function(row){
-    sh+="<tr><td>"+esc(row.category)+"</td><td>"+formatCompareMetric(row.ds.PFj,row.ds.Nj)+"</td><td>"+formatCompareMetric(row.mm.PFj,row.mm.Nj)+"</td><td>"+fmt(row.ds.PVj)+"</td><td>"+fmt(row.mm.PVj)+"</td><td style=font-size:12px>DS："+esc(row.ds.examples.join("；")||"—")+"<br>Kimi："+esc(row.mm.examples.join("；")||"—")+"</td><td style=font-size:12px>"+esc(row.diff_note)+"</td></tr>";
+    sh+="<tr><td>"+esc(row.category)+"</td><td>"+formatCompareMetric(row.deepseek.frequency,row.deepseek.hit_count)+"</td><td>"+formatCompareMetric(row.kimi.frequency,row.kimi.hit_count)+"</td><td>"+fmt(row.deepseek.tendency)+"</td><td>"+fmt(row.kimi.tendency)+"</td><td style=font-size:12px>DeepSeek："+esc(row.deepseek.examples.join("；")||"—")+"<br>Kimi AI："+esc(row.kimi.examples.join("；")||"—")+"</td><td style=font-size:12px>"+esc(row.diff_note)+"</td></tr>";
   });
-  sh+="</tbody></table>";
+  sh+="</tbody></table></div>";
   if(!rows.length)sh="<p style=color:var(--muted)>当前结果没有可按模型来源拆分的 CES 数据；请确认使用双模型分析并等待两个模型返回。</p>";
-  var summary="<div style='font-size:13px;margin-bottom:8px'>";
-  summary+="<strong>DeepSeek</strong>：感知频率类别 "+comparison.ds.freqCount+" 个，感知倾向类别 "+comparison.ds.tendCount+" 个";
-  summary+="<br><strong>Kimi AI</strong>：感知频率类别 "+comparison.mm.freqCount+" 个，感知倾向类别 "+comparison.mm.tendCount+" 个";
-  if(comparison.sourceWeak)summary+="<br><span style='color:var(--warn)'>部分结果缺少模型来源，已按整体结果辅助展示。</span>";
-  summary+="</div>";
+  var summary="<div class=compare-stat-grid>"+
+    "<div class=compare-stat><strong>"+comparison.commonCount+"</strong>共同命中</div>"+
+    "<div class=compare-stat><strong>"+comparison.deepseekOnlyCount+"</strong>仅 DeepSeek 命中</div>"+
+    "<div class=compare-stat><strong>"+comparison.kimiOnlyCount+"</strong>仅 Kimi AI 命中</div>"+
+    "<div class=compare-stat><strong>"+comparison.differenceCount+"</strong>差异显著类别</div>"+
+    "</div>";
   $("compareSummary").innerHTML=summary+sh;
   renderDeepSeekCompareSummary(result,comparison);
 }
 
-function modelKeyFromSource(value){
-  var s=String(value||"");
-  if(s.indexOf("deepseek")>=0||s.indexOf("DeepSeek")>=0)return"ds";
-  if(s.indexOf("Kimi")>=0||s.indexOf("kimi")>=0||s.indexOf("Kimi")>=0||s.indexOf("MiMo")>=0)return"mm";
-  return"";
-}
-
-function emptyCompareSide(){return{PFj:null,Nj:null,PVj:null,tendency_hits:0,freq_hits:0,examples:[]}}
+function emptyCompareSide(){return{frequency:null,hit_count:null,tendency:null,examples:[]}}
 
 function ensureCompareRow(map,category){
   category=category||"未分类";
-  if(!map[category])map[category]={category:category,ds:emptyCompareSide(),mm:emptyCompareSide(),diff_note:""};
+  if(!map[category])map[category]={category:category,deepseek:emptyCompareSide(),kimi:emptyCompareSide(),diff_note:""};
   return map[category];
 }
 
@@ -2129,79 +2209,79 @@ function addExample(side,text){
 }
 
 function buildModelComparisonData(result){
-  var map={},sourceWeak=false,dsStats={freqCount:0,tendCount:0},mmStats={freqCount:0,tendCount:0};
-  var freq=result.perception_frequency_ai||{},tend=result.perception_tendency||{};
-  (freq.items||[]).forEach(function(item){
-    var key=modelKeyFromSource(item.source_model);
-    if(!key){sourceWeak=true;return}
-    var row=ensureCompareRow(map,item.ces_category||item.category);
-    var side=row[key];
-    side.freq_hits++;
-    side.Nj=(side.Nj||0)+1;
-    addExample(side,item.matched_text||item.segment);
-  });
-  (freq.category_summary||[]).forEach(function(s){
-    var key=modelKeyFromSource(s.source_model);
-    if(!key)return;
-    var row=ensureCompareRow(map,s.ces_category||s.category);
-    row[key].PFj=Number(s.PFj??s.pfj??s.frequency);
-    row[key].Nj=Number(s.Nj??s.hit_count??s.count??row[key].Nj)||row[key].Nj;
-    (Array.isArray(s.examples)?s.examples:[]).forEach(function(ex){addExample(row[key],ex)});
-  });
-  (tend.items||[]).forEach(function(item){
-    var key=modelKeyFromSource(item.source_model);
-    if(!key){sourceWeak=true;return}
-    var row=ensureCompareRow(map,item.ces_category||item.category);
-    var side=row[key];
-    side.tendency_hits++;
-    addExample(side,item.matched_text||item.segment);
-  });
-  (tend.category_summary||[]).forEach(function(s){
-    var key=modelKeyFromSource(s.source_model);
-    if(!key)return;
-    var row=ensureCompareRow(map,s.ces_category||s.category);
-    row[key].PVj=Number(s.tendency_mean??s.PVj??s.pvj??s.mean);
-  });
-  if(!Object.keys(map).length){
-    sourceWeak=true;
-    (freq.category_summary||[]).forEach(function(s){
-      var row=ensureCompareRow(map,s.ces_category||s.category);
-      row.ds.PFj=Number(s.PFj??s.pfj??s.frequency);
-      row.ds.Nj=Number(s.Nj??s.hit_count??s.count)||row.ds.Nj;
-      (Array.isArray(s.examples)?s.examples:[]).forEach(function(ex){addExample(row.ds,ex)});
+  var map={},models=result.model_comparison||{};
+  function optionalNumber(value){
+    if(value===null||value===undefined||value==="")return null;
+    var number=Number(value);
+    return Number.isFinite(number)?number:null;
+  }
+  function addModel(modelKey,data){
+    var frequency=data&&data.perception_frequency||{},tendency=data&&data.perception_tendency||{};
+    (frequency.category_summary||[]).forEach(function(summary){
+      var row=ensureCompareRow(map,summary.ces_category||summary.category),side=row[modelKey];
+      side.frequency=optionalNumber(summary.PFj??summary.pfj??summary.frequency);
+      side.hit_count=optionalNumber(summary.Nj??summary.hit_count??summary.count);
+      (Array.isArray(summary.examples)?summary.examples:[]).forEach(function(example){addExample(side,example)});
     });
-    (tend.category_summary||[]).forEach(function(s){
-      var row=ensureCompareRow(map,s.ces_category||s.category);
-      row.ds.PVj=Number(s.tendency_mean??s.PVj??s.pvj??s.mean);
+    (frequency.items||[]).forEach(function(item){
+      var row=ensureCompareRow(map,item.ces_category||item.category);
+      addExample(row[modelKey],item.matched_text||item.segment);
+    });
+    (tendency.category_summary||[]).forEach(function(summary){
+      var row=ensureCompareRow(map,summary.ces_category||summary.category);
+      row[modelKey].tendency=optionalNumber(summary.tendency_mean??summary.PVj??summary.pvj??summary.mean);
+    });
+    (tendency.items||[]).forEach(function(item){
+      var row=ensureCompareRow(map,item.ces_category||item.category);
+      addExample(row[modelKey],item.matched_text||item.segment);
     });
   }
+  addModel("deepseek",models.deepseek);
+  addModel("kimi",models.kimi);
+  var commonCount=0,deepseekOnlyCount=0,kimiOnlyCount=0,differenceCount=0;
   var rows=Object.keys(map).sort().map(function(category){
     var row=map[category],notes=[];
-    var dsHit=(row.ds.freq_hits||row.ds.tendency_hits||row.ds.PFj!=null||row.ds.PVj!=null);
-    var mmHit=(row.mm.freq_hits||row.mm.tendency_hits||row.mm.PFj!=null||row.mm.PVj!=null);
-    if(dsHit&&!mmHit)notes.push("仅 DeepSeek 命中");
-    if(mmHit&&!dsHit)notes.push("仅 Kimi 命中");
-    if(row.ds.PFj!=null&&row.mm.PFj!=null&&Math.abs(row.ds.PFj-row.mm.PFj)>0.05)notes.push("PFj 差异 "+Math.abs(row.ds.PFj-row.mm.PFj).toFixed(4));
-    if(row.ds.PVj!=null&&row.mm.PVj!=null&&Math.abs(row.ds.PVj-row.mm.PVj)>0.15)notes.push("PVj 差异 "+Math.abs(row.ds.PVj-row.mm.PVj).toFixed(3));
+    var deepseekHit=(row.deepseek.frequency!=null||row.deepseek.tendency!=null);
+    var kimiHit=(row.kimi.frequency!=null||row.kimi.tendency!=null);
+    if(deepseekHit&&kimiHit)commonCount++;
+    if(deepseekHit&&!kimiHit){notes.push("仅 DeepSeek 命中");deepseekOnlyCount++}
+    if(kimiHit&&!deepseekHit){notes.push("仅 Kimi AI 命中");kimiOnlyCount++}
+    if(row.deepseek.frequency!=null&&row.kimi.frequency!=null&&Math.abs(row.deepseek.frequency-row.kimi.frequency)>0.05)notes.push("感知频率差异 "+Math.abs(row.deepseek.frequency-row.kimi.frequency).toFixed(4));
+    if(row.deepseek.tendency!=null&&row.kimi.tendency!=null&&Math.abs(row.deepseek.tendency-row.kimi.tendency)>0.15)notes.push("感知倾向差异 "+Math.abs(row.deepseek.tendency-row.kimi.tendency).toFixed(3));
     row.diff_note=notes.length?notes.join("；"):"基本一致";
-    if(dsHit){if(row.ds.PFj!=null||row.ds.Nj!=null)dsStats.freqCount++;if(row.ds.PVj!=null||row.ds.tendency_hits)dsStats.tendCount++}
-    if(mmHit){if(row.mm.PFj!=null||row.mm.Nj!=null)mmStats.freqCount++;if(row.mm.PVj!=null||row.mm.tendency_hits)mmStats.tendCount++}
+    if(notes.some(function(note){return note.indexOf("差异")>=0}))differenceCount++;
     return row;
   });
-  return{rows:rows,ds:dsStats,mm:mmStats,sourceWeak:sourceWeak};
+  return{rows:rows,commonCount:commonCount,deepseekOnlyCount:deepseekOnlyCount,kimiOnlyCount:kimiOnlyCount,differenceCount:differenceCount};
 }
 
-function formatCompareMetric(pfj,nj){
-  var p=Number(pfj),n=Number(nj);
+function formatCompareMetric(value,count){
+  var p=Number(value),n=Number(count);
   if(Number.isFinite(p)&&Number.isFinite(n))return p.toFixed(4)+" / "+n;
   if(Number.isFinite(p))return p.toFixed(4)+" / —";
-  if(Number.isFinite(n)&&n>0)return "命中 / "+n;
+  if(Number.isFinite(n)&&n>0)return "— / "+n;
   return "—";
+}
+
+function renderComparisonChart(rows,key,title){
+  var body=rows.map(function(row){
+    var deepseekValue=row.deepseek[key]===null||row.deepseek[key]===undefined?NaN:Number(row.deepseek[key]);
+    var kimiValue=row.kimi[key]===null||row.kimi[key]===undefined?NaN:Number(row.kimi[key]);
+    var deepseekWidth=Number.isFinite(deepseekValue)?Math.max(0,Math.min(100,deepseekValue*100)):0;
+    var kimiWidth=Number.isFinite(kimiValue)?Math.max(0,Math.min(100,kimiValue*100)):0;
+    return '<div class=compare-chart-row><div class=compare-chart-label title="'+esc(row.category)+'">'+esc(row.category)+'</div><div class=compare-bar-set><div class=compare-bar-line><span>DeepSeek</span><div class=compare-bar-track><div class="compare-bar-fill deepseek" style="width:'+deepseekWidth+'%"></div></div><b>'+fmt(deepseekValue)+'</b></div><div class=compare-bar-line><span>Kimi AI</span><div class=compare-bar-track><div class="compare-bar-fill kimi" style="width:'+kimiWidth+'%"></div></div><b>'+fmt(kimiValue)+'</b></div></div></div>';
+  }).join("");
+  return '<div class=compare-chart><h3>'+title+'</h3><div class=compare-chart-scroll><div class=compare-chart-body>'+body+'</div></div></div>';
+}
+
+function renderComparisonCharts(comparison){
+  if(!comparison.rows.length)return '<p style="color:var(--muted)">暂无可绘制的双模型结构化数据。</p>';
+  return '<div class=compare-charts>'+renderComparisonChart(comparison.rows,"frequency","感知频率对比")+renderComparisonChart(comparison.rows,"tendency","感知倾向对比")+'</div>';
 }
 
 function compareSummaryPayload(comparison){
   return comparison.rows.slice(0,12).map(function(row){
-    return{ces_category:row.category,deepseek:{PFj:row.ds.PFj,PVj:row.ds.PVj,Nj:row.ds.Nj,examples:row.ds.examples},kimi:{PFj:row.mm.PFj,PVj:row.mm.PVj,Nj:row.mm.Nj,examples:row.mm.examples},difference:row.diff_note};
+    return{ces_category:row.category,DeepSeek:{感知频率:row.deepseek.frequency,感知倾向:row.deepseek.tendency,命中数:row.deepseek.hit_count,examples:row.deepseek.examples},KimiAI:{感知频率:row.kimi.frequency,感知倾向:row.kimi.tendency,命中数:row.kimi.hit_count,examples:row.kimi.examples},difference:row.diff_note};
   });
 }
 
@@ -2209,21 +2289,21 @@ async function renderDeepSeekCompareSummary(result,comparison){
   var box=$("compareDeepseekSummary");
   if(!box)return;
   if(getAiMode()!=="both"){box.innerHTML="";return}
-  if(!comparison.rows.length){box.innerHTML='<p style="color:var(--muted)">DeepSeek 对比总结未生成：暂无可对比数据。</p>';return}
+  if(!comparison.rows.length){box.innerHTML='<p style="color:var(--muted)">对比总结未生成：暂无可对比数据。</p>';return}
   var payload=compareSummaryPayload(comparison);
   var cacheKey=JSON.stringify(payload);
   if(box.getAttribute&&box.getAttribute("data-compare-key")===cacheKey&&box.innerHTML)return;
   if(box.setAttribute)box.setAttribute("data-compare-key",cacheKey);
-  box.innerHTML='<p style="color:var(--muted)">DeepSeek 正在总结双模型差异...</p>';
+  box.innerHTML='<p style="color:var(--muted)">DeepSeek 正在生成对比总结...</p>';
   try{
     var messages=[
       {role:"system",content:"你是 CES 双模型结果审阅助手。用中文简洁总结，不要 JSON。"},
-      {role:"user",content:"请根据 DeepSeek 与 Kimi AI 的 CES 对比数据，输出：1共识；2主要分歧；3需人工复核类别；4哪个模型更保守或更敏感；5研究解释建议。控制在 250 字以内。\n\n对比数据：\n"+JSON.stringify(payload,null,2)}
+      {role:"user",content:"请根据 DeepSeek 与 Kimi AI 的 CES 对比数据，输出：1共识；2主要分歧；3建议进一步关注的类别；4哪个模型更保守或更敏感；5研究解释建议。控制在 250 字以内。\n\n对比数据：\n"+JSON.stringify(payload,null,2)}
     ];
     var raw=await callAi("deepseek",messages,"compare");
-    box.innerHTML='<div class="highlight-text"><strong>DeepSeek 对比总结</strong>\n\n'+esc(String(raw||"").trim()||"DeepSeek 未返回总结。")+'</div>';
+    box.innerHTML='<div class="highlight-text"><strong>对比总结</strong>\n\n'+esc(String(raw||"").trim()||"DeepSeek 未返回总结。")+'</div>';
   }catch(e){
-    box.innerHTML='<p style="color:var(--muted)">DeepSeek 对比总结未生成：'+esc(formatAiError(e))+'</p>';
+    box.innerHTML='<p style="color:var(--muted)">对比总结未生成：'+esc(formatAiError(e))+'</p>';
   }
 }
 
@@ -2255,9 +2335,9 @@ function highlightKw(kw){
 
 // Feature 6: Export history
 function exportHistoryCSV(){
-  var lines=["\uFEFF类型,#,文本,类别,命中/片段,复核,来源,时间"];
-  tendencyHistory.forEach(function(e,i){lines.push(["\u611f\u77e5\u503e\u5411",i+1,"\""+e.text.replace(/"/g,"\"\"")+"\"",e.category_count,e.item_count,e.review_required_count,e.provider,e.time].join(","))});
-  frequencyHistory.forEach(function(e,i){lines.push(["\u611f\u77e5\u9891\u7387",i+1,"\""+e.text.replace(/"/g,"\"\"")+"\"",e.category_count,e.hit_count+"\u547d/"+e.valid_segment_count+"\u53e5","",e.provider,e.time].join(","))});
+  var lines=["\uFEFF类型,#,文本,类别,命中/片段,来源,时间"];
+  tendencyHistory.forEach(function(e,i){lines.push(["\u611f\u77e5\u503e\u5411",i+1,"\""+e.text.replace(/"/g,"\"\"")+"\"",e.category_count,e.item_count,e.provider,e.time].join(","))});
+  frequencyHistory.forEach(function(e,i){lines.push(["\u611f\u77e5\u9891\u7387",i+1,"\""+e.text.replace(/"/g,"\"\"")+"\"",e.category_count,e.hit_count+"\u547d/"+e.valid_segment_count+"\u53e5",e.provider,e.time].join(","))});
   var blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"});
   var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="CES_history_"+new Date().toISOString().slice(0,10)+".csv";a.click();
 }
@@ -2297,7 +2377,7 @@ analyze=async function(task,silent){
     if(cached){lastResult=cached;if(!silent)renderAll(lastResult);$("statusMsg").textContent="(缓存命中) 分析完成。";$("statusMsg").className="status ok";return}
   }
   try{
-    await _origAnalyze(task);
+    await _origAnalyze(task,silent);
     if(lastResult)setCachedResult(text,task,mode,lastResult);
     if(!silent&&lastResult)renderCompareView(lastResult);
   }catch(e){
@@ -2307,7 +2387,7 @@ analyze=async function(task,silent){
 
 // Hook renderAll for compare view
 var _origRenderAll=renderAll;
-renderAll=function(result){_origRenderAll(result);if(result)renderCompareView(result)};
+renderAll=function(result,text,task,options){_origRenderAll(result,text,task,options);if(result)renderCompareView(result)};
 
 // Hook loadDeepSeekSettings for taxonomy tree init
 var _origLoad=loadDeepSeekSettings;
