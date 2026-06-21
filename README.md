@@ -1,87 +1,33 @@
-# 6.15 CES GitHub Pages 部署版
+# CES 感知情感分析
 
-这是一个纯静态网页项目，可以本地直接打开，也可以上传到 GitHub 后用 GitHub Pages 部署。
+这是一个可上传到 GitHub、并部署到 Cloudflare Pages 的 CES 感知分析网页。页面内置本地 CES 分类树和关键词数据，支持 DeepSeek、Kimi AI 与 MIMO V2.5 ASR。
+
+## 项目结构
+
+- `index.html`：主页面和本地 CES 分类数据。
+- `functions/api/chat.js`：Cloudflare Pages AI 请求代理。
+- `scripts/`：无依赖的构建与检查脚本。
 
 ## 本地使用
 
-双击：
+直接双击 `index.html` 可使用本地 CES 分类。AI 功能需要在页面填写自己的 API Key；直接打开文件时，浏览器会直接请求 AI 服务。
 
-`启动项/CES情感分析.html`
+## GitHub 与 Cloudflare Pages 部署
 
-不需要启动 Python，不需要打开 bat。
+1. 将本目录内容上传到 GitHub 仓库根目录。
+2. 在 Cloudflare Pages 连接该仓库。
+3. 构建命令填写 `npm run build`，输出目录填写 `dist`，根目录留空。
+4. 部署完成后访问 Cloudflare 提供的网址。
 
-也可以打开根目录的：
+Cloudflare 部署环境会通过 `/api/chat` 转发请求，避免浏览器跨域限制。代理只允许 DeepSeek、Moonshot/Kimi 和小米 MIMO 的固定接口地址，不保存或记录用户 Key。
 
-`index.html`
+## Key 规则
 
-它会自动跳转到主页面。
+所有 API Key 默认空白。填写后仅保存在当前浏览器的 `localStorage`，不会写入代码或上传到 GitHub。
 
-## GitHub Pages 部署
+## 检查命令
 
-1. 把本目录 `6.15ces软件` 上传到 GitHub 仓库。
-2. 进入仓库 `Settings`。
-3. 打开 `Pages`。
-4. Source 选择 `Deploy from a branch`。
-5. Branch 选择 `main`，目录选择 `/root`。
-6. 保存后等待 GitHub 生成访问网址。
-
-## Cloudflare Pages 部署
-
-Cloudflare Pages 可以直接连接这个 GitHub 仓库。
-
-构建设置：
-
-```text
-Build command: npm run build
-Build output directory: dist
-Root directory: 留空
+```powershell
+npm run check
+npm run build
 ```
-
-项目已经包含 `package.json` 和 `wrangler.toml`，用于解决 Cloudflare 默认执行 `npm run build` 时找不到 `package.json` 的问题。
-
-部署到 Cloudflare 后，页面会优先请求本站的 `/api/chat`，再由 Cloudflare Pages Function 转发到 DeepSeek 或 MiMo。这样可以避免浏览器直接跨域请求外部 API 被拦截。
-
-## 保留内容
-
-- `index.html`：GitHub Pages 首页入口。
-- `启动项/CES情感分析.html`：主页面。
-- `启动项/ces_browser_dataset.js`：浏览器本地 CES 分类树和关键词数据。
-- `functions/api/chat.js`：Cloudflare Pages Function，用于代理 DeepSeek / MiMo / MiMo ASR。
-- `package.json`、`wrangler.toml`、`scripts/build-static.js`：Cloudflare Pages 静态构建配置。
-- `.nojekyll`、`.gitignore`、`.gitattributes`：GitHub Pages 和编码辅助配置。
-
-## 已移除内容
-
-- 机器学习模型。
-- 完整训练数据。
-- 训练脚本。
-- Python 后端代理。
-- 启动 bat / ps1。
-- 缓存和测试文件。
-
-## 当前工作方式
-
-- DeepSeek：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.deepseek.com`，本地双击 HTML 时浏览器直连。
-- MIMO V2.5pro：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1`，本地双击 HTML 时浏览器直连。
-- MiMo 2.5 ASR：Cloudflare 部署后经 `/api/chat` 转发到 `https://api.xiaomimimo.com/v1/chat/completions`，本地双击 HTML 时浏览器直连。
-- 本地 CES：使用 `ces_browser_dataset.js` 做轻量分类兜底。
-- CES 感知倾向：可单独运行，也可和感知频率一起运行；本地数据集先给出候选 CES 类别和关键词命中，deepseek v4 pro / MIMO V2.5pro 再给出倾向分值、依据和人工复核标记。
-- AI 感知频率复核：可单独运行，也可和感知倾向一起运行；本地数据集先给出关键词命中，deepseek v4 pro / MIMO V2.5pro 再按 `PFj = Nj / N` 输出语义级命中片段、判断原因和人工复核标记。
-- MIMO V2.5pro：优先尝试结构化复核；如果超时、空内容或非 JSON，会自动切到计划 B，在 `MIMO V2.5pro 分析` 区显示自然语言辅助判断。
-- DeepSeek：兼容 `https://api.deepseek.com`、`https://api.deepseek.com/v1`、`/chat/completions` 和 `/v1/chat/completions`，仍是结构化感知倾向和感知频率主模型。
-- DeepSeek 的 `感知倾向+感知频率` 如果一次结构化请求失败，会自动拆成倾向和频率两次请求。
-- 双模型模式：deepseek v4 pro 与 MIMO V2.5pro 默认平权，也可在页面设置自定义权重。
-- 双模型容错：DeepSeek 结果会先显示；MIMO V2.5pro 结构化成功则合并进表格，结构化失败但计划 B 成功则追加自然语言分析，完全失败时保留 DeepSeek 和本地数据集结果。
-- 分析历史：感知倾向和感知频率分开保存，每类最多保留 100 条，保存在当前浏览器 `localStorage`。
-
-页面不会在代码里保存真实 Key。用户填写 Key 后，只保存在当前浏览器的 `localStorage`，输入框会直接显示普通字符。
-
-## 重要说明
-
-本地 CES 兜底只基于分类树和关键词，不是原来的 Python 机器学习模型。
-
-感知倾向功能使用的是轻量 CES 分类树、关键词和统计信息，不读取完整训练明细，也不运行机器学习模型。
-
-本地感知频率是关键词命中频率；AI 感知频率复核是语义辅助结果，不读取完整训练明细，也不替代人工复核。
-
-如果 DeepSeek 或 MiMo 服务端不允许浏览器跨域直连，AI 功能会失败，但本地 CES 兜底仍可用。

@@ -1,16 +1,8 @@
-# 渲染缓存
-_renders/
-
-# 文档自动提取（临时文件）
-_docx_extract/
-_extract_check/
-
-# 重复副本
-*_fixed.htm
-*_fixed.html
-
-# 系统文件
+dist/
+node_modules/
+.wrangler/
+.dev.vars
+.env
+*.log
 .DS_Store
 Thumbs.db
-__pycache__/
-*.pyc
