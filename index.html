@@ -23,7 +23,7 @@ textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgb
 .btn-sm{font-size:13px;padding:7px 12px}.context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .context-grid label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
 .context-grid input,.context-grid select{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:14px;background:#fff;width:100%}
-.model-switch{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}.model-switch .btn{min-width:96px}
+.model-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:12px 0 4px}.model-switch .btn{min-width:0;white-space:nowrap}
 .compat-hidden{display:none!important}
 .status{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}.status.ok{color:var(--positive)}.status.bad{color:var(--negative)}
 .metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:14px}
@@ -41,7 +41,7 @@ textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgb
 details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:pointer;padding:6px 0}
 .footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 .badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;background:#fff;border:1px solid var(--line);font-size:12px;color:var(--muted);margin:0 4px 8px 0}.badge.ok{background:#eaf7ee;color:var(--positive);border-color:#cbe8d3}.badge.bad{background:#fff0f0;color:var(--negative);border-color:#ffd6d6}
-@media(max-width:600px){header h1{font-size:22px}.card{padding:14px}.metric-grid{grid-template-columns:repeat(2,1fr)}.bar-row{font-size:12px}.bar-label{width:90px}.btn-row{flex-direction:column}.btn{width:100%}.compare-charts{grid-template-columns:1fr}.compare-chart-row{grid-template-columns:100px 1fr}}
+@media(max-width:600px){header h1{font-size:22px}.card{padding:14px}.metric-grid{grid-template-columns:repeat(2,1fr)}.bar-row{font-size:12px}.bar-label{width:90px}.btn-row.primary-actions{display:grid;grid-template-columns:1fr 1fr}.btn-row.primary-actions .btn:last-child{grid-column:span 2}.btn-row.secondary-actions{margin-top:8px}.btn-row.secondary-actions .btn{flex:1}.compare-charts{grid-template-columns:1fr}.compare-chart-row{grid-template-columns:100px 1fr}.workspace-switch{grid-template-columns:1fr 1fr}.model-switch{grid-template-columns:1fr;gap:5px}.model-switch .btn{width:100%}.table-scroll{margin-left:-2px;margin-right:-2px}.analysis-summary-row{grid-template-columns:92px 1fr}.weight-control{grid-template-columns:1fr}}
 
 .batch-progress-bar{height:6px;background:#eee;border-radius:3px;margin:4px 0;overflow:hidden}
 .batch-progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .3s}
@@ -54,6 +54,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 .compare-table td{padding:3px 6px;border-bottom:1px solid var(--line)}
 .compare-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}.compare-chart{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}.compare-chart h3{font-size:14px;margin:0 0 8px}.compare-chart-scroll{overflow-x:auto}.compare-chart-body{min-width:620px}.compare-chart-row{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;margin:8px 0}.compare-chart-label{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compare-bar-set{display:grid;gap:4px}.compare-bar-line{display:grid;grid-template-columns:58px 1fr 44px;gap:6px;align-items:center;font-size:11px}.compare-bar-track{height:10px;background:#edf0f3;border-radius:6px;overflow:hidden}.compare-bar-fill{height:100%;min-width:2px;border-radius:6px}.compare-bar-fill.deepseek{background:#007aff}.compare-bar-fill.kimi{background:#ff9f0a}.compare-stat-grid{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.compare-stat{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px}.compare-stat strong{font-size:16px;display:block}
 .model-result-heading{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.model-result-heading small{font-size:12px;font-weight:400;color:var(--muted)}.model-result-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.model-result-split h3{font-size:14px;margin:0 0 8px}.model-result-split .table-scroll{margin-top:8px}.model-result-note{font-size:12px;color:var(--muted);margin:0 0 8px}@media(max-width:700px){.model-result-split{grid-template-columns:1fr}}
+.workspace-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px}.workspace-switch .btn{background:#fff;color:var(--muted);border:1px solid var(--line);padding:11px 14px}.workspace-switch .btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}.workspace-panel{min-width:0}.primary-actions{margin-top:12px}.secondary-actions{margin-top:8px}.secondary-actions .btn{color:var(--muted);border-color:var(--line)}.utility-card details>summary,.settings-card details>summary{font-size:16px;font-weight:600}.settings-card{padding:14px 20px}.weight-control{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:10px 0}.weight-control input[type=range]{width:100%;accent-color:var(--primary)}.weight-value{font-size:13px;font-weight:600;white-space:nowrap}.weight-presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.analysis-summary{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.analysis-summary h3{font-size:14px;margin:0 0 8px}.analysis-summary-row{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;margin:8px 0}.analysis-summary-label{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.analysis-summary-bars{display:grid;gap:4px}.analysis-mini-bar{display:grid;grid-template-columns:52px 1fr 46px;gap:6px;align-items:center;font-size:11px}.analysis-mini-track{height:8px;background:#edf0f3;border-radius:6px;overflow:hidden}.analysis-mini-fill{height:100%;min-width:2px;border-radius:6px}.analysis-mini-fill.tendency{background:var(--accent)}.analysis-mini-fill.frequency{background:var(--primary)}.detail-evidence{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}.detail-evidence summary{font-size:13px;color:var(--primary);font-weight:500}.result-details{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:rgba(255,255,255,.58)}.result-details>summary{font-size:15px;font-weight:600;padding:10px 0}.result-details[open]>summary{border-bottom:1px solid var(--line)}.evidence-panel{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:0 20px;margin-bottom:16px}.evidence-panel>summary{font-size:17px;font-weight:600;padding:18px 0}.evidence-section{padding:14px 0;border-top:1px solid var(--line)}.evidence-section h2{font-size:15px;margin:0 0 10px}.evidence-section .card{margin:0;padding:0;background:transparent;border:0;backdrop-filter:none}.batch-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.compact-status{margin-top:6px}.hidden{display:none!important}
 .taxonomy-tree{margin:0;padding:0;list-style:none}
 .taxonomy-tree li{margin:2px 0}
 .taxonomy-tree .cat-toggle{cursor:pointer;user-select:none;font-weight:600;color:var(--ink)}
@@ -79,20 +80,30 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <p>deepseek v4 pro / Kimi AI / MIMO ASR + 本地 CES 数据集</p>
 </header>
 
+<nav class="workspace-switch" aria-label="研究工作区">
+  <button class="btn active" id="singleWorkspaceBtn" type="button" onclick="switchWorkspace('single')">单条分析</button>
+  <button class="btn" id="batchWorkspaceBtn" type="button" onclick="switchWorkspace('batch')">批量研究</button>
+</nav>
+
+<section id="batchWorkspace" class="workspace-panel" style="display:none">
 <div class="card">
   <h2>📋 批量分析 <small style="font-weight:400;color:var(--muted)">每行一条评论</small></h2>
   <textarea id="batchInput" placeholder="每行一条评论，例如：&#10;莲花山公园环境优美，适合散步&#10;厕所太少，排队时间太长&#10;……" style="min-height:80px"></textarea>
-  <div class="btn-row">
+  <div class="btn-row batch-toolbar">
     <button class="btn btn-primary btn-sm" onclick="startBatchAnalysis('tendency')">🧭 批量感知倾向</button>
     <button class="btn btn-primary btn-sm" onclick="startBatchAnalysis('frequency')">🧮 批量感知频率</button>
     <button class="btn btn-primary btn-sm" onclick="startBatchAnalysis('both')">🔁 批量两者</button>
     <button class="btn btn-outline btn-sm" onclick="$('batchInput').value='';$('batchProgress').innerHTML='';$('batchResults').innerHTML=''">🗑 清空</button>
+    <button class="btn btn-outline btn-sm" onclick="exportBatchResults('csv')">导出 CSV</button>
+    <button class="btn btn-outline btn-sm" onclick="exportBatchResults('json')">导出 JSON</button>
   </div>
   <div class="status" id="batchStatus"></div>
   <div id="batchProgress" style="font-size:13px;color:var(--muted);margin-top:4px"></div>
   <div class="table-scroll" id="batchResults" style="margin-top:8px"></div>
 </div>
+</section>
 
+<section id="singleWorkspace" class="workspace-panel">
 <div class="card">
   <h2>📝 输入文本</h2>
   <textarea id="commentInput" placeholder="输入访谈、评论或语音转写文本……"></textarea>
@@ -101,20 +112,23 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
     <button class="btn btn-outline btn-sm btn-mode" id="modeKimiBtn" type="button" onclick="setAiMode('kimi')">Kimi AI</button>
     <button class="btn btn-outline btn-sm btn-mode" id="modeBothBtn" type="button" onclick="setAiMode('both')">deepseek v4 pro + Kimi AI</button>
   </div>
-  <div class="btn-row">
+  <div class="btn-row primary-actions">
     <button class="btn btn-primary" id="analyzeTendencyBtn" onclick="analyze('tendency')">🧭 感知倾向分析</button>
     <button class="btn btn-primary" id="analyzeFrequencyBtn" onclick="analyze('frequency')">🧮 感知频率分析</button>
     <button class="btn btn-primary" id="analyzeBothBtn" onclick="analyze('both')">🔁 感知倾向+感知频率分析</button>
-    <button class="btn btn-outline btn-sm" onclick="fillExample('pos')">🌞 正面示例</button>
-    <button class="btn btn-outline btn-sm" onclick="fillExample('neg')">🌧 负面示例</button>
-    <button class="btn btn-outline btn-sm" onclick="fillExample('mix')">🌗 混合示例</button>
     <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
   </div>
-  <div class="status" id="statusMsg"></div>
+  <div class="btn-row secondary-actions">
+    <button class="btn btn-outline btn-sm" onclick="fillExample('pos')">正面示例</button>
+    <button class="btn btn-outline btn-sm" onclick="fillExample('neg')">负面示例</button>
+    <button class="btn btn-outline btn-sm" onclick="fillExample('mix')">混合示例</button>
+  </div>
+  <div class="status compact-status" id="statusMsg"></div>
 </div>
 
-<div class="card">
-  <h2>🎙 Kimi V2.5 ASR 语音识别</h2>
+<div class="card utility-card">
+  <details>
+  <summary>🎙 语音输入</summary>
   <div class="context-grid">
     <div><label>上传音频文件</label><input id="audioFileInput" type="file" accept="audio/*" onchange="handleAudioFileChange()"></div>
   </div>
@@ -127,11 +141,12 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   </div>
   <div class="status" id="asrStatus">可上传常见音频，也可以直接录音。识别前会自动转为 MIMO ASR 支持的 WAV。</div>
   <textarea id="asrText" placeholder="语音识别结果会显示在这里……" style="min-height:70px;margin-top:10px"></textarea>
+  </details>
 </div>
 
-<div class="card">
-  <details open>
-    <summary>🔌 AI 连接与权重设置</summary>
+<div class="card settings-card">
+  <details>
+    <summary>🔌 研究设置</summary>
     <div style="margin:10px 0">
       <span class="badge" id="backendBadge">AI 后端未检查</span>
       <span class="badge" id="deepseekBadge">本地数据集未检查</span>
@@ -144,18 +159,22 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
       <div><label>Kimi 地址</label><input id="kimiApiBase" value="https://api.moonshot.cn"></div>
       <div><label>Kimi 模型名</label><input id="kimiModel" value="moonshot-v1-auto"></div>
       <div><label>Kimi API Key</label><input id="kimiApiKey" type="text" autocomplete="off" placeholder="填入 Kimi API Key"></div>
-      <div><label>双模型权重模式</label><select id="weightMode" onchange="updateWeightPreview()"><option value="recommended">推荐比例 70% + 30%</option><option value="equal">平权 50% + 50%</option><option value="custom">自定义</option></select></div>
-      <div><label>DeepSeek 权重(%)</label><input id="deepseekWeight" type="number" min="0" max="100" step="5" value="70" oninput="updateWeightPreview()"></div>
+      <div class="compat-hidden"><label>双模型权重模式</label><select id="weightMode"><option value="recommended">推荐比例 70% + 30%</option><option value="equal">平权 50% + 50%</option><option value="custom">自定义</option></select></div>
       <div><label>MIMO ASR 地址</label><input id="mimoAsrApiBase" value="https://api.xiaomimimo.com/v1"></div>
       <div><label>MIMO ASR 模型名</label><input id="mimoAsrModel" value="mimo-v2.5-asr"></div>
       <div><label>MIMO ASR API Key</label><input id="mimoAsrApiKey" type="text" autocomplete="off" placeholder="填入 MIMO ASR API Key"></div>
+    </div>
+    <div id="weightPanel">
+      <label style="font-size:12px;color:var(--muted);display:block;margin-top:12px">双模型权重</label>
+      <div class="weight-control"><input id="deepseekWeight" type="range" min="0" max="100" step="5" value="70" oninput="setCustomWeight(this.value)"><span class="weight-value" id="weightPreview">DeepSeek 70% + Kimi AI 30%</span></div>
+      <div class="weight-presets"><button class="btn btn-outline btn-sm" type="button" onclick="setWeightPreset('recommended')">推荐 70/30</button><button class="btn btn-outline btn-sm" type="button" onclick="setWeightPreset('equal')">平权 50/50</button></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-outline btn-sm" onclick="saveAiSettings()">保存 AI 设置</button>
       <button class="btn btn-outline btn-sm" onclick="checkHealth()">测试 AI 连接</button>
       <button class="btn btn-outline btn-sm" onclick="clearAiKeys()">清除 Key</button>
     </div>
-    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">可选择 deepseek v4 pro、Kimi AI 或两者共同分析。联合结果默认采用：<span id="weightPreview">DeepSeek 70% + Kimi 30%</span>。</p>
+    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">API Key 仅保存于当前浏览器。双模型联合结果按当前比例计算。</p>
   </details>
 </div>
 
@@ -168,19 +187,11 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
 
 <div id="resultSection" style="display:none">
   <div class="card">
-    <h2>📊 多维感知诊断</h2>
+    <h2>📊 研究概览</h2>
     <div id="providerBadge" class="badge"></div>
     <div class="metric-grid" id="metricGrid"></div>
-  </div>
-
-  <div class="card">
-    <h2>📈 CES 感知维度 <small id="cesHitCount" style="color:var(--muted);font-weight:400"></small></h2>
-    <div id="cesBars"></div>
-  </div>
-
-  <div class="card">
-    <h2>🧩 CES 二级子类</h2>
-    <div id="subCats" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <div class="analysis-summary"><h3>当前 CES 摘要</h3><div id="analysisSummaryBars"></div></div>
+    <details class="result-details"><summary>本地 CES 候选维度 <small id="cesHitCount" style="color:var(--muted);font-weight:400"></small></summary><div id="cesBars"></div><div id="subCats" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"></div></details>
   </div>
 
   <div id="singleModelResultCards">
@@ -188,69 +199,58 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
     <h2>🧭 CES 感知倾向</h2>
     <p class="tendency-note" id="tendencyNote"></p>
     <div class="table-scroll" id="tendencySummary"></div>
-    <div class="table-scroll" id="tendencyItems" style="margin-top:12px"></div>
+    <details class="detail-evidence"><summary>查看命中依据</summary><div class="table-scroll" id="tendencyItems"></div></details>
   </div>
 
   <div class="card">
     <h2>🧮 感知频率</h2>
     <p class="tendency-note" id="frequencyAiNote"></p>
     <div class="table-scroll" id="frequencyAiSummary"></div>
-    <div class="table-scroll" id="frequencyAiItems" style="margin-top:12px"></div>
+    <details class="detail-evidence"><summary>查看命中依据</summary><div class="table-scroll" id="frequencyAiItems"></div></details>
   </div>
   </div>
 
   <div id="dualModelResultCards" style="display:none">
     <div class="card">
-      <div class="model-result-heading"><h2>🟦 DeepSeek 分析结果</h2><small>模型独立结果</small></div>
-      <div class="model-result-split">
-        <section><h3>感知倾向</h3><p class="model-result-note" id="deepseekTendencyNote"></p><div class="table-scroll" id="deepseekTendencySummary"></div><div class="table-scroll" id="deepseekTendencyItems" style="margin-top:12px"></div></section>
-        <section><h3>感知频率</h3><p class="model-result-note" id="deepseekFrequencyNote"></p><div class="table-scroll" id="deepseekFrequencySummary"></div><div class="table-scroll" id="deepseekFrequencyItems" style="margin-top:12px"></div></section>
-      </div>
-    </div>
-    <div class="card">
-      <div class="model-result-heading"><h2>🟨 Kimi AI 分析结果</h2><small>模型独立结果</small></div>
-      <div class="model-result-split">
-        <section><h3>感知倾向</h3><p class="model-result-note" id="kimiTendencyNote"></p><div class="table-scroll" id="kimiTendencySummary"></div><div class="table-scroll" id="kimiTendencyItems" style="margin-top:12px"></div></section>
-        <section><h3>感知频率</h3><p class="model-result-note" id="kimiFrequencyNote"></p><div class="table-scroll" id="kimiFrequencySummary"></div><div class="table-scroll" id="kimiFrequencyItems" style="margin-top:12px"></div></section>
-      </div>
-    </div>
-    <div class="card">
       <div class="model-result-heading"><h2>🟩 DeepSeek + Kimi AI 联合结果</h2><small id="combinedWeightLabel">DeepSeek 70% + Kimi AI 30%</small></div>
+      <div class="analysis-summary"><h3>联合 CES 摘要</h3><div id="combinedAnalysisBars"></div></div>
       <div class="model-result-split">
-        <section><h3>加权感知倾向</h3><p class="model-result-note" id="combinedTendencyNote"></p><div class="table-scroll" id="combinedTendencySummary"></div><div class="table-scroll" id="combinedTendencyItems" style="margin-top:12px"></div></section>
-        <section><h3>加权感知频率</h3><p class="model-result-note" id="combinedFrequencyNote"></p><div class="table-scroll" id="combinedFrequencySummary"></div><div class="table-scroll" id="combinedFrequencyItems" style="margin-top:12px"></div></section>
+        <section><h3>加权感知倾向</h3><p class="model-result-note" id="combinedTendencyNote"></p><div class="table-scroll" id="combinedTendencySummary"></div><details class="detail-evidence"><summary>查看命中依据</summary><div class="table-scroll" id="combinedTendencyItems"></div></details></section>
+        <section><h3>加权感知频率</h3><p class="model-result-note" id="combinedFrequencyNote"></p><div class="table-scroll" id="combinedFrequencySummary"></div><details class="detail-evidence"><summary>查看命中依据</summary><div class="table-scroll" id="combinedFrequencyItems"></div></details></section>
       </div>
     </div>
   </div>
 
-<div class="card" id="compareCard" style="display:none">
+<details class="evidence-panel" id="evidencePanel">
+  <summary>对比与证据</summary>
+<div class="evidence-section" id="compareCard" style="display:none">
   <h2>⚖️ 双模型对比视图 <small style="font-weight:400;color:var(--muted);font-size:13px">DeepSeek vs Kimi AI</small></h2>
   <div id="compareCharts"></div>
   <div id="compareSummary"></div>
   <div id="compareDeepseekSummary" style="margin-top:10px"></div>
 </div>
 
-<div class="card" id="kimiPlanBCard" style="display:none">
+<div class="evidence-section" id="kimiPlanBCard" style="display:none">
     <h2>🤖 Kimi AI 分析</h2>
     <div class="highlight-text" id="kimiAnalysis">暂无 Kimi AI 分析。</div>
   </div>
 
-  <div class="card">
+  <div class="evidence-section">
     <h2>🔍 原文 CES 词频标注</h2>
     <div class="highlight-text" id="highlighted"></div>
   </div>
 
-  <div class="card">
+  <div class="evidence-section">
     <h2>💬 分句感知诊断</h2>
     <div id="sentenceAnalysis"></div>
   </div>
 
-  <div class="card">
+  <div class="evidence-section">
     <h2>💡 评论可能原因（DeepSeek）</h2>
     <ul class="reasons" id="reasonList"></ul>
   </div>
 
-  <div class="card">
+  <div class="evidence-section">
     <details>
       <summary>📋 分析历史（倾向 <span id="tendencyHistoryCount">0</span> / 频率 <span id="frequencyHistoryCount">0</span>）</summary>
       <div class="range-row">
@@ -273,12 +273,13 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
     </details>
   </div>
 
-  <div class="card">
+  <div class="evidence-section">
     <details>
       <summary>🧾 原始 JSON <button class="btn btn-outline btn-sm" onclick="copyJson()" id="copyBtn" style="margin-left:10px">复制</button><button class="btn btn-outline btn-sm" onclick="exportReport()" style="margin-left:10px">📥 导出报告</button></summary>
       <pre class="json-out" id="jsonOut"></pre>
     </details>
   </div>
+</details>
 </div>
 
 <div class="card">
@@ -287,6 +288,7 @@ details{margin-top:8px}details summary{font-size:15px;font-weight:500;cursor:poi
   <div class="btn-row"><button class="btn btn-primary" onclick="askQuestion()">提问</button></div>
   <div class="highlight-text" id="qaAnswer" style="margin-top:12px">暂无回答。</div>
 </div>
+</section>
 
   <div class="footer">CES 感知情感分析 · deepseek v4 pro / Kimi AI / MIMO ASR · 本地数据集</div>
 </div>
@@ -337,12 +339,21 @@ let asrRecorder = null;
 let asrChunks = [];
 let asrAudioBlob = null;
 let asrAudioName = "";
+let lastBatchResults = [];
+let activeWorkspace = "single";
 
 function $(id){return document.getElementById(id)}
 function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function fmt(v){return v==null || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(4)}
 function fmtCount(v){var n=Number(v);return Number.isFinite(n)?(Math.abs(n-Math.round(n))<0.0001?String(Math.round(n)):n.toFixed(2)):"-"}
+function switchWorkspace(workspace){
+  activeWorkspace=workspace==="batch"?"batch":"single";
+  $("singleWorkspace").style.display=activeWorkspace==="single"?"":"none";
+  $("batchWorkspace").style.display=activeWorkspace==="batch"?"":"none";
+  $("singleWorkspaceBtn").className="btn"+(activeWorkspace==="single"?" active":"");
+  $("batchWorkspaceBtn").className="btn"+(activeWorkspace==="batch"?" active":"");
+}
 function normalizeChatUrl(base,fallback){var clean=String(base||fallback).replace(/\/+$/,"");return clean.endsWith("/chat/completions")?clean:clean+"/chat/completions"}
 function normalizeDeepSeekUrl(base){
   var clean=String(base||DEFAULT_DEEPSEEK_API_BASE).replace(/\/+$/,"");
@@ -370,6 +381,7 @@ function updateAiModeButtons(){
     btn.className="btn btn-outline btn-sm btn-mode"+(active?" active":"");
     btn.setAttribute("aria-pressed",active?"true":"false");
   });
+  updateWeightPanel();
 }
 function setAiMode(mode){
   if(["deepseek","kimi","both"].indexOf(mode)<0)mode="both";
@@ -400,12 +412,44 @@ function getModelWeights(){
 function updateWeightPreview(){
   var w=getModelWeights();
   if($("deepseekWeight")){
-    $("deepseekWeight").disabled=w.mode!=="custom";
     $("deepseekWeight").value=String(w.deepseekPercent);
   }
   var label="DeepSeek "+w.deepseekPercent+"% + Kimi AI "+w.kimiPercent+"%";
   if($("weightPreview"))$("weightPreview").textContent=label;
   if($("combinedWeightLabel"))$("combinedWeightLabel").textContent=label;
+}
+function updateWeightPanel(){
+  var panel=$("weightPanel");
+  if(panel)panel.classList.toggle("hidden",getAiMode()!=="both");
+}
+function setWeightPreset(mode){
+  if(["recommended","equal"].indexOf(mode)<0)mode="recommended";
+  $("weightMode").value=mode;
+  $("deepseekWeight").value=String(mode==="equal"?50:70);
+  updateWeightPreview();
+  refreshCombinedResultForWeight();
+}
+function setCustomWeight(value){
+  $("weightMode").value="custom";
+  $("deepseekWeight").value=String(clampPercent(value));
+  updateWeightPreview();
+  refreshCombinedResultForWeight();
+}
+function refreshCombinedResultForWeight(){
+  var models=lastResult&&lastResult.model_results;
+  if(!models||!models.deepseek||!models.kimi||!models.combined)return;
+  var weights=getModelWeights();
+  var rows=[
+    {cfg:{kind:"deepseek",label:"DeepSeek"},parsed:{perception_tendency:models.deepseek.perception_tendency,perception_frequency_ai:models.deepseek.perception_frequency_ai}},
+    {cfg:{kind:"kimi",label:"Kimi AI"},parsed:{perception_tendency:models.kimi.perception_tendency,perception_frequency_ai:models.kimi.perception_frequency_ai}}
+  ];
+  var combinedTendency=combinePerceptionTendencies(rows,weights),combinedFrequency=combinePerceptionFrequencyAi(rows,weights);
+  models.combined.perception_tendency=combinedTendency;
+  models.combined.perception_frequency_ai=combinedFrequency;
+  models.combined.weights=weights;
+  lastResult.perception_tendency=combinedTendency;
+  lastResult.perception_frequency_ai=combinedFrequency;
+  renderAll(lastResult,$("commentInput").value,"both",{skipHistory:true});
 }
 function requireDeepSeekApiKey(){
   var key=getDeepSeekApiKey();
@@ -1095,7 +1139,13 @@ function localFrequencyAiFallback(local,error){
 }
 
 function normalizeAiParsed(parsed){
-  var pp=Number(parsed.positive_prob),np=Number(parsed.negative_prob),sentiment=parsed.sentiment;
+  parsed=parsed&&typeof parsed==="object"?parsed:{};
+  function optionalNumber(value){
+    if(value===null||value===undefined||String(value).trim()==="")return null;
+    var number=Number(value);
+    return Number.isFinite(number)?number:null;
+  }
+  var pp=optionalNumber(parsed.positive_prob),np=optionalNumber(parsed.negative_prob),sentiment=parsed.sentiment;
   if(sentiment==null)sentiment=parsed.overall_sentiment;
   if(sentiment==="积极")sentiment=2;
   if(sentiment==="中性")sentiment=1;
@@ -1103,10 +1153,12 @@ function normalizeAiParsed(parsed){
   if(String(sentiment).toLowerCase()==="positive")sentiment=2;
   if(String(sentiment).toLowerCase()==="neutral")sentiment=1;
   if(String(sentiment).toLowerCase()==="negative")sentiment=0;
+  var normalizedSentiment=optionalNumber(sentiment);
+  if(normalizedSentiment!==0&&normalizedSentiment!==1&&normalizedSentiment!==2)normalizedSentiment=null;
   return {
-    sentiment:sentiment,
-    positive_prob:Number.isFinite(pp)?pp:null,
-    negative_prob:Number.isFinite(np)?np:null,
+    sentiment:normalizedSentiment,
+    positive_prob:pp!=null&&pp>=0&&pp<=1?pp:null,
+    negative_prob:np!=null&&np>=0&&np<=1?np:null,
     sentence_analysis:Array.isArray(parsed.sentence_analysis)?parsed.sentence_analysis:[],
     reasons:Array.isArray(parsed.reasons)?parsed.reasons:[]
   };
@@ -1436,7 +1488,7 @@ function mergeResult(local,parsed,cfg,task){
   result.ai_models=[{provider:label,ok:true,model:cfg&&cfg.model||"deepseek-chat",weight:1}];
   result.deepseek={ok:cfg&&cfg.kind==="deepseek",fallback:false,model:cfg&&cfg.kind==="deepseek"?(cfg.model||"deepseek-chat"):""};
   result.mimo={ok:cfg&&cfg.kind==="kimi",fallback:false,model:cfg&&cfg.kind==="kimi"?(cfg.model||getKimiModel()):""};
-  result.sentiment_item={sentiment:norm.sentiment,positive_prob:norm.positive_prob,negative_prob:norm.negative_prob,confidence:Math.max(norm.positive_prob||0,norm.negative_prob||0),note:"情感由 "+label+" 输出；CES 分类由本地数据集输出。"};
+  result.sentiment_item={sentiment:norm.sentiment,positive_prob:norm.positive_prob,negative_prob:norm.negative_prob,confidence:(norm.positive_prob!=null||norm.negative_prob!=null)?Math.max(norm.positive_prob??0,norm.negative_prob??0):null,note:"情感由 "+label+" 输出；CES 分类由本地数据集输出。"};
   result.perception_tendency=taskIncludesTendency(task)?normalizePerceptionTendency(parsed&&parsed.perception_tendency,label):{items:[],category_summary:[],method_note:"本次只执行感知频率分析，未请求感知倾向。"};
   result.perception_frequency_ai=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(parsed&&parsed.perception_frequency_ai,label):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"本次只执行感知倾向分析，未请求感知频率。"};
   result.model_results={};
@@ -1473,24 +1525,23 @@ function mergeEqualWeightResult(local,rows,task){
   }else{
     pos=null;neg=null;
   }
-  var sentiment=1;
+  var sentiment=null;
   if(pos!=null&&neg!=null&&pos-neg>0.1)sentiment=2;
   else if(pos!=null&&neg!=null&&neg-pos>0.1)sentiment=0;
-  else if(Number.isFinite(Number(n1.sentiment))&&Number.isFinite(Number(n2.sentiment)))sentiment=Math.round((Number(n1.sentiment)*deepWeight)+(Number(n2.sentiment)*mimoWeight));
-  else if(Number.isFinite(Number(n1.sentiment)))sentiment=Number(n1.sentiment);
-  else if(Number.isFinite(Number(n2.sentiment)))sentiment=Number(n2.sentiment);
+  else if(Number.isFinite(n1.sentiment)&&Number.isFinite(n2.sentiment))sentiment=Math.round((n1.sentiment*deepWeight)+(n2.sentiment*mimoWeight));
+  else if(Number.isFinite(n1.sentiment))sentiment=n1.sentiment;
+  else if(Number.isFinite(n2.sentiment))sentiment=n2.sentiment;
   result.ok=true;result.fallback=false;result.provider=PROVIDER_BOTH;
   result.ai_models=valid.map(function(r){return{provider:r.cfg.label,ok:true,model:r.cfg.model,weight:r.cfg.kind==="deepseek"?deepWeight:mimoWeight}});
   result.deepseek={ok:true,fallback:false,model:"deepseek-chat"};
   result.mimo={ok:true,fallback:false,model:getKimiModel()};
   var note=hasDeepProb&&hasMimoProb?"情感由 DeepSeek "+weights.deepseekPercent+"% 与 Kimi AI "+weights.kimiPercent+"% 合成；CES 分类由本地数据集输出。":"情感数值由可结构化返回的模型输出；CES 结果按可用模型结构化结果显示。";
-  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:Math.max(pos||0,neg||0),note:note};
-  var structuredRows=valid.filter(function(r){return !(r.cfg&&r.cfg.kind==="kimi"&&r.parsed&&r.parsed.mimo_plan_b)});
+  result.sentiment_item={sentiment:sentiment,positive_prob:pos,negative_prob:neg,confidence:(pos!=null||neg!=null)?Math.max(pos??0,neg??0):null,note:note};
   var deepTendency=taskIncludesTendency(task)?normalizePerceptionTendency(deepRow.parsed&&deepRow.parsed.perception_tendency,"DeepSeek"):{items:[],category_summary:[],method_note:"未执行感知倾向分析。"};
   var kimiTendency=taskIncludesTendency(task)?normalizePerceptionTendency(mimoRow.parsed&&mimoRow.parsed.perception_tendency,"Kimi AI"):{items:[],category_summary:[],method_note:"未执行感知倾向分析。"};
   var deepFrequency=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(deepRow.parsed&&deepRow.parsed.perception_frequency_ai,"DeepSeek"):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"未执行感知频率分析。"};
   var kimiFrequency=taskIncludesFrequency(task)?normalizePerceptionFrequencyAi(mimoRow.parsed&&mimoRow.parsed.perception_frequency_ai,"Kimi AI"):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"未执行感知频率分析。"};
-  var combinedRows=structuredRows.length?structuredRows:valid;
+  var combinedRows=valid;
   var combinedTendency=taskIncludesTendency(task)?combinePerceptionTendencies(combinedRows,weights):{items:[],category_summary:[],method_note:"本次只执行感知频率分析，未请求感知倾向。",combined:true};
   var combinedFrequency=taskIncludesFrequency(task)?combinePerceptionFrequencyAi(combinedRows,weights):{segments:[],items:[],category_summary:[],valid_segment_count:0,method_note:"本次只执行感知倾向分析，未请求感知频率。",combined:true};
   result.model_results={
@@ -1876,27 +1927,55 @@ function renderModelResultGroups(result){
   if(!dual){
     renderTendency(result.perception_tendency||{},RESULT_RENDER_TARGETS.single.tendency);
     renderFrequencyAi(result.perception_frequency_ai||{},RESULT_RENDER_TARGETS.single.frequency);
+    renderAnalysisSummaryBars(result.perception_tendency||{},result.perception_frequency_ai||{},"analysisSummaryBars");
     return;
   }
   var weights=models.combined.weights||getModelWeights();
   $("combinedWeightLabel").textContent="DeepSeek "+weights.deepseekPercent+"% + Kimi AI "+weights.kimiPercent+"%";
-  renderTendency(models.deepseek.perception_tendency||{},RESULT_RENDER_TARGETS.deepseek.tendency);
-  renderFrequencyAi(models.deepseek.perception_frequency_ai||{},RESULT_RENDER_TARGETS.deepseek.frequency);
-  renderTendency(models.kimi.perception_tendency||{},RESULT_RENDER_TARGETS.kimi.tendency);
-  renderFrequencyAi(models.kimi.perception_frequency_ai||{},RESULT_RENDER_TARGETS.kimi.frequency);
   renderTendency(models.combined.perception_tendency||{},RESULT_RENDER_TARGETS.combined.tendency);
   renderFrequencyAi(models.combined.perception_frequency_ai||{},RESULT_RENDER_TARGETS.combined.frequency);
+  renderAnalysisSummaryBars(models.combined.perception_tendency||{},models.combined.perception_frequency_ai||{},"analysisSummaryBars");
+  renderAnalysisSummaryBars(models.combined.perception_tendency||{},models.combined.perception_frequency_ai||{},"combinedAnalysisBars");
+}
+
+function renderAnalysisSummaryBars(tendency,frequency,targetId){
+  var el=$(targetId);
+  if(!el)return;
+  var map={};
+  (tendency.category_summary||[]).forEach(function(row){
+    var key=(row.ces_code||"")+"|"+(row.ces_category||"");
+    map[key]=map[key]||{code:row.ces_code,category:row.ces_category,tendency:null,frequency:null};
+    map[key].tendency=Number.isFinite(Number(row.tendency_mean))?Number(row.tendency_mean):null;
+  });
+  (frequency.category_summary||[]).forEach(function(row){
+    var key=(row.ces_code||"")+"|"+(row.ces_category||"");
+    map[key]=map[key]||{code:row.ces_code,category:row.ces_category,tendency:null,frequency:null};
+    map[key].frequency=Number.isFinite(Number(row.PFj))?Number(row.PFj):null;
+  });
+  var rows=Object.keys(map).map(function(key){return map[key]}).sort(function(a,b){return Math.max(b.frequency||0,b.tendency||0)-Math.max(a.frequency||0,a.tendency||0)}).slice(0,12);
+  if(!rows.length){el.innerHTML='<p style="color:var(--muted);font-size:13px">暂无可展示的感知摘要。</p>';return}
+  el.innerHTML=rows.map(function(row){
+    var tendency=row.tendency==null?0:Math.max(0,Math.min(1,row.tendency)),frequency=row.frequency==null?0:Math.max(0,Math.min(1,row.frequency));
+    return '<div class="analysis-summary-row"><div class="analysis-summary-label" title="'+esc((row.code?row.code+" ":"")+(row.category||"-"))+'">'+esc((row.code?row.code+" ":"")+(row.category||"-"))+'</div><div class="analysis-summary-bars"><div class="analysis-mini-bar"><span>倾向</span><div class="analysis-mini-track"><div class="analysis-mini-fill tendency" style="width:'+Math.round(tendency*100)+'%"></div></div><b>'+fmt(row.tendency)+'</b></div><div class="analysis-mini-bar"><span>频率</span><div class="analysis-mini-track"><div class="analysis-mini-fill frequency" style="width:'+Math.round(frequency*100)+'%"></div></div><b>'+fmt(row.frequency)+'</b></div></div></div>';
+  }).join("");
 }
 
 function renderMetrics(r){
-  var item=r.sentiment_item||{},labels={2:"积极",1:"中性",0:"消极"},s=item.sentiment,cls=s===2?"positive":s===0?"negative":"neutral",pf=r.perception_frequency||0;
-  $("metricGrid").innerHTML=
-    '<div class="metric '+cls+'"><span>情感倾向</span><strong>'+(labels[s]||"-")+'</strong><small>sentiment</small></div>'+
-    '<div class="metric positive"><span>积极概率</span><strong>'+fmt(item.positive_prob)+'</strong><small>positive_prob</small></div>'+
-    '<div class="metric negative"><span>消极概率</span><strong>'+fmt(item.negative_prob)+'</strong><small>negative_prob</small></div>'+
-    '<div class="metric neutral"><span>置信度</span><strong>'+fmt(item.confidence)+'</strong><small>confidence</small></div>'+
-    '<div class="metric"><span>感知频率</span><strong>'+fmt(pf)+'</strong><small>CES frequency</small></div>'+
-    '<div class="metric"><span>分析引擎</span><strong style="font-size:13px">'+esc(r.provider||"-")+'</strong><small>provider</small></div>';
+  var item=r.sentiment_item||{},labels={2:"积极",1:"中性",0:"消极"},s=item.sentiment,cls=s===2?"positive":s===0?"negative":"neutral",metrics=[];
+  if(s===0||s===1||s===2){
+    metrics.push('<div class="metric '+cls+'"><span>整体情感</span><strong>'+labels[s]+'</strong><small>模型返回</small></div>');
+  }else{
+    metrics.push('<div class="metric neutral"><span>整体情感</span><strong style="font-size:16px">未返回</strong><small>模型未提供整体情感</small></div>');
+  }
+  if(item.positive_prob!=null)metrics.push('<div class="metric positive"><span>积极概率</span><strong>'+fmt(item.positive_prob)+'</strong><small>模型返回</small></div>');
+  if(item.negative_prob!=null)metrics.push('<div class="metric negative"><span>消极概率</span><strong>'+fmt(item.negative_prob)+'</strong><small>模型返回</small></div>');
+  if(item.confidence!=null)metrics.push('<div class="metric neutral"><span>情感置信度</span><strong>'+fmt(item.confidence)+'</strong><small>基于有效概率</small></div>');
+  var dimensions=((r.ces&&r.ces.active_dimensions)||[]).length;
+  metrics.push('<div class="metric"><span>CES 命中类别</span><strong>'+dimensions+'</strong><small>本地候选类别</small></div>');
+  var weights=r.model_results&&r.model_results.combined&&r.model_results.combined.weights;
+  if(weights)metrics.push('<div class="metric"><span>联合权重</span><strong style="font-size:14px">DeepSeek '+weights.deepseekPercent+'%<br>Kimi AI '+weights.kimiPercent+'%</strong><small>当前联合比例</small></div>');
+  metrics.push('<div class="metric"><span>分析来源</span><strong style="font-size:13px">'+esc(r.provider||"-")+'</strong><small>当前结果</small></div>');
+  $("metricGrid").innerHTML=metrics.join("");
 }
 
 var CES_COLORS=["#007aff","#34c759","#ff9f0a","#ff375f","#5856d6","#00c7be","#ff2d55","#af52de","#5ac8fa","#ff6b35","#8e8e93","#30d158","#64d2ff","#ffd60a"];
@@ -2170,6 +2249,7 @@ function clearFrequencyHistory(){frequencyHistory=[];localStorage.removeItem(STO
 function copyJson(){if(!lastResult)return;navigator.clipboard.writeText(JSON.stringify(lastResult,null,2));var b=$("copyBtn");b.textContent="已复制!";setTimeout(function(){b.textContent="复制"},1500)}
 function clearAll(){$("commentInput").value="";$("statusMsg").textContent="";$("statusMsg").className="status";$("resultSection").style.display="none";$("asrText").value="";$("audioFileInput").value="";asrAudioBlob=null;asrAudioName="";setAsrStatus("可上传常见音频，也可以直接录音。识别前会自动转为 MIMO ASR 支持的 WAV。");lastResult=null}
 loadDeepSeekSettings();
+switchWorkspace("single");
 tendencyHistory=loadStoredHistory(STORAGE_TENDENCY_HISTORY);
 frequencyHistory=loadStoredHistory(STORAGE_FREQUENCY_HISTORY);
 renderHistory();
@@ -2241,6 +2321,7 @@ async function startBatchAnalysis(task){
     if(i<total-1)await sleep(500);
   }
   batchRunning=false;
+  lastBatchResults={task:task,results:results,errors:errors,exported_at:new Date().toISOString()};
   var html="<h3 style='margin:8px 0'>📊 批量汇总（"+results.length+" 条成功"+(errors.length?", "+errors.length+" 失败":"")+"）</h3>";
   html+="<table class=batch-table><thead><tr><th>CES类别</th><th>命中次数</th><th>命中率</th></tr></thead><tbody>";
   Object.keys(allCes).sort(function(a,b){return (allCes[b]||0)-(allCes[a]||0)}).forEach(function(k){
@@ -2264,6 +2345,34 @@ async function startBatchAnalysis(task){
   $("batchResults").innerHTML=html;
   $("statusMsg").textContent="批量分析完成："+results.length+" 条成功";
   $("statusMsg").className="status ok";
+}
+
+function exportBatchResults(format){
+  if(!lastBatchResults||!Array.isArray(lastBatchResults.results)||!lastBatchResults.results.length){
+    $("batchStatus").textContent="请先完成至少一条批量分析。";
+    return;
+  }
+  var date=new Date().toISOString().slice(0,10),blob,name;
+  if(format==="json"){
+    blob=new Blob([JSON.stringify(lastBatchResults,null,2)],{type:"application/json"});
+    name="CES_batch_"+date+".json";
+  }else{
+    var cell=function(value){return '"'+String(value??"").replace(/"/g,'""')+'"'};
+    var lines=["\uFEFF序号,评论,来源,CES类别,感知倾向类别,感知频率类别"];
+    lastBatchResults.results.forEach(function(row,index){
+      var result=row.result||{},ces=(result.ces&&result.ces.active_dimensions||[]).map(function(item){return item.category||item.name||item}).join("；");
+      var tendency=(result.perception_tendency&&result.perception_tendency.category_summary||[]).map(function(item){return item.ces_category||""}).filter(Boolean).join("；");
+      var frequency=(result.perception_frequency_ai&&result.perception_frequency_ai.category_summary||[]).map(function(item){return item.ces_category||""}).filter(Boolean).join("；");
+      lines.push([index+1,cell(row.text),cell(result.provider),cell(ces),cell(tendency),cell(frequency)].join(","));
+    });
+    blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"});
+    name="CES_batch_"+date+".csv";
+  }
+  var link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download=name;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 
